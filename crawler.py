@@ -5,14 +5,17 @@ import time
 from collections import deque
 
 class Crawler:
-    def __init__(self, start_url):
-        self.start_url = start_url
+    def __init__(self):
+        self.start_url = ''
+        self.crawl_depth = ''
+        self.num_pages = ''
+        self.proxy = ''
         self.visited_urls = set()
         self.tree_structure = {}
 
     def fetch_page(self, url): #fetching html data
         try:
-            response = requests.get(url, timeout=5)
+            response = requests.get(url, timeout=5) # here use the user agent string for requests
             if response.status_code == 200: # takes valid urls
                 return response.text
         except requests.RequestException: #general exeption catching we will have an error handler class to handle this
@@ -57,11 +60,87 @@ class Crawler:
                 file.write(f"{parent_url} -> {', '.join(children)}\n")
 
     def start(self): # starting crawling sequence
+        self.receive_url()
+        self.receive_crawler_depth()
+        self.receive_crawl_pages_desired()
+        self.receive_proxy()
+        #user agent string (?) - example in google (not as bad as it sounds)
+        #request delay (?) - ???
+        #additional params (????)
         self.crawl()
         self.save_tree()
         print("Crawl completed.")
 
+    #simple url validator
+    def validate_url_requested(self, url):
+        if len(url) <=12:
+            return False
+        if url[0:7] != "http://" or url[-5:] != ".com/":
+            return False
+        return True
+    
+    #function that receives the url from the user in terminal *will change once we integret ui*
+    def receive_url(self):
+        url = ''
+        while True:
+            url = input('Please input the target URL ')
+            if self.validate_url_requested(url):
+                #update base url for crawler class (dont think it should be an attribute of crawler class as we in theory only need one instance of crawler 
+                #and should recieve test multiple times b ut can fix later with ui)
+                self.start_url = url
+                break
+            print("Invalid URL! Please ensure you include 'https://' at the start and '.com' at the end")
+    
+    #function that recieves and updates the constraint for how deep into urls we want to crawl
+    def receive_crawler_depth(self):
+        depth = -1
+        while depth <= 0:
+            try:
+                depth = input("Please input how deep into a url you'd like to crawl. If no preference please enter an empty line '' ")
+                if depth == '' or int(depth) >=1:
+                    self.depth = depth
+                    break
+                print("Invalid depth!")
+                depth = -1
+            except:
+                print("Not a number or empty line!")
+                depth = -1
+            
+
+    #function that recieves and updates the constraint for how many pages we would like to crawl in total
+    def receive_crawl_pages_desired(self):
+        num_pages = -1
+        while num_pages <= 0:
+            try:
+                num_pages = input("Please input how many pages you want the crawl to retrieve. If no preference please enter an empty line '' ")
+                if num_pages == '' or int(num_pages) >=1:
+                    self.num_pages = num_pages
+                    break
+                print("Invalid number!")
+                num_pages = -1
+            except:
+                print("Not a number or empty line!")
+                num_pages = -1
+
+    
+    #function for receiving proxy as input
+    def receive_proxy(self):
+        proxy = -1
+        while proxy <= 0:
+            try:
+                proxy = input("Please input your desired proxy. If no preference please enter an empty line '' ")
+                if proxy == '' or int(proxy) == 8080:
+                    self.proxy = proxy
+                    break
+                print("Invalid proxy")
+                proxy = -1
+            except:
+                print("Invalid proxy!")
+                proxy = -1
+    
+        
 # Start the crawler
 if __name__ == "__main__":
-    crawler = Crawler("http://books.toscrape.com/")  # Change this URL to test different websites will be something not needed once implemented through a sveltkit
+    # "http://books.toscrape.com/"
+    crawler = Crawler()  # Change this URL to test different websites will be something not needed once implemented through a sveltkit
     crawler.start()
