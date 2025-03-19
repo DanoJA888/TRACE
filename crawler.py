@@ -42,6 +42,14 @@ class Crawler:
 
         while queue:
             url = queue.popleft()
+
+            #counts the depth of the current path and skips url if too deep
+            if self.depth != '' and url != self.start_url:
+                curr_url_path = urlparse(url).path
+                url_depth = curr_url_path.count('/')
+                if url_depth > self.depth:
+                    continue
+
             if url in self.visited_urls:
                 continue
 
@@ -53,6 +61,10 @@ class Crawler:
                 self.tree_structure[url] = list(links)  # Store links in the tree structure
                 queue.extend(links)  # Add found links to the queue
                 # time.sleep(1)  # sleep to avoid overloading servers can probably remove if needed
+            
+            #if num pages crawled quota reached, strop crawling
+            if self.num_pages != '' and len(self.tree_structure) == self.num_pages:
+                break
 
     def save_tree(self): #this will be merged or likely changed out of this code once we are provided code and team to work with on subsystem 1
         with open("crawl_tree.txt", "w") as file:
@@ -71,7 +83,7 @@ class Crawler:
         self.save_tree()
         print("Crawl completed.")
 
-    #simple url validator
+    #simple url validator (not necessary later probs)
     def validate_url_requested(self, url):
         if len(url) <=12:
             return False
@@ -91,14 +103,14 @@ class Crawler:
                 break
             print("Invalid URL! Please ensure you include 'https://' at the start and '.com' at the end")
     
-    #function that recieves and updates the constraint for how deep into urls we want to crawl
+    #function that recieves crawler depth desire
     def receive_crawler_depth(self):
         depth = -1
         while depth <= 0:
             try:
                 depth = input("Please input how deep into a url you'd like to crawl. If no preference please enter an empty line '' ")
                 if depth == '' or int(depth) >=1:
-                    self.depth = depth
+                    self.depth = depth if depth == '' else int(depth)
                     break
                 print("Invalid depth!")
                 depth = -1
@@ -107,14 +119,14 @@ class Crawler:
                 depth = -1
             
 
-    #function that recieves and updates the constraint for how many pages we would like to crawl in total
+    #function that recieves total crawls desired
     def receive_crawl_pages_desired(self):
         num_pages = -1
         while num_pages <= 0:
             try:
                 num_pages = input("Please input how many pages you want the crawl to retrieve. If no preference please enter an empty line '' ")
                 if num_pages == '' or int(num_pages) >=1:
-                    self.num_pages = num_pages
+                    self.num_pages = num_pages if num_pages == '' else int(num_pages)
                     break
                 print("Invalid number!")
                 num_pages = -1
@@ -123,14 +135,14 @@ class Crawler:
                 num_pages = -1
 
     
-    #function for receiving proxy as input
+    #function for receiving proxy desired 
     def receive_proxy(self):
         proxy = -1
         while proxy <= 0:
             try:
                 proxy = input("Please input your desired proxy. If no preference please enter an empty line '' ")
                 if proxy == '' or int(proxy) == 8080:
-                    self.proxy = proxy
+                    self.proxy = proxy if proxy == '' else int(proxy)
                     break
                 print("Invalid proxy")
                 proxy = -1
