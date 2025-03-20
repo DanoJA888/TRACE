@@ -10,12 +10,16 @@ class Crawler:
         self.crawl_depth = ''
         self.num_pages = ''
         self.proxy = ''
+        self.user_agent_string = ''
         self.visited_urls = set()
         self.tree_structure = {}
 
     def fetch_page(self, url): #fetching html data
         try:
-            response = requests.get(url, timeout=5) # here use the user agent string for requests
+            headers = {}
+            if self.user_agent_string != '':
+                headers["User-Agent"] = self.user_agent_string
+            response = requests.get(url, timeout=5, headers=headers) # here use the user agent string for requests
             if response.status_code == 200: # takes valid urls
                 return response.text
         except requests.RequestException: #general exeption catching we will have an error handler class to handle this
@@ -76,7 +80,7 @@ class Crawler:
         self.receive_crawler_depth()
         self.receive_crawl_pages_desired()
         self.receive_proxy()
-        #user agent string (?) - example in google (not as bad as it sounds)
+        self.receive_user_agent()
         #request delay (?) - ???
         #additional params (????)
         self.crawl()
@@ -149,7 +153,10 @@ class Crawler:
             except:
                 print("Invalid proxy!")
                 proxy = -1
-    
+
+    def receive_user_agent(self):
+        user_agent = input("Please enter the user agent string of choice. If no preference please enter an empty line '' ")
+        self.user_agent_string = user_agent
         
 # Start the crawler
 if __name__ == "__main__":
