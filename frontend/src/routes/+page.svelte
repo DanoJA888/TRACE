@@ -1,34 +1,33 @@
 <script>
   let crawlerParams = [
-    { id: "target-url", label: "Target URL", type: "text"},
-		{ id: "depth", label: "Crawl Depth", type: "number"},
-		{ id: "max-pages", label: "Max Pages", type: "number"},
-		{ id: "user-agent", label: "User Agent", type: "text"},
-		{ id: "delay", label: "Request Delay", type: "number"},
-		{ id: "proxy", label: "Proxy", type: "number"}
-];
+    { id: "target-url", label: "Target URL", type: "text", value: "" },
+    { id: "depth", label: "Crawl Depth", type: "number", value: "" },
+    { id: "max-pages", label: "Max Pages", type: "number", value: "" },
+    { id: "user-agent", label: "User Agent", type: "text", value: "" },
+    { id: "delay", label: "Request Delay", type: "number", value: "" },
+    { id: "proxy", label: "Proxy", type: "number", value: "" }
+  ];
+
+  function handleSubmit() {
+    console.log("Form submitted:", crawlerParams);
+  }
 </script>
 
-<div class = crawlerConfigPage>
+<div class="crawlerConfigPage">
   <div>
     <h1>Crawler</h1>
-    <div >
+    <div>
       <form on:submit|preventDefault={handleSubmit}>
         {#each crawlerParams as param}
           <label>
             {param.label}:
-            {#if param.type === 'textarea'}
-              <textarea bind:value={crawlerParams[param.key]} required></textarea>
-            {:else}
-              <input type={param.type} bind:value={crawlerParams[param.key]} required />
-            {/if}
+            <input type={param.type} bind:value={param.value} required />
           </label>
         {/each}
         
         <button type="submit">Submit</button>
       </form>
     </div>
-    
   </div>
 </div>
   
