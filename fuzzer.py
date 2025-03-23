@@ -7,7 +7,7 @@ class WebFuzzer:
         self.target_url = target_url
         self.results = []
         self.is_fuzzing = False
-    
+    #Fetches response
     def fetch_response(self, url, param, method="GET"):
         #Send a request with a test parameter
         try:
