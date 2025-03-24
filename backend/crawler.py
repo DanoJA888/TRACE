@@ -113,7 +113,15 @@ class Crawler:
             for parent_url, children in self.tree_structure.items():
                 file.write(f"{parent_url} -> {', '.join(children)}\n")
 
-    def start(self): # starting crawling sequence
+
+    '''
+    CLI START: calls all commented functions inside start_crawl to receive params, runs crawl with given params, stores and says that crawl is complete
+    FULL STACK START: 
+     - Will probably get rid of crawlinfo class maybe? dont see how it can work for front end
+     - Will receive params in the method signature as opposed to asking
+     - Will stop printing to command line and might instead log on inspect console (need to see how that can happen)
+    '''
+    async def start_crawl(self): # starting crawling sequence
         self.receive_url()
         self.receive_crawler_depth()
         self.receive_crawl_pages_desired()
@@ -199,4 +207,4 @@ class Crawler:
 if __name__ == "__main__":
     # "http://books.toscrape.com/"
     crawler = Crawler()  # Change this URL to test different websites will be something not needed once implemented through a sveltkit
-    crawler.start()
+    crawler.start_crawl()
