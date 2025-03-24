@@ -4,6 +4,7 @@ from urllib.parse import urljoin, urlparse
 import time
 from collections import deque
 
+#questionable, will think about it tomorrow
 class CrawledURLInfo:
     def __init__(self, url_in = '', title_in = '', word_count_in = '', char_count_in = '', links_found_in = '', words_in = []):
         self.url = url_in
@@ -26,7 +27,8 @@ class Crawler:
         self.visited_urls = set()
         self.tree_structure = {}
         self.crawled_urls = {}
-
+        
+    #fine for backend
     def fetch_page(self, url): #fetching html data
         try:
             headers = {}
@@ -38,10 +40,10 @@ class Crawler:
         except requests.RequestException: #general exeption catching we will have an error handler class to handle this
             return None
         return None
-
+    
+    #fine for backend
     def retreieve_links_to_crawl(self, parsed_html, base_url):
         """Extracts and returns valid links from an HTML page."""
-        # soup = BeautifulSoup(html, "html.parser")
         links = set()
         for a_tag in parsed_html.find_all("a", href=True):
             full_url = urljoin(base_url, a_tag["href"])
@@ -49,10 +51,12 @@ class Crawler:
                 links.add(full_url)
         return links
 
+    #fine for backend
     def is_valid_url(self, url): #I think I wrote this wrong but this should effectively avoid a looping issue where the url visits itself or visits one from before
         parsed = urlparse(url)
         return parsed.netloc == urlparse(self.start_url).netloc and url not in self.visited_urls
     
+    #questionable will think about it tomorrow
     #creates an object to store the info of each webpage
     def retreive_url_info(self, parsed_html, url, links):
         text = parsed_html.get_text()
@@ -64,8 +68,8 @@ class Crawler:
 
         url_info = CrawledURLInfo(url, title, word_count, char_count, link_count, words)
         return url_info
-        pass
 
+    #fine for backend
     def crawl(self): #crawler process using a queue
         start = time.time()
         queue = deque([self.start_url])  # Use a queue to track URLs
@@ -84,7 +88,7 @@ class Crawler:
             if url in self.visited_urls:
                 continue
 
-            print(f"Crawling: {url}")
+            #print(f"Crawling: {url}")
             self.visited_urls.add(url)
             html = self.fetch_page(url)
             if html:
@@ -93,12 +97,11 @@ class Crawler:
                 links = self.retreieve_links_to_crawl(parsed_html, url)
                 url_info = self.retreive_url_info(parsed_html, url, links)
                 self.crawled_urls[len(self.crawled_urls)] = url_info
-                url_id = len(self.crawled_urls) - 1
-                print(str(url_id) , " | ", self.crawled_urls[url_id].url , " | " , self.crawled_urls[url_id].title, " | ", str(self.crawled_urls[url_id].word_count) , " | " , str(self.crawled_urls[url_id].char_count) 
-                      , " | ", str(self.crawled_urls[url_id].link_count))
+                
+                #print(str(url_id) , " | ", self.crawled_urls[url_id].url , " | " , self.crawled_urls[url_id].title, " | ", str(self.crawled_urls[url_id].word_count) , " | " , str(self.crawled_urls[url_id].char_count) 
+                #      , " | ", str(self.crawled_urls[url_id].link_count))
                 self.tree_structure[url] = list(links)  # Store links in the tree structure
                 queue.extend(links)  # Add found links to the queue
-                # time.sleep(1)  # sleep to avoid overloading servers can probably remove if needed
             
             #if num pages crawled quota reached, strop crawling
             if self.num_pages != '' and len(self.tree_structure) == self.num_pages:
@@ -108,6 +111,7 @@ class Crawler:
         self.crawl_time = end - start
         self.requests_per_sec = round(((len(self.crawled_urls)) / self.crawl_time), 2)
 
+    #questionable, will think about it tomorrow
     def save_tree(self): #this will be merged or likely changed out of this code once we are provided code and team to work with on subsystem 1
         with open("crawl_tree.txt", "w") as file:
             for parent_url, children in self.tree_structure.items():
@@ -121,17 +125,26 @@ class Crawler:
      - Will receive params in the method signature as opposed to asking
      - Will stop printing to command line and might instead log on inspect console (need to see how that can happen)
     '''
+
+    '''
+    potential new signature
+    async def start_crawl(url, depth = '', crawler_pages = '', user_agent = '', delay = '', proxy = '')
+    '''
     async def start_crawl(self): # starting crawling sequence
+        self.crawl()
+        self.save_tree()
+        # ***COMMENTED THIS OUT AS IT IS PART OF CLI
+        '''
         self.receive_url()
         self.receive_crawler_depth()
         self.receive_crawl_pages_desired()
         self.receive_proxy()
         self.receive_user_agent()
-        self.crawl()
-        self.save_tree()
-        print("Crawl completed in " + str(round(self.crawl_time, 2)) + " seconds.")
-        print("Requests/sec: " + str(self.requests_per_sec))
-
+        #print("Crawl completed in " + str(round(self.crawl_time, 2)) + " seconds.")
+        #print("Requests/sec: " + str(self.requests_per_sec))
+        '''
+    # ***COMMENTED THIS OUT AS IT IS PART OF CLI
+    '''
     #simple url validator (not necessary later probs)
     def validate_url_requested(self, url):
         if len(url) <=12:
@@ -202,9 +215,10 @@ class Crawler:
     def receive_user_agent(self):
         user_agent = input("Please enter the user agent string of choice. If no preference please enter an empty line '' ")
         self.user_agent_string = user_agent
-        
+
 # Start the crawler
 if __name__ == "__main__":
     # "http://books.toscrape.com/"
     crawler = Crawler()  # Change this URL to test different websites will be something not needed once implemented through a sveltkit
     crawler.start_crawl()
+'''
