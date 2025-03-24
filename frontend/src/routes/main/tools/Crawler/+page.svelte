@@ -11,22 +11,39 @@
     ];
 
 
-  
-    async function handleSubmit() {
-      const response = await fetch('/api/crawler', { //This is where the params are being sent
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(crawlerParams),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        console.log("Crawler started:", result);
-      } else {
-        console.error("Error starting crawler:", response.statusText);
-      }
-    }
+  // This is for inputs to be sent to the backend for computation.
+  //  async function handleSubmit() {
+  //    const response = await fetch('/api/crawler', { //This is where the params are being sent
+  //      method: 'POST', 
+  //      headers: {
+  //        'Content-Type': 'application/json',
+  //      },
+  //      body: JSON.stringify(crawlerParams),
+  //    });
+  //    if (response.ok) {
+  //      const result = await response.json();
+  //      console.log("Crawler started:", result);
+  //    } else {
+  //      console.error("Error starting crawler:", response.statusText);
+  //    }
+  //  }
+
+    
+    // This version has predefined inputs to be sent to the backend for computation. This will immedietly move the user to the next page if you run the webpage with this.
+let inputData = ''; //This is the defined input.
+
+const sendData = async () => {
+  const response = await fetch('/api/compute', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ input: inputData })
+  });
+
+  const result = await response.json();
+  console.log('Computed Result:', result);
+};
 
 
   </script>
