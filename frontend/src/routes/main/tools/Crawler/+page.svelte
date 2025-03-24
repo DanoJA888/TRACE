@@ -12,9 +12,23 @@
 
 
   
-    function handleSubmit() {
-      console.log("Form submitted:", crawlerParams);
+    async function handleSubmit() {
+      const response = await fetch('/api/crawler', { //This is where the params are being sent
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(crawlerParams),
+      });
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Crawler started:", result);
+      } else {
+        console.error("Error starting crawler:", response.statusText);
+      }
     }
+
+
   </script>
   
   <div class="crawlerConfigPage">
