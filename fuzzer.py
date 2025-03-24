@@ -61,7 +61,7 @@ class WebFuzzer:
         
         self.is_fuzzing = False
         return self.results
-    
+    #Shows results
     def show_results(self):
         if not self.results:
             print("Nothing to Display")
