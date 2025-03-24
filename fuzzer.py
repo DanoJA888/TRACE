@@ -22,7 +22,7 @@ class WebFuzzer:
         except requests.RequestException as e:
             print(f"Error requesting '{param}': {e}")
             return None
-    
+    # test parameter
     def test_param(self, param):
         if param is None or param == "":
             return
