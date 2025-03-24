@@ -41,7 +41,7 @@ class WebFuzzer:
         
         self.results.append(result)
         return result
-    
+    #defines fuzzer
     def fuzz(self, payloads):
         self.is_fuzzing = True
         self.results = []
