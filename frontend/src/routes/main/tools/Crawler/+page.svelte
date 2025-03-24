@@ -2,13 +2,15 @@
 
 <script>
     let crawlerParams = [
-      { id: "target-url", label: "Target URL", type: "text", value: "" },
-      { id: "depth", label: "Crawl Depth", type: "number", value: "" },
-      { id: "max-pages", label: "Max Pages", type: "number", value: "" },
-      { id: "user-agent", label: "User Agent", type: "text", value: "" },
-      { id: "delay", label: "Request Delay", type: "number", value: "" },
-      { id: "proxy", label: "Proxy", type: "number", value: "" }
+      { id: "target-url", label: "Target URL", type: "text", value: "", example: "https://example.com", required: true },
+      { id: "depth", label: "Crawl Depth", type: "number", value: "", example: "#", required: false },
+      { id: "max-pages", label: "Max Pages", type: "number", value: "", example: "#", required: false },
+      { id: "user-agent", label: "User Agent", type: "text", value: "", example: "Mozilla/5.0", required: false },
+      { id: "delay", label: "Request Delay", type: "number", value: "", example: "#", required: false },
+      { id: "proxy", label: "Proxy", type: "number", value: "", example: "#", required: false }
     ];
+
+
   
     function handleSubmit() {
       console.log("Form submitted:", crawlerParams);
@@ -23,7 +25,7 @@
           {#each crawlerParams as param}
             <label>
               {param.label}:
-              <input type={param.type} bind:value={param.value} required />
+              <input type={param.type} bind:value={param.value} placeholder={param.example} requirement={param.required ? "required" : ""} />
             </label>
           {/each}
           
