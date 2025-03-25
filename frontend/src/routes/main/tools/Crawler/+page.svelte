@@ -1,68 +1,101 @@
-<h1> This is the Crawler screen </h1>
-
 <script>
-    let crawlerParams = [
-      { id: "target-url", label: "Target URL", type: "text", value: "", example: "https://example.com", required: true },
-      { id: "depth", label: "Crawl Depth", type: "number", value: "", example: "#", required: false },
-      { id: "max-pages", label: "Max Pages", type: "number", value: "", example: "#", required: false },
-      { id: "user-agent", label: "User Agent", type: "text", value: "", example: "Mozilla/5.0", required: false },
-      { id: "delay", label: "Request Delay", type: "number", value: "", example: "#", required: false },
-      { id: "proxy", label: "Proxy", type: "number", value: "", example: "#", required: false }
-    ];
+  let crawlerInput = [
+    { id: "url", label: "Target URL", type: "text", value: "", example: "Ex: https://example.com", required: true },
+    { id: "depth", label: "Crawl Depth", type: "number", value: "", example: "Ex: 2", required: false },
+    { id: "max_pages", label: "Max Pages", type: "number", value: "", example: "Ex: 15", required: false },
+    { id: "user_agent", label: "User Agent", type: "text", value: "", example: "Ex: Mozilla/5.0", required: false },
+    { id: "delay", label: "Request Delay", type: "number", value: "", example: "Ex: 5", required: false },
+    { id: "proxy", label: "Proxy", type: "text", value: "", example: "Ex: 8080", required: false }
+  ];
 
+  let crawlerParams = {
+    url : ""
+  }
+
+  let crawlResult = []
+
+  let acceptingParams = true;
+  let crawling = false;
+  let displayingResults = false;
+
+  function paramsToCrawling(){
+    acceptingParams = false;
+    crawling = true;
+  }
+
+  function crawlingToResults(){
+    crawling = false;
+    displayingResults = true;
+  }
+
+  function resultsToParams(){
+    displayingResults = false;
+    acceptingParams = true;
+  }
+
+  //instead of hard coded values in dict, dynamically add items to dictionary
+  function dynamicCrawlerParamUpdate(id, value) {
+    crawlerParams[id] = value;
+    console.log(crawlerParams[id])
+  }
+  
 
   // This is for inputs to be sent to the backend for computation.
-  //  async function handleSubmit() {
-  //    const response = await fetch('/api/crawler', { //This is where the params are being sent
-  //      method: 'POST', 
-  //      headers: {
-  //        'Content-Type': 'application/json',
-  //      },
-  //      body: JSON.stringify(crawlerParams),
-  //    });
-  //    if (response.ok) {
-  //      const result = await response.json();
-  //      console.log("Crawler started:", result);
-  //    } else {
-  //      console.error("Error starting crawler:", response.statusText);
-  //    }
-  //  }
-
-    
-    // This version has predefined inputs to be sent to the backend for computation. This will immedietly move the user to the next page if you run the webpage with this.
-let inputData = ''; //This is the defined input.
-
-const sendData = async () => {
-  const response = await fetch('/api/compute', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ input: inputData })
-  });
-
-  const result = await response.json();
-  console.log('Computed Result:', result);
-};
-
-
-  </script>
+  async function handleSubmit() {
+    const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
+      method: 'POST', 
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(crawlerParams),
+    });
+    if (response.ok) {
+      crawlingToResults()
+      crawlResult = await response.json();
+      console.log("Crawler results:", crawlResult);
+    } else {
+      console.error("Error starting crawler:", response.statusText);
+    }
+  }
+</script>
   
   <div class="crawlerConfigPage">
     <div>
       <h1>Crawler</h1>
-      <div>
-        <form on:submit|preventDefault={handleSubmit}>
-          {#each crawlerParams as param}
-            <label>
-              {param.label}:
-              <input type={param.type} bind:value={param.value} placeholder={param.example} requirement={param.required ? "required" : ""} />
-            </label>
+      {#if acceptingParams}
+        <div>
+          <form  onsubmit= "{(e) => {e.preventDefault(); handleSubmit(); paramsToCrawling()}}">
+            {#each crawlerInput as param}
+              <label>
+                {param.label}:
+                <input type={param.type} bind:value={crawlerParams[param.id]} placeholder={param.example} requirement={param.required} oninput={(e) => dynamicCrawlerParamUpdate(param.id, e.target.value)}/>
+              </label>
+            {/each}
+            
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+      {/if}
+      
+      {#if crawling}
+        <div>
+          <h2>Crawling...</h2>
+        </div>
+      {/if}
+
+      {#if displayingResults}
+        <h2>Crawl Results</h2>
+        <div>
+          {#each crawlResult as crawledURL}
+            <div class="row">
+              {#each Object.entries(crawledURL) as [key, value]}
+                <span>{value}</span>
+              {/each}
+            </div>
           {/each}
-          
-          <button type="submit">Submit</button>
-        </form>
-      </div>
+          <button onclick={(e) => { resultsToParams()}}>Back to Param Setup</button>
+        </div>
+      {/if}
     </div>
   </div>
     
@@ -87,7 +120,19 @@ const sendData = async () => {
       flex-direction: column;
       font-weight: bold;
     }
-  
+    
+    .row {
+      display: flex;
+      flex-direction: row;
+      margin: 10px;
+      padding: 5px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .row span {
+      margin-right: 15px;
+    }
+
   </style>
   
   
