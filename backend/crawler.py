@@ -16,7 +16,13 @@ class Crawler:
         self.crawl_time = 0.0
         self.visited_urls = set()
         self.tree_structure = {}
-        self.crawled_urls = []
+        self.crawled_urls = [{
+            'id' : 'ID',
+            'title': 'Title',
+            'word_count': 'Word Count',
+            'char_count': "Character Count",
+            'link_count': "Links Found",
+        }]
         
     #fine for backend
     def fetch_page(self, url): #fetching html data
