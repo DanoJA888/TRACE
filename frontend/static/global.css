@@ -1,0 +1,112 @@
+/* Ensure the main container is centered */
+.crawlerConfigPage {
+  width: 400px;  /* Adjusted width */
+  margin: 10vh auto; /* Centered with some spacing from the top */
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Center the form */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 300px;
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+
+.row span {
+  margin-right: 15px;
+}
+
+input {
+  width: 100%;
+  max-width: 300px; /* Prevent stretching */
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Button styling */
+button {
+  width: 100%;
+  max-width: 300px; /* Matches input size */
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Results Table Styling */
+.results-container {
+  max-width: 100%;
+  overflow-x: auto; /* Prevents breaking on small screens */
+  margin-top: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  word-break: break-word; /* Ensures long text doesn't overflow */
+}
+
+th {
+  background-color: #007bff;
+  color: white;
+}
+
+td {
+  background-color: #f9f9f9;
+}
+
+/* Ensures the table is responsive */
+@media (max-width: 600px) {
+  table {
+    font-size: 14px;
+  }
+  
+  th, td {
+    padding: 8px;
+  }
+}

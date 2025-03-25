@@ -83,23 +83,47 @@
         </div>
       {/if}
 
+
       {#if displayingResults}
-        <h2>Crawl Results</h2>
-        <div>
-          {#each crawlResult as crawledURL}
-            <div class="row">
-              {#each Object.entries(crawledURL) as [key, value]}
-                <span>{value}</span>
-              {/each}
-            </div>
-          {/each}
-          <button onclick={(e) => { resultsToParams()}}>Back to Param Setup</button>
-        </div>
-      {/if}
+      <h2>Crawl Results</h2>
+      <div class="results-table">
+        <table>
+          <thead>
+            <tr>
+              <!-- Fixed header order -->
+              <th>ID</th>
+              <th>URL</th>
+              <th>Title</th>
+              <th>Word Count</th>
+              <th>Character Count</th>
+              <th>Links</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each crawlResult as crawledURL}
+              <tr>
+                <!-- Fixed row order to match the header -->
+                <td>{crawledURL.id}</td>
+                <td>{crawledURL.url}</td>
+                <td>{crawledURL.title}</td>
+                <td>{crawledURL.word_count}</td>
+                <td>{crawledURL.char_count}</td>
+                <td>{crawledURL.link_count}</td>
+                <td>{crawledURL.error ? 'True' : 'False'}</td> <!-- Display error as True or False -->
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+        <button onclick={(e) => { resultsToParams()}}>Back to Param Setup</button>
+      </div>
+    {/if}
     </div>
   </div>
     
-  <style>
+
+  <!-- just commenting this out incase i need to copy this over to the style sheet -->
+  <!-- <style>
     form {
       display: flex;
       flex-direction: column;
@@ -133,6 +157,6 @@
       margin-right: 15px;
     }
 
-  </style>
+  </style> -->
   
   

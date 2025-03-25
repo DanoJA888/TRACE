@@ -23,7 +23,7 @@ class Crawler:
             'char_count': "Character Count",
             'link_count': "Links Found",
         }]
-        
+        # here use the user agent string for requests
     #fine for backend
     def fetch_page(self, url): #fetching html data
         try:
@@ -32,10 +32,11 @@ class Crawler:
                 headers["User-Agent"] = self.user_agent_string
             response = requests.get(url, timeout=5, headers=headers) # here use the user agent string for requests
             if response.status_code == 200: # takes valid urls
-                return response.text
+                return False #No error found (this is for table)
+            else:
+                return True # returning true if error occured (this is for the table)
         except requests.RequestException: #general exeption catching we will have an error handler class to handle this
-            return None
-        return None
+            return True #returning true since error must have occursed (this is for the table)
     
     #fine for backend
     def retreieve_links_to_crawl(self, parsed_html, base_url):
@@ -54,13 +55,15 @@ class Crawler:
     
     #retrieves information asked for EXCEPT Errors (will ask, not sure what this entry would look like), and adds to JSON type format, (not quite json though watch out)
 
-    def retreive_url_info(self, parsed_html, url, links):
-        text = parsed_html.get_text()
+    def retreive_url_info(self, parsed_html, url, links, error = False):
+        # text = parsed_html.get_text()
+        text = parsed_html.get_text() if parsed_html else ""
         char_count = len(text)
-        words= text.split()
+        words = text.split()
         word_count = len(words)
         link_count = len(links)
-        title = parsed_html.title.string
+        # title = parsed_html.title.string
+        title = parsed_html.title.string if parsed_html and parsed_html.title else "No Title"
         crawled_urls_entry = {
             'id': len(self.crawled_urls),
             'url': url,
@@ -68,6 +71,7 @@ class Crawler:
             'word_count': word_count,
             'char_count': char_count,
             'link_count': link_count,
+            'error': error  # Adding error field (True if error occurred, False otherwise)
         }
         # url_info = CrawledURLInfo(url, title, word_count, char_count, link_count, words)
         # return url_info
@@ -93,15 +97,23 @@ class Crawler:
                 continue
 
             self.visited_urls.add(url)
-            html = self.fetch_page(url)
-            if html:
-                parsed_html = BeautifulSoup(html, "html.parser")
-                # sets up crawled urls info
-                links = self.retreieve_links_to_crawl(parsed_html, url)
-                self.retreive_url_info(parsed_html, url, links)
-                self.tree_structure[url] = list(links)  # Store links in the tree structure
-                queue.extend(links)  # Add found links to the queue
-            
+            error_occurred = self.fetch_page(url)
+
+            if not error_occurred:
+                response = requests.get(url, timeout=5, headers={"User-Agent": self.user_agent_string})
+                if response.status_code == 200:
+                    html = response.text  # Use the HTML content from the successful response
+                    parsed_html = BeautifulSoup(html, "html.parser")
+                    # sets up crawled urls info
+                    links = self.retreieve_links_to_crawl(parsed_html, url)
+                    self.retreive_url_info(parsed_html, url, links, error=False)  # No error occurred 
+                    self.tree_structure[url] = list(links)  # Store links in the tree structure
+                    queue.extend(links)  # Add found links to the queue
+                else:
+                    self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
+            else:
+                self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
+                
             #if num pages crawled quota reached, strop crawling
             if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
                 break
