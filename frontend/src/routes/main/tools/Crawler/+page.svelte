@@ -1,49 +1,42 @@
 <h1> This is the Crawler screen </h1>
 
 <script>
-    let crawlerParams = [
-      { id: "target-url", label: "Target URL", type: "text", value: "", example: "https://example.com", required: true },
+    let crawlerInput = [
+      { id: "url", label: "Target URL", type: "text", value: "", example: "https://example.com", required: true },
       { id: "depth", label: "Crawl Depth", type: "number", value: "", example: "#", required: false },
-      { id: "max-pages", label: "Max Pages", type: "number", value: "", example: "#", required: false },
-      { id: "user-agent", label: "User Agent", type: "text", value: "", example: "Mozilla/5.0", required: false },
+      { id: "max_pages", label: "Max Pages", type: "number", value: "", example: "#", required: false },
+      { id: "user_agent", label: "User Agent", type: "text", value: "", example: "Mozilla/5.0", required: false },
       { id: "delay", label: "Request Delay", type: "number", value: "", example: "#", required: false },
       { id: "proxy", label: "Proxy", type: "number", value: "", example: "#", required: false }
     ];
 
+    let crawlerParams = {
+      url : "",
+      depth : 0,
+      max_pages: 0,
+      user_agent: "",
+      delay : "",
+      proxy: ""
+    }
+
 
   // This is for inputs to be sent to the backend for computation.
-  //  async function handleSubmit() {
-  //    const response = await fetch('/api/crawler', { //This is where the params are being sent
-  //      method: 'POST', 
-  //      headers: {
-  //        'Content-Type': 'application/json',
-  //      },
-  //      body: JSON.stringify(crawlerParams),
-  //    });
-  //    if (response.ok) {
-  //      const result = await response.json();
-  //      console.log("Crawler started:", result);
-  //    } else {
-  //      console.error("Error starting crawler:", response.statusText);
-  //    }
-  //  }
+   async function handleSubmit() {
+     const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
+       method: 'POST', 
+       headers: {
+         'Content-Type': 'application/json',
+       },
+       body: JSON.stringify(crawlerParams),
+     });
+     if (response.ok) {
+       const result = await response.json();
+       console.log("Crawler started:", result);
+     } else {
+       console.error("Error starting crawler:", response.statusText);
+     }
+   }
 
-    
-    // This version has predefined inputs to be sent to the backend for computation. This will immedietly move the user to the next page if you run the webpage with this.
-let inputData = ''; //This is the defined input.
-
-const sendData = async () => {
-  const response = await fetch('/api/compute', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ input: inputData })
-  });
-
-  const result = await response.json();
-  console.log('Computed Result:', result);
-};
 
 
   </script>
@@ -53,10 +46,10 @@ const sendData = async () => {
       <h1>Crawler</h1>
       <div>
         <form on:submit|preventDefault={handleSubmit}>
-          {#each crawlerParams as param}
+          {#each crawlerInput as param}
             <label>
               {param.label}:
-              <input type={param.type} bind:value={param.value} placeholder={param.example} requirement={param.required ? "required" : ""} />
+              <input type={param.type} bind:value={crawlerParams[param.id]} placeholder={param.example} requirement={param.required ? "required" : ""} />
             </label>
           {/each}
           
