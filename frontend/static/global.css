@@ -1,6 +1,6 @@
 /* Ensure the main container is centered */
 .crawlerConfigPage {
-  width: 400px;  /* Adjusted width */
+  width: 600px;  /* Adjusted width to give more space */
   margin: 10vh auto; /* Centered with some spacing from the top */
   padding: 20px;
   background: #ffffff;
@@ -18,7 +18,7 @@ form {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  width: 300px;
+  width: 500px; /* Increased form width */
   margin: 50px auto;
   padding: 20px;
   border: 1px solid #ccc;
@@ -47,7 +47,7 @@ label {
 
 input {
   width: 100%;
-  max-width: 300px; /* Prevent stretching */
+  max-width: 450px; /* Prevent stretching */
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #ccc;
@@ -58,7 +58,7 @@ input {
 /* Button styling */
 button {
   width: 100%;
-  max-width: 300px; /* Matches input size */
+  max-width: 450px; /* Matches input size */
   padding: 12px;
   background-color: #007bff;
   color: white;
@@ -74,13 +74,13 @@ button:hover {
 
 /* Results Table Styling */
 .results-container {
-  max-width: 100%;
-  overflow-x: auto; /* Prevents breaking on small screens */
+  width: 60%;  /* Set the results container to 60% of the screen width */
   margin-top: 20px;
+  overflow-x: auto; /* Prevents breaking on small screens */
 }
 
 table {
-  width: 100%;
+  width: 100%;  /* Set the table to take up 100% of the container width */
   border-collapse: collapse;
   text-align: left;
 }
@@ -100,6 +100,15 @@ td {
   background-color: #f9f9f9;
 }
 
+/* band-aid fix while i read up how to manipulate tables more appropriately in css*/
+th:nth-child(1), td:nth-child(1) {  /* ID column */
+  min-width: 60px; /* Slightly narrower */
+}
+
+th:nth-child(7), td:nth-child(7) {  /* Error column */
+  min-width: 60px; /* Slightly narrower */
+}
+
 /* Ensures the table is responsive */
 @media (max-width: 600px) {
   table {
@@ -108,5 +117,8 @@ td {
   
   th, td {
     padding: 8px;
+  }
+  th:nth-child(1), td:nth-child(1), th:nth-child(7), td:nth-child(7) {
+    min-width: 48px; /* Make them smaller on smaller screens, but still readable */
   }
 }
