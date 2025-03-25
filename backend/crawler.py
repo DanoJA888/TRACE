@@ -16,13 +16,7 @@ class Crawler:
         self.crawl_time = 0.0
         self.visited_urls = set()
         self.tree_structure = {}
-        self.crawled_urls = [{
-            'id': 'ID',
-            'title': 'Title',
-            'word_count': 'Word Count',
-            'char_count': "Character Count",
-            'link_count': "Links Found",
-        }]
+        self.crawled_urls = []
         self.json_filename = json_filename  # Initialize the JSON filename
         # here use the user agent string for requests
     #fine for backend
@@ -133,7 +127,7 @@ class Crawler:
         try:
             with open(self.json_filename, 'w') as json_file:
                 crawled_data = []
-                for index, entry in enumerate(self.crawled_urls[1:], start=1): #adding enumeration so we have workign ID 
+                for index, entry in enumerate(self.crawled_urls, start=1): #adding enumeration so we have workign ID 
                     if 'url' in entry:
                         crawled_data.append({
                             'id': index,  # Assign an ID starting from 1
