@@ -32,7 +32,8 @@ async def launchCrawl(request: CrawlRequest):
   #converts request from CrawlRequest Object to dictionary
   params_dict = request.model_dump()
   logger.info(request)
-  crawl_results = crawler.start_crawl(params_dict)
+  crawl_results = await crawler.start_crawl(params_dict)
+  logger.info(crawl_results)
 
 #helps frontend and backend communicate (different ports for fastAPI and sveltekit)
 app.add_middleware(

@@ -4,29 +4,19 @@ from urllib.parse import urljoin, urlparse
 import time
 from collections import deque
 
-#questionable, will think about it tomorrow
-class CrawledURLInfo:
-    def __init__(self, url_in = '', title_in = '', word_count_in = '', char_count_in = '', links_found_in = '', words_in = []):
-        self.url = url_in
-        self.title = title_in
-        self.word_count = word_count_in
-        self.char_count = char_count_in
-        self.link_count = links_found_in
-        self.words = words_in
-
-
 class Crawler:
     def __init__(self):
         self.start_url = ''
-        self.crawl_depth = ''
-        self.num_pages = ''
-        self.proxy = ''
+        self.depth = ''
+        self.max_pages = ''
         self.user_agent_string = ''
+        self.delay = ''
+        self.proxy = ''
         self. requests_per_sec = 0.0
         self.crawl_time = 0.0
         self.visited_urls = set()
         self.tree_structure = {}
-        self.crawled_urls = {}
+        self.crawled_urls = []
         
     #fine for backend
     def fetch_page(self, url): #fetching html data
@@ -56,8 +46,8 @@ class Crawler:
         parsed = urlparse(url)
         return parsed.netloc == urlparse(self.start_url).netloc and url not in self.visited_urls
     
-    #questionable will think about it tomorrow
-    #creates an object to store the info of each webpage
+    #retrieves information asked for EXCEPT Errors (will ask, not sure what this entry would look like), and adds to JSON type format, (not quite json though watch out)
+
     def retreive_url_info(self, parsed_html, url, links):
         text = parsed_html.get_text()
         char_count = len(text)
@@ -65,9 +55,17 @@ class Crawler:
         word_count = len(words)
         link_count = len(links)
         title = parsed_html.title.string
-
-        url_info = CrawledURLInfo(url, title, word_count, char_count, link_count, words)
-        return url_info
+        crawled_urls_entry = {
+            'id': len(self.crawled_urls),
+            'url': url,
+            'title': title,
+            'word_count': word_count,
+            'char_count': char_count,
+            'link_count': link_count,
+        }
+        # url_info = CrawledURLInfo(url, title, word_count, char_count, link_count, words)
+        # return url_info
+        self.crawled_urls.append(crawled_urls_entry)
 
     #fine for backend
     def crawl(self): #crawler process using a queue
@@ -88,23 +86,18 @@ class Crawler:
             if url in self.visited_urls:
                 continue
 
-            #print(f"Crawling: {url}")
             self.visited_urls.add(url)
             html = self.fetch_page(url)
             if html:
                 parsed_html = BeautifulSoup(html, "html.parser")
                 # sets up crawled urls info
                 links = self.retreieve_links_to_crawl(parsed_html, url)
-                url_info = self.retreive_url_info(parsed_html, url, links)
-                self.crawled_urls[len(self.crawled_urls)] = url_info
-                
-                #print(str(url_id) , " | ", self.crawled_urls[url_id].url , " | " , self.crawled_urls[url_id].title, " | ", str(self.crawled_urls[url_id].word_count) , " | " , str(self.crawled_urls[url_id].char_count) 
-                #      , " | ", str(self.crawled_urls[url_id].link_count))
+                self.retreive_url_info(parsed_html, url, links)
                 self.tree_structure[url] = list(links)  # Store links in the tree structure
                 queue.extend(links)  # Add found links to the queue
             
             #if num pages crawled quota reached, strop crawling
-            if self.num_pages != '' and len(self.tree_structure) == self.num_pages:
+            if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
                 break
 
         end = time.time()
@@ -121,104 +114,33 @@ class Crawler:
     '''
     CLI START: calls all commented functions inside start_crawl to receive params, runs crawl with given params, stores and says that crawl is complete
     FULL STACK START: 
-     - Will probably get rid of crawlinfo class maybe? dont see how it can work for front end
-     - Will receive params in the method signature as opposed to asking
-     - Will stop printing to command line and might instead log on inspect console (need to see how that can happen)
+     - Will probably get rid of crawlinfo class maybe? dont see how it can work for front end [DONE]
+     - Will receive params in the method signature as opposed to asking [DONE]
+     - Will stop printing to command line and might instead log on inspect console (need to see how that can happen) [DONE]
     '''
 
     '''
     potential new signature
     async def start_crawl(url, depth = '', crawler_pages = '', user_agent = '', delay = '', proxy = '')
     '''
-    async def start_crawl(self): # starting crawling sequence
+    async def start_crawl(self, crawler_params): # starting crawling sequence
+        self.configure_crawler(crawler_params)
         self.crawl()
         self.save_tree()
-        # ***COMMENTED THIS OUT AS IT IS PART OF CLI
-        '''
-        self.receive_url()
-        self.receive_crawler_depth()
-        self.receive_crawl_pages_desired()
-        self.receive_proxy()
-        self.receive_user_agent()
-        #print("Crawl completed in " + str(round(self.crawl_time, 2)) + " seconds.")
-        #print("Requests/sec: " + str(self.requests_per_sec))
-        '''
-    # ***COMMENTED THIS OUT AS IT IS PART OF CLI
-    '''
-    #simple url validator (not necessary later probs)
-    def validate_url_requested(self, url):
-        if len(url) <=12:
-            return False
-        if (url[0:7] != "http://" and url [0:8] != "https://") or url[-5:] != ".com/":
-            return False
-        return True
-    
-    #function that receives the url from the user in terminal *will change once we integret ui*
-    def receive_url(self):
-        url = ''
-        while True:
-            url = input('Please input the target URL ')
-            if self.validate_url_requested(url):
-                #update base url for crawler class (dont think it should be an attribute of crawler class as we in theory only need one instance of crawler 
-                #and should recieve test multiple times b ut can fix later with ui)
-                self.start_url = url
-                break
-            print("Invalid URL! Please ensure you include 'https://' at the start and '.com' at the end")
-    
-    #function that recieves crawler depth desire
-    def receive_crawler_depth(self):
-        depth = -1
-        while depth <= 0:
-            try:
-                depth = input("Please input how deep into a url you'd like to crawl. If no preference please enter an empty line '' ")
-                if depth == '' or int(depth) >=1:
-                    self.depth = depth if depth == '' else int(depth)
-                    break
-                print("Invalid depth!")
-                depth = -1
-            except:
-                print("Not a number or empty line!")
-                depth = -1
-            
+        return self.crawled_urls
 
-    #function that recieves total crawls desired
-    def receive_crawl_pages_desired(self):
-        num_pages = -1
-        while num_pages <= 0:
-            try:
-                num_pages = input("Please input how many pages you want the crawl to retrieve. If no preference please enter an empty line '' ")
-                if num_pages == '' or int(num_pages) >=1:
-                    self.num_pages = num_pages if num_pages == '' else int(num_pages)
-                    break
-                print("Invalid number!")
-                num_pages = -1
-            except:
-                print("Not a number or empty line!")
-                num_pages = -1
+    def configure_crawler(self, crawler_params):
+        self.start_url = crawler_params['url']
+        
+        config_depth = crawler_params['depth']
+        self.depth = config_depth if config_depth == '' else int(config_depth)
+        
+        config_max_pages = crawler_params['max_pages']
+        self.max_pages = config_max_pages if config_max_pages == '' else int(config_max_pages)
 
-    
-    #function for receiving proxy desired 
-    def receive_proxy(self):
-        proxy = -1
-        while proxy <= 0:
-            try:
-                proxy = input("Please input your desired proxy. If no preference please enter an empty line '' ")
-                if proxy == '' or int(proxy) == 8080:
-                    self.proxy = proxy if proxy == '' else int(proxy)
-                    break
-                print("Invalid proxy")
-                proxy = -1
-            except:
-                print("Invalid proxy!")
-                proxy = -1
+        self.user_agent_string = crawler_params['user_agent']
+        
+        config_delay = crawler_params['delay']
+        self.delay = config_delay if config_delay == '' else int(config_delay)
 
-    def receive_user_agent(self):
-        user_agent = input("Please enter the user agent string of choice. If no preference please enter an empty line '' ")
-        self.user_agent_string = user_agent
-
-# Start the crawler
-if __name__ == "__main__":
-    # "http://books.toscrape.com/"
-    crawler = Crawler()  # Change this URL to test different websites will be something not needed once implemented through a sveltkit
-    crawler.start_crawl()
-'''
+        self.proxy = crawler_params['proxy']
