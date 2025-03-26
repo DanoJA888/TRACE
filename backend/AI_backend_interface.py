@@ -48,15 +48,16 @@ async def generate_credentials_endpoint(req: CredentialRequest):
 
     generator = CredentialGeneratorMDP(
         csv_path ="site_list.csv",      # or wherever your CSV is
-        wordlist_path =req.wordlist_path or "wordlist_uploads\wordlist.txt"
-        user_include_char = req.user_include_char or True
-        user_include_num = req.user_include_num or True
-        user_include_sym = req.user_include_sym or True
-        user_length = req.user_length or 12
+        wordlist_path =req.wordlist_path or "wordlist_uploads\wordlist.txt",
 
-        pass_include_char = req.pass_include_char or True
-        pass_include_num = req.pass_include_num or True
-        pass_include_sym = req.pass_include_sym or True
+        user_include_char = req.user_include_char or True,
+        user_include_num = req.user_include_num or True,
+        user_include_sym = req.user_include_sym or True,
+        user_length = req.user_length or 12,
+
+        pass_include_char = req.pass_include_char or True,
+        pass_include_num = req.pass_include_num or True,
+        pass_include_sym = req.pass_include_sym or True,
         pass_length = req.pass_length or 12
     )
 
