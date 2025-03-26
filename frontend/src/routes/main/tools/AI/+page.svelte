@@ -1,6 +1,7 @@
 <script>
   
-  let wordlistInput = { id: "wordlist", accept: ".json, .txt", label: "Word List", type: "file", value: "", example: "Ex: wordlist.txt", required: true }
+  let wordlistInput = { id: "wordlist", type: "file", accept: ".json, .txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true }
+
   let userPassInput = [
     { id: "userChar", type: "checkbox", label: "Characters", isChecked: true},
     { id: "userNum", type: "checkbox", label: "Numbers", isChecked: true},
@@ -9,9 +10,10 @@
     { id: "passChar", type: "checkbox", label: "Numbers", isChecked: true},
     { id: "passSymb", type: "checkbox", label: "Symbols", isChecked: true}
   ];
+
   let lengthInput = [
-    { id: "userLen", label: "Length", type: "number", value: "", example: "Ex: 12", required: true },
-    { id: "passLen", label: "Length", type: "number", value: "", example: "Ex: 12", required: true }
+    { id: "userLen", type: "number", label: "Length", value: "", example: "Ex: 12", required: true },
+    { id: "passLen", type: "number", label: "Length", value: "", example: "Ex: 12", required: true }
   ]
 
   let aiParams = {
