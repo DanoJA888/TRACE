@@ -169,10 +169,51 @@ class Crawler:
     '''
     async def start_crawl(self, crawler_params): # starting crawling sequence
         self.configure_crawler(crawler_params)
-        self.crawl()
-        # self.save_tree()
-        self.save_json() #replacing the save.tree() function
-        return self.crawled_urls
+        start = time.time()
+        queue = deque([self.start_url])
+        self.tree_structure[self.start_url] = []
+
+        while queue:
+            url = queue.popleft()
+
+            #counts the depth of the current path and skips url if too deep
+            if self.depth != '' and url != self.start_url:
+                curr_url_path = urlparse(url).path
+                url_depth = curr_url_path.count('/')
+                if url_depth > self.depth:
+                    continue
+
+            if url in self.visited_urls:
+                continue
+
+            self.visited_urls.add(url)
+            error_occurred = self.fetch_page(url)
+
+            if not error_occurred:
+                response = requests.get(url, timeout=5, headers={"User-Agent": self.user_agent_string})
+                if response.status_code == 200:
+                    html = response.text  # Use the HTML content from the successful response
+                    parsed_html = BeautifulSoup(html, "html.parser")
+                    # sets up crawled urls info
+                    links = self.retreieve_links_to_crawl(parsed_html, url)
+                    self.retreive_url_info(parsed_html, url, links, error=False)  # No error occurred 
+                    self.tree_structure[url] = list(links)  # Store links in the tree structure
+                    queue.extend(links)  # Add found links to the queue
+                else:
+                    self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
+            else:
+                self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
+
+            yield self.crawled_urls[-1]  # Yield the latest crawled URL
+
+            #if num pages crawled quota reached, strop crawling
+            if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
+                break
+
+        end = time.time()
+        self.crawl_time = end - start
+        self.requests_per_sec = round(((len(self.crawled_urls)) / self.crawl_time), 2)
+        self.save_json()
 
     def configure_crawler(self, crawler_params):
         self.start_url = crawler_params['url']

@@ -12,7 +12,7 @@
     url : ""
   }
 
-  let crawlResult = []
+  let crawlResult = []; // Updated dynamically during crawling
 
   let acceptingParams = true;
   let crawling = false;
@@ -42,6 +42,7 @@
 
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
+    paramsToCrawling();
     const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
       method: 'POST', 
       headers: {
@@ -49,10 +50,23 @@
       },
       body: JSON.stringify(crawlerParams),
     });
+
     if (response.ok) {
-      crawlingToResults()
-      crawlResult = await response.json();
-      console.log("Crawler results:", crawlResult);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
+          crawlResult = [...crawlResult, ...updates];
+        }
+      }
+
+      crawlingToResults();
     } else {
       console.error("Error starting crawler:", response.statusText);
     }
@@ -80,6 +94,37 @@
     {#if crawling}
       <div>
         <h2>Crawling...</h2>
+        <div class="results-table">
+          {#if crawlResult.length === 0}
+            <p>No data received yet. Please wait...</p>
+          {/if}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>URL</th>
+                <th>Title</th>
+                <th>Word Count</th>
+                <th>Character Count</th>
+                <th>Links</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each crawlResult as crawledURL, index (crawledURL.id)}  <!-- Ensure each item is uniquely identified -->
+                <tr>
+                  <td>{crawledURL.id}</td>
+                  <td>{crawledURL.url}</td>
+                  <td>{crawledURL.title}</td>
+                  <td>{crawledURL.word_count}</td>
+                  <td>{crawledURL.char_count}</td>
+                  <td>{crawledURL.link_count}</td>
+                  <td>{crawledURL.error ? 'True' : 'False'}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
       </div>
     {/if}
 
