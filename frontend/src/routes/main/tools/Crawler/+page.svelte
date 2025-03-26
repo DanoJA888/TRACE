@@ -21,6 +21,23 @@
   let totalPages = 0;
   let crawledPages = 0;
 
+  let startTime = null;
+  let elapsedTime = "0s";
+  let timerInterval;
+
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - startTime) / 1000);
+      elapsedTime = `${seconds}s`;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    elapsedTime = "0s";
+  }
+
   function paramsToCrawling(){
     acceptingParams = false;
     crawling = true;
@@ -46,6 +63,7 @@
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
     paramsToCrawling();
+    startTimer(); // Start the timer
     crawledPages = 0; // Reset progress
     totalPages = crawlerParams.max_pages || 0; // Set total pages if max_pages is defined
 
@@ -77,6 +95,7 @@
     } else {
       console.error("Error starting crawler:", response.statusText);
     }
+    stopTimer(); // Stop the timer
   }
 </script>
   
@@ -100,7 +119,7 @@
     
     {#if crawling}
       <div>
-        <h2>Crawling...</h2>
+        <h2>Running...</h2>
         <div class="progress-bar">
           <div
             class="progress"
@@ -108,6 +127,7 @@
           ></div>
         </div>
         <p>{crawledPages} / {totalPages || "∞"} pages crawled</p>
+        <p>Running Time: {elapsedTime}</p> <!-- Add running time display -->
         <div class="results-table">
           {#if crawlResult.length === 0}
             <p>No data received yet. Please wait...</p>
