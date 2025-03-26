@@ -206,7 +206,7 @@ class CredentialMDP:
 
 # Class for generating credentials using Markov Decision Process
 class CredentialGeneratorMDP:
-    def __init__(self, csv_path: str, wordlist_path: str):
+    def __init__(self, csv_path: str, wordlist_path: str, user_include_char: bool, user_include_num: bool, user_include_sym: bool,user_length: int, pass_include_char: bool, pass_include_num: bool, pass_include_sym: bool, pass_length: int):
         try:
             self.web_text = load_web_text(csv_path)
             self.wordlists = load_wordlist(wordlist_path)
@@ -217,8 +217,9 @@ class CredentialGeneratorMDP:
 
         self.username_mdp = CredentialMDP(order=2)
         self.password_mdp = CredentialMDP(order=3)
-        self.min_username_length = 5
-        self.min_password_length = 10
+        self.min_username_length = user_length 
+        self.min_password_length = pass_length
+        
 
     # Preprocess text data
     def preprocess_text(self, text: str) -> List[str]:
