@@ -32,12 +32,8 @@ class Fuzzer:
         if not response:
             return None
             
-        result = {
-            'id': len(self.fuzz_results),
-            'response': response.status_code,
-            'payload': payload,
-            'length': len(response.content)
-        }
+        result = {'id': len(self.fuzz_results),'response': response.status_code,'payload': payload,'length': len(response.content)
+                  }
         self.fuzz_results.append(result)
         return result
 
@@ -65,7 +61,7 @@ class Fuzzer:
   
         word_list = fuzz_params.get('word_list', [])#input worlists
         if isinstance(word_list, str) and word_list:
-            self.word_list = [word.strip() for word in word_list.split(',') if word.strip()]#hangle commas in input
+            self.word_list = [word.strip() for word in word_list.split(',') if word.strip()]#handle commas in input
         else:
             self.word_list = word_list if isinstance(word_list, list) else []
             
