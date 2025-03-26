@@ -1,0 +1,124 @@
+/* Ensure the main container is centered */
+.crawlerConfigPage {
+  width: 600px;  /* Adjusted width to give more space */
+  margin: 10vh auto; /* Centered with some spacing from the top */
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Center the form */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 500px; /* Increased form width */
+  margin: 50px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+label {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+
+.row span {
+  margin-right: 15px;
+}
+
+input {
+  width: 100%;
+  max-width: 450px; /* Prevent stretching */
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Button styling */
+button {
+  width: 100%;
+  max-width: 450px; /* Matches input size */
+  padding: 12px;
+  background-color: #51f1c9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #51f1c9;
+}
+
+/* Results Table Styling */
+.results-container {
+  width: 60%;  /* Set the results container to 60% of the screen width */
+  margin-top: 20px;
+  overflow-x: auto; /* Prevents breaking on small screens */
+}
+
+table {
+  width: 100%;  /* Set the table to take up 100% of the container width */
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  word-break: break-word; /* Ensures long text doesn't overflow */
+}
+
+th {
+  background-color: #51f1c9;
+  color: white;
+}
+
+td {
+  background-color: #f9f9f9;
+}
+
+/* band-aid fix while i read up how to manipulate tables more appropriately in css*/
+th:nth-child(1), td:nth-child(1) {  /* ID column */
+  min-width: 60px; /* Slightly narrower */
+}
+
+th:nth-child(7), td:nth-child(7) {  /* Error column */
+  min-width: 60px; /* Slightly narrower */
+}
+
+/* Ensures the table is responsive */
+@media (max-width: 600px) {
+  table {
+    font-size: 14px;
+  }
+  
+  th, td {
+    padding: 8px;
+  }
+  th:nth-child(1), td:nth-child(1), th:nth-child(7), td:nth-child(7) {
+    min-width: 48px; /* Make them smaller on smaller screens, but still readable */
+  }
+}

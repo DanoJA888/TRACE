@@ -1,29 +1,24 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-import time
+import time, json
 from collections import deque
 
 class Crawler:
-    def __init__(self):
+    def __init__(self, json_filename='crawl_results.json'): #this feels incorrect but idk how else to handle json
         self.start_url = ''
         self.depth = ''
         self.max_pages = ''
         self.user_agent_string = ''
         self.delay = ''
         self.proxy = ''
-        self. requests_per_sec = 0.0
+        self.requests_per_sec = 0.0
         self.crawl_time = 0.0
         self.visited_urls = set()
         self.tree_structure = {}
-        self.crawled_urls = [{
-            'id' : 'ID',
-            'title': 'Title',
-            'word_count': 'Word Count',
-            'char_count': "Character Count",
-            'link_count': "Links Found",
-        }]
-        
+        self.crawled_urls = []
+        self.json_filename = json_filename  # Initialize the JSON filename
+        # here use the user agent string for requests
     #fine for backend
     def fetch_page(self, url): #fetching html data
         try:
@@ -32,10 +27,11 @@ class Crawler:
                 headers["User-Agent"] = self.user_agent_string
             response = requests.get(url, timeout=5, headers=headers) # here use the user agent string for requests
             if response.status_code == 200: # takes valid urls
-                return response.text
+                return False #No error found (this is for table)
+            else:
+                return True # returning true if error occured (this is for the table)
         except requests.RequestException: #general exeption catching we will have an error handler class to handle this
-            return None
-        return None
+            return True #returning true since error must have occursed (this is for the table)
     
     #fine for backend
     def retreieve_links_to_crawl(self, parsed_html, base_url):
@@ -54,13 +50,20 @@ class Crawler:
     
     #retrieves information asked for EXCEPT Errors (will ask, not sure what this entry would look like), and adds to JSON type format, (not quite json though watch out)
 
-    def retreive_url_info(self, parsed_html, url, links):
-        text = parsed_html.get_text()
+    def retreive_url_info(self, parsed_html, url, links, error = False):
+        if not url:  # Check if URL is None or empty
+            print("Invalid URL: ", url)  # Log invalid URL for debugging
+            return  # Early exit if URL is invalid
+
+        text = parsed_html.get_text() if parsed_html else ""
         char_count = len(text)
-        words= text.split()
+        words = text.split()
         word_count = len(words)
         link_count = len(links)
-        title = parsed_html.title.string
+        title = parsed_html.title.string if parsed_html and parsed_html.title else "No Title"
+        #for debugging
+        #print(f"Crawled info: URL={url}, Title={title}, Word Count={word_count}, Char Count={char_count}, Link Count={link_count}, Error={error}")
+
         crawled_urls_entry = {
             'id': len(self.crawled_urls),
             'url': url,
@@ -68,6 +71,7 @@ class Crawler:
             'word_count': word_count,
             'char_count': char_count,
             'link_count': link_count,
+            'error': error  # Adding error field (True if error occurred, False otherwise)
         }
         # url_info = CrawledURLInfo(url, title, word_count, char_count, link_count, words)
         # return url_info
@@ -93,15 +97,23 @@ class Crawler:
                 continue
 
             self.visited_urls.add(url)
-            html = self.fetch_page(url)
-            if html:
-                parsed_html = BeautifulSoup(html, "html.parser")
-                # sets up crawled urls info
-                links = self.retreieve_links_to_crawl(parsed_html, url)
-                self.retreive_url_info(parsed_html, url, links)
-                self.tree_structure[url] = list(links)  # Store links in the tree structure
-                queue.extend(links)  # Add found links to the queue
-            
+            error_occurred = self.fetch_page(url)
+
+            if not error_occurred:
+                response = requests.get(url, timeout=5, headers={"User-Agent": self.user_agent_string})
+                if response.status_code == 200:
+                    html = response.text  # Use the HTML content from the successful response
+                    parsed_html = BeautifulSoup(html, "html.parser")
+                    # sets up crawled urls info
+                    links = self.retreieve_links_to_crawl(parsed_html, url)
+                    self.retreive_url_info(parsed_html, url, links, error=False)  # No error occurred 
+                    self.tree_structure[url] = list(links)  # Store links in the tree structure
+                    queue.extend(links)  # Add found links to the queue
+                else:
+                    self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
+            else:
+                self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
+
             #if num pages crawled quota reached, strop crawling
             if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
                 break
@@ -110,11 +122,37 @@ class Crawler:
         self.crawl_time = end - start
         self.requests_per_sec = round(((len(self.crawled_urls)) / self.crawl_time), 2)
 
-    #questionable, will think about it tomorrow
-    def save_tree(self): #this will be merged or likely changed out of this code once we are provided code and team to work with on subsystem 1
-        with open("crawl_tree.txt", "w") as file:
-            for parent_url, children in self.tree_structure.items():
-                file.write(f"{parent_url} -> {', '.join(children)}\n")
+
+    def save_json(self):
+        try:
+            with open(self.json_filename, 'w') as json_file:
+                crawled_data = []
+                for index, entry in enumerate(self.crawled_urls, start=1): #adding enumeration so we have workign ID 
+                    if 'url' in entry:
+                        crawled_data.append({
+                            'id': index,  # Assign an ID starting from 1
+                            'url': entry['url'],
+                            'title': entry['title'],
+                            'word_count': entry['word_count'],
+                            'char_count': entry['char_count'],
+                            'link_count': entry['link_count'],
+                            'error': entry['error']
+                        })
+                    else:
+                        print(f"Warning: 'url' key missing in entry: {entry}") #trying to find where that empty URL is coming from
+                json.dump(crawled_data, json_file, indent = 4)
+        except Exception as e:
+            print(f"Error saving JSON: {e}")
+
+
+
+
+# commenting it out incase of fall back needed, replaced by save_json
+    # #questionable, will think about it tomorrow
+    # def save_tree(self): #this will be merged or likely changed out of this code once we are provided code and team to work with on subsystem 1
+    #     with open("crawl_tree.txt", "w") as file:
+    #         for parent_url, children in self.tree_structure.items():
+    #             file.write(f"{parent_url} -> {', '.join(children)}\n")
 
 
     '''
@@ -132,7 +170,8 @@ class Crawler:
     async def start_crawl(self, crawler_params): # starting crawling sequence
         self.configure_crawler(crawler_params)
         self.crawl()
-        self.save_tree()
+        # self.save_tree()
+        self.save_json() #replacing the save.tree() function
         return self.crawled_urls
 
     def configure_crawler(self, crawler_params):

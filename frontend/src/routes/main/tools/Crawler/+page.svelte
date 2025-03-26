@@ -59,80 +59,62 @@
   }
 </script>
   
-  <div class="crawlerConfigPage">
-    <div>
-      <h1>Crawler</h1>
-      {#if acceptingParams}
-        <div>
-          <form  onsubmit= "{(e) => {e.preventDefault(); handleSubmit(); paramsToCrawling()}}">
-            {#each crawlerInput as param}
-              <label>
-                {param.label}:
-                <input type={param.type} bind:value={crawlerParams[param.id]} placeholder={param.example} requirement={param.required} oninput={(e) => dynamicCrawlerParamUpdate(param.id, e.target.value)}/>
-              </label>
-            {/each}
-            
-            <button type="submit">Submit</button>
-          </form>
-        </div>
-      {/if}
-      
-      {#if crawling}
-        <div>
-          <h2>Crawling...</h2>
-        </div>
-      {/if}
-
-      {#if displayingResults}
-        <h2>Crawl Results</h2>
-        <div>
-          {#each crawlResult as crawledURL}
-            <div class="row">
-              {#each Object.entries(crawledURL) as [key, value]}
-                <span>{value}</span>
-              {/each}
-            </div>
+<div class="crawlerConfigPage">
+  <div>
+    <h1>Crawler</h1>
+    {#if acceptingParams}
+      <div>
+        <form onsubmit="{(e) => {e.preventDefault(); handleSubmit(); paramsToCrawling()}}">
+          {#each crawlerInput as param}
+            <label>
+              {param.label}:
+              <input type={param.type} bind:value={crawlerParams[param.id]} placeholder={param.example} requirement={param.required} oninput={(e) => dynamicCrawlerParamUpdate(param.id, e.target.value)}/>
+            </label>
           {/each}
-          <button onclick={(e) => { resultsToParams()}}>Back to Param Setup</button>
-        </div>
-      {/if}
-    </div>
+
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+    {/if}
+    
+    {#if crawling}
+      <div>
+        <h2>Crawling...</h2>
+      </div>
+    {/if}
+
+
+    {#if displayingResults}
+      <h2>Crawl Results</h2>
+      <div class="results-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>URL</th>
+              <th>Title</th>
+              <th>Word Count</th>
+              <th>Character Count</th>
+              <th>Links</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each crawlResult as crawledURL, index (crawledURL.id)}  <!-- Ensure each item is uniquely identified -->
+              <tr>
+                <td>{crawledURL.id}</td>
+                <td>{crawledURL.url}</td>
+                <td>{crawledURL.title}</td>
+                <td>{crawledURL.word_count}</td>
+                <td>{crawledURL.char_count}</td>
+                <td>{crawledURL.link_count}</td>
+                <td>{crawledURL.error ? 'True' : 'False'}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+        <button onclick={(e) => { resultsToParams() }}>Back to Param Setup</button>
+      </div>
+    {/if}
   </div>
-    
-  <style>
-    form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      width: 300px;
-      margin: 50px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-  
-    label {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      font-weight: bold;
-    }
-    
-    .row {
-      display: flex;
-      flex-direction: row;
-      margin: 10px;
-      padding: 5px;
-      border-bottom: 1px solid #ccc;
-    }
-
-    .row span {
-      margin-right: 15px;
-    }
-
-  </style>
-  
-  
+</div>
