@@ -18,6 +18,7 @@ class Crawler:
         self.tree_structure = {}
         self.crawled_urls = []
         self.json_filename = json_filename  # Initialize the JSON filename
+        self.total_pages = 0  # Track total pages to crawl
         # here use the user agent string for requests
     #fine for backend
     def fetch_page(self, url): #fetching html data
@@ -169,6 +170,7 @@ class Crawler:
     '''
     async def start_crawl(self, crawler_params): # starting crawling sequence
         self.configure_crawler(crawler_params)
+        self.total_pages = self.max_pages if self.max_pages else float('inf')  # Set total pages
         start = time.time()
         queue = deque([self.start_url])
         self.tree_structure[self.start_url] = []
@@ -204,7 +206,10 @@ class Crawler:
             else:
                 self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
 
-            yield self.crawled_urls[-1]  # Yield the latest crawled URL
+            yield {
+                **self.crawled_urls[-1],
+                "progress": len(self.crawled_urls) / self.total_pages if self.total_pages != float('inf') else None
+            }
 
             #if num pages crawled quota reached, strop crawling
             if self.max_pages != '' and len(self.tree_structure) == self.max_pages:

@@ -1,92 +1,47 @@
 [
     {
         "id": 1,
-        "url": "https://google.com",
-        "title": "Google",
-        "word_count": 16,
-        "char_count": 254,
-        "link_count": 7,
+        "url": "https://apple.com",
+        "title": "Apple",
+        "word_count": 864,
+        "char_count": 5942,
+        "link_count": 83,
         "error": false
     },
     {
         "id": 2,
-        "url": "https://google.com/services/",
-        "title": "Get Listed on Google - Google Business Profile",
-        "word_count": 1756,
-        "char_count": 23463,
-        "link_count": 1,
+        "url": "https://apple.com/diversity/",
+        "title": "Inclusion & Diversity - Apple",
+        "word_count": 4567,
+        "char_count": 32108,
+        "link_count": 74,
         "error": false
     },
     {
         "id": 3,
-        "url": "https://google.com/advanced_search?hl=en&authuser=0",
-        "title": "Google Advanced Search",
-        "word_count": 414,
-        "char_count": 4720,
-        "link_count": 5,
+        "url": "https://apple.com/today/",
+        "title": "Today at Apple - Apple",
+        "word_count": 970,
+        "char_count": 9302,
+        "link_count": 344,
         "error": false
     },
     {
         "id": 4,
-        "url": "https://google.com/preferences?hl=en",
-        "title": "Search settings",
-        "word_count": 360,
-        "char_count": 5555,
-        "link_count": 6,
+        "url": "https://apple.com/apple-cash/",
+        "title": "Apple Cash - Apple",
+        "word_count": 2883,
+        "char_count": 17601,
+        "link_count": 76,
         "error": false
     },
     {
         "id": 5,
-        "url": "https://google.com/services/#page-content",
-        "title": "Get Listed on Google - Google Business Profile",
-        "word_count": 1756,
-        "char_count": 23463,
-        "link_count": 0,
-        "error": false
-    },
-    {
-        "id": 6,
-        "url": "https://google.com/webhp?tab=ww",
-        "title": "Google",
-        "word_count": 16,
-        "char_count": 252,
-        "link_count": 4,
-        "error": false
-    },
-    {
-        "id": 7,
-        "url": "https://google.com/url?q=https://policies.google.com/terms%3Fhl%3Den%26fg%3D1&opi=89978449&sa=U&ved=0ahUKEwjol8PBuKiMAxWNCTQIHd26Bt8Q8qwCCAM&usg=AOvVaw1F0FhBxSoKlgozibuy6-6W",
-        "title": "Google Terms of Service \u2013 Privacy & Terms \u2013 Google",
-        "word_count": 4160,
-        "char_count": 28186,
-        "link_count": 38,
-        "error": false
-    },
-    {
-        "id": 8,
-        "url": "https://google.com/url?q=https://policies.google.com/privacy%3Fhl%3Den%26fg%3D1&opi=89978449&sa=U&ved=0ahUKEwjol8PBuKiMAxWNCTQIHd26Bt8Q8awCCAI&usg=AOvVaw1nWKoPZiLSxdGQgkKU2KYL",
-        "title": "Privacy Policy \u2013 Privacy & Terms \u2013 Google",
-        "word_count": 9672,
-        "char_count": 63329,
-        "link_count": 85,
-        "error": false
-    },
-    {
-        "id": 9,
-        "url": "https://google.com/url?q=https://support.google.com/websearch/%3Fp%3Dws_results_help%26hl%3Den%26fg%3D1&opi=89978449&sa=U&ved=0ahUKEwjol8PBuKiMAxWNCTQIHd26Bt8Q8KwCCAE&usg=AOvVaw2dctArrhLAkRG-a7g_AtTe",
-        "title": "Google Search Help",
-        "word_count": 707,
-        "char_count": 5598,
-        "link_count": 119,
-        "error": false
-    },
-    {
-        "id": 10,
-        "url": "https://google.com/url?q=https://policies.google.com/terms%3Fhl%3Den%26fg%3D1&opi=89978449&sa=U&ved=0ahUKEwjWhvzBuKiMAxVt78kDHe87ODYQ8qwCCAo&usg=AOvVaw2hz6Xz7njh0XayJcJLSquW",
-        "title": "Google Terms of Service \u2013 Privacy & Terms \u2013 Google",
-        "word_count": 4160,
-        "char_count": 28186,
-        "link_count": 38,
+        "url": "https://apple.com/apple-books/",
+        "title": "Apple Books - Apple",
+        "word_count": 923,
+        "char_count": 6379,
+        "link_count": 72,
         "error": false
     }
 ]

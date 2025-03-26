@@ -18,6 +18,9 @@
   let crawling = false;
   let displayingResults = false;
 
+  let totalPages = 0;
+  let crawledPages = 0;
+
   function paramsToCrawling(){
     acceptingParams = false;
     crawling = true;
@@ -43,6 +46,9 @@
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
     paramsToCrawling();
+    crawledPages = 0; // Reset progress
+    totalPages = crawlerParams.max_pages || 0; // Set total pages if max_pages is defined
+
     const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
       method: 'POST', 
       headers: {
@@ -63,6 +69,7 @@
           const chunk = decoder.decode(value, { stream: true });
           const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
           crawlResult = [...crawlResult, ...updates];
+          crawledPages += updates.length; // Update progress
         }
       }
 
@@ -94,6 +101,13 @@
     {#if crawling}
       <div>
         <h2>Crawling...</h2>
+        <div class="progress-bar">
+          <div
+            class="progress"
+            style="width: {totalPages > 0 ? (crawledPages / totalPages) * 100 : 0}%"
+          ></div>
+        </div>
+        <p>{crawledPages} / {totalPages || "∞"} pages crawled</p>
         <div class="results-table">
           {#if crawlResult.length === 0}
             <p>No data received yet. Please wait...</p>
@@ -163,3 +177,19 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .progress {
+    height: 20px;
+    background-color: #76c7c0;
+    transition: width 0.3s ease;
+  }
+</style>
