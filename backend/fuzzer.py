@@ -57,7 +57,7 @@ class Fuzzer:
         self.configure_fuzzer(fuzz_params)
         success = self.fuzz()
         return {
-            'fuzzer results': self.fuzz_results
+            'results': self.fuzz_results
         }
 
     def configure_fuzzer(self, fuzz_params):#fuzzer params
