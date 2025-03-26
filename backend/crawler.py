@@ -175,6 +175,9 @@ class Crawler:
         queue = deque([self.start_url])
         self.tree_structure[self.start_url] = []
 
+        processed_requests = 0
+        filtered_requests = 0
+
         while queue:
             url = queue.popleft()
 
@@ -201,14 +204,20 @@ class Crawler:
                     self.retreive_url_info(parsed_html, url, links, error=False)  # No error occurred 
                     self.tree_structure[url] = list(links)  # Store links in the tree structure
                     queue.extend(links)  # Add found links to the queue
+                    filtered_requests += 1  # Increment filtered requests for successful responses
                 else:
                     self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
             else:
                 self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
 
+            processed_requests += 1  # Increment processed requests
+
             yield {
                 **self.crawled_urls[-1],
-                "progress": len(self.crawled_urls) / self.total_pages if self.total_pages != float('inf') else None
+                "progress": len(self.crawled_urls) / self.total_pages if self.total_pages != float('inf') else None,
+                "processed_requests": processed_requests,
+                "filtered_requests": filtered_requests,
+                "requests_per_second": round(processed_requests / (time.time() - start), 2)
             }
 
             #if num pages crawled quota reached, strop crawling

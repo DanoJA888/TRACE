@@ -25,6 +25,10 @@
   let elapsedTime = "0s";
   let timerInterval;
 
+  let processedRequests = 0;
+  let filteredRequests = 0;
+  let requestsPerSecond = 0;
+
   function startTimer() {
     startTime = Date.now();
     timerInterval = setInterval(() => {
@@ -88,6 +92,11 @@
           const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
           crawlResult = [...crawlResult, ...updates];
           crawledPages += updates.length; // Update progress
+
+          // Update real-time metrics
+          processedRequests += updates.length;
+          filteredRequests = crawlResult.filter((item) => !item.error).length;
+          requestsPerSecond = (processedRequests / ((Date.now() - startTime) / 1000)).toFixed(2);
         }
       }
 
@@ -128,6 +137,9 @@
         </div>
         <p>{crawledPages} / {totalPages || "∞"} pages crawled</p>
         <p>Running Time: {elapsedTime}</p> <!-- Add running time display -->
+        <p>Processed Requests: {processedRequests}</p>
+        <p>Filtered Requests: {filteredRequests}</p>
+        <p>Requests Per Second: {requestsPerSecond}</p>
         <div class="results-table">
           {#if crawlResult.length === 0}
             <p>No data received yet. Please wait...</p>
