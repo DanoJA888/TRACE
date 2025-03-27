@@ -1,6 +1,6 @@
 <script>
   
-  let wordlistInput = { id: "wordlist", type: "file", accept: ".json, .txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true }
+  let wordlistInput = { id: "wordlist", type: "file", accept: ".txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true }
 
   let usernameInput = [
     { id: "userChar", type: "checkbox", label: "Characters", isChecked: true},
@@ -10,16 +10,28 @@
 
   let passwordInput = [
     { id: "passChar", type: "checkbox", label: "Characters", isChecked: true},
-    { id: "passChar", type: "checkbox", label: "Numbers", isChecked: true},
+    { id: "passNum", type: "checkbox", label: "Numbers", isChecked: true},
     { id: "passSymb", type: "checkbox", label: "Symbols", isChecked: true}
   ]
 
   let usernameLenInput = { id: "userLen", type: "number", label: "Length", value: "", example: "Ex: 12", required: true }
   let passwordLenInput = { id: "passLen", type: "number", label: "Length", value: "", example: "Ex: 12", required: true }
 
+  let wordlist;
+
   let aiParams = {
     wordlist : ""
   }
+
+  for(let i = 0; i < usernameInput.length;i++){
+    aiParams[usernameInput[i].id] = usernameInput[i].value;
+  }
+  console.log("Populated aiParams with Username checkbox...");
+
+  for(let i = 0; i < passwordInput.length;i++){
+    aiParams[passwordInput[i].id] = passwordInput[i].value;
+  }
+  console.log("Populated aiParams with Password checkbox...");
 
   let aiResult = []
 
@@ -43,15 +55,38 @@
   }
 
   function dynamicAiParamUpdate(id, value) {
+    aiParams[id] = value;
+    console.log(`Updated ${id}: ${value}`);
+  }
+
+  // Checks that the file is exclusively txt file and updates our file accordingly
+  async function handleFile() {
+    const selectedFile = event.target.files[0];
+    if (selectedFile && selectedFile.type === "text/plain") {
+      wordlist = selectedFile;
+      console.log("Valid file selected:", wordlist.name);
+    } else {
+      alert("Please select a valid .txt file");
+      event.target.value = ""; // Reset input
+      wordlist = null;
+    }
   }
 
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
     console.log("Form Submitted");
-  }
-
-  async function handleFile() {
-    console.log("File Submitted");
+    const response = await fetch('http://localhost:8000/ai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(aiParams),
+    });
+    if (response.ok) {
+      console.log("Generating...")
+    } else {
+      console.error("Error starting generate:", response.statusText);
+    }
   }
 </script>
   
@@ -71,7 +106,7 @@
                   {#each usernameInput as param}
                       <label>
                           {param.label}:
-                          <input type="checkbox" bind:checked={param.isChecked} oninput={(e) => dynamicAiParamUpdate(param.id, e.target.value)} />
+                          <input type="checkbox" bind:checked={param.isChecked} onchange={(e) => dynamicAiParamUpdate(param.id, e.target.checked)} />
                       </label>
                   {/each}
 
@@ -87,7 +122,7 @@
                   {#each passwordInput as param}
                       <label>
                           {param.label}:
-                          <input type="checkbox" bind:checked={param.isChecked} oninput={(e) => dynamicAiParamUpdate(param.id, e.target.value)} />
+                          <input type="checkbox" bind:checked={param.isChecked} onchange={(e) => dynamicAiParamUpdate(param.id, e.target.checked)} />
                       </label>
                   {/each}
 
