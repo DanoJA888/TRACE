@@ -65,10 +65,11 @@
 
     if (selectedFile && selectedFile.type === "text/plain") {
       wordlist = selectedFile;
-      console.log("Valid file selected:", wordlist.name);
 
       // Update param after file validation
       dynamicAiParamUpdate(wordlistInput.id, selectedFile);
+      console.log("Valid file selected:", wordlist.name);
+
     } else {
       alert("Please select a valid .txt file");
       event.target.value = ""; // Reset input
@@ -79,17 +80,28 @@
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
     console.log("Form Submitted");
-    const response = await fetch('http://localhost:8000/ai', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(aiParams),
-    });
-    if (response.ok) {
-      console.log("Generating...")
-    } else {
-      console.error("Error starting generate:", response.statusText);
+
+    const formData = newFormData();
+
+    if(wordlist) {
+      formData.append("wordlist", wordlist);
+    }
+
+    formData.append("date", JSON.stringify(aiParams));
+
+    try{
+      const response = await fetch('http://localhost:8000/ai', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (response.ok) {
+        console.log("Generating...")
+      } else {
+        console.error("Error starting generate:", response.statusText);
+      }
+    } catch (error) {
+        console.error("Request failed:", error);
     }
   }
 </script>
