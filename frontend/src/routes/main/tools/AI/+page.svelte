@@ -81,20 +81,20 @@
   async function handleSubmit() {
     console.log("Form Submitted");
 
-    const formData = newFormData();
+    const formData = new FormData();
 
     if(wordlist) {
       formData.append("wordlist", wordlist);
     }
 
-    formData.append("date", JSON.stringify(aiParams));
+    formData.append("data", JSON.stringify(aiParams));
 
     try{
       const response = await fetch('http://localhost:8000/ai', {
         method: 'POST',
         body: formData
       });
-      
+
       if (response.ok) {
         console.log("Generating...")
       } else {
