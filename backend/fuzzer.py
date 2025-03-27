@@ -10,8 +10,6 @@ class Fuzzer:
         self.word_list = []
         self.http_method = 'GET'
         self.fuzz_results = [{'id': 'ID', 'response': 'Response', 'payload': 'Payload', 'length': 'Length'}]
-        
-        # New parameters
         self.cookies = ''
         self.hide_codes = ''
         self.show_only = ''
@@ -25,7 +23,7 @@ class Fuzzer:
             "User-Agent": "TRACE Fuzzer"
         }
 
-        # Add cookies if provided
+        # cookies
         if self.cookies:
             headers["Cookie"] = self.cookies
 
@@ -38,7 +36,9 @@ class Fuzzer:
                 response = requests.put(url, headers=headers, timeout=10)
             else:
                 return None
+            
             return response
+        
         except requests.RequestException as e:
             logging.error(f"Error with payload {payload}: {str(e)}")
             return None
@@ -56,6 +56,33 @@ class Fuzzer:
 
         self.fuzz_results.append(result)
         return result
+    
+    def should_include_response(self, response_code, response_length):
+        # Parse hide_codes
+        if self.hide_codes:
+            hidden = [int(code.strip()) for code in self.hide_codes.split(',') if code.strip().isdigit()]
+            if response_code in hidden:
+                return False
+
+        # Parse show_only
+        if self.show_only:
+            allowed = [int(code.strip()) for code in self.show_only.split(',') if code.strip().isdigit()]
+            if response_code not in allowed:
+                return False
+
+        # Parse content_length filters
+        if self.content_length:
+            length_filters = self.content_length.split(',')
+            for f in length_filters:
+                f = f.strip()
+                if f.startswith('>') and response_length <= int(f[1:]):
+                    return False
+                elif f.startswith('<') and response_length >= int(f[1:]):
+                    return False
+                elif f.isdigit() and response_length != int(f):
+                    return False
+                
+        return True
 
     def fuzz(self):
         if not self.target_url or not self.word_list:
@@ -65,8 +92,8 @@ class Fuzzer:
         for payload in self.word_list:
             response = self.execute_request(payload)
             if response:
-                self.process_fuzzer_response(response, payload)
-        
+                if self.should_include_response(response.status_code, len(response.content)):
+                    self.process_fuzzer_response(response, payload)
         return True
 
     async def start_fuzz(self, fuzz_params):
@@ -86,32 +113,8 @@ class Fuzzer:
             self.word_list = word_list if isinstance(word_list, list) else []
 
         self.http_method = fuzz_params.get('http_method', 'GET')
-
-        # Extra fields
         self.cookies = fuzz_params.get('cookies', '')
         self.hide_codes = fuzz_params.get('hide_codes', '')
         self.show_only = fuzz_params.get('show_only', '')
         self.content_length = fuzz_params.get('content_length', '')
         self.extra_params = fuzz_params.get('extra_params', '')
-
-# -------------------
-# FastAPI Setup
-# -------------------
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-fuzzer = Fuzzer()
-
-@app.post("/start-fuzz")
-async def start_fuzz(request: Request):
-    data = await request.json()
-    result = await fuzzer.start_fuzz(data)
-    return result
