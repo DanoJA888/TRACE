@@ -60,11 +60,15 @@
   }
 
   // Checks that the file is exclusively txt file and updates our file accordingly
-  async function handleFile() {
+  async function handleFile(event) {
     const selectedFile = event.target.files[0];
+
     if (selectedFile && selectedFile.type === "text/plain") {
       wordlist = selectedFile;
       console.log("Valid file selected:", wordlist.name);
+
+      // Update param after file validation
+      dynamicAiParamUpdate(wordlistInput.id, selectedFile);
     } else {
       alert("Please select a valid .txt file");
       event.target.value = ""; // Reset input
@@ -98,7 +102,7 @@
             <form onsubmit= "{(e) => {e.preventDefault(); handleSubmit(); paramsToGenerate()}}">
 
                 {wordlistInput.label}
-                <input accept=wordlistInput.accept type={wordlistInput.type} bind:value={wordlistInput.id} placeholder={wordlistInput.example} requirement={wordlistInput.required} oninput={(e) => {dynamicAiParamUpdate(wordlistInput.id, e.target.value); handleFile()}}/>
+                <input accept=wordlistInput.accept type={wordlistInput.type} placeholder={wordlistInput.example} requirement={wordlistInput.required} onchange={handleFile}/>
 
                 <div class="input-container">
                   <div class="column">
