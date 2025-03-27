@@ -10,8 +10,6 @@ class Fuzzer:
         self.word_list = []
         self.http_method = 'GET'
         self.fuzz_results = [{'id': 'ID', 'response': 'Response', 'payload': 'Payload', 'length': 'Length'}]
-        
-        # New parameters
         self.cookies = ''
         self.hide_codes = ''
         self.show_only = ''
@@ -86,17 +84,11 @@ class Fuzzer:
             self.word_list = word_list if isinstance(word_list, list) else []
 
         self.http_method = fuzz_params.get('http_method', 'GET')
-
-        # Extra fields
         self.cookies = fuzz_params.get('cookies', '')
         self.hide_codes = fuzz_params.get('hide_codes', '')
         self.show_only = fuzz_params.get('show_only', '')
         self.content_length = fuzz_params.get('content_length', '')
         self.extra_params = fuzz_params.get('extra_params', '')
-
-# -------------------
-# FastAPI Setup
-# -------------------
 
 app = FastAPI()
 
