@@ -217,8 +217,8 @@ class CredentialGeneratorMDP:
 
         self.username_mdp = CredentialMDP(order=2)
         self.password_mdp = CredentialMDP(order=3)
-        self.min_username_length = user_length 
-        self.min_password_length = pass_length
+        self.min_username_length = int(user_length) 
+        self.min_password_length = int(pass_length)
         
 
     # Preprocess text data

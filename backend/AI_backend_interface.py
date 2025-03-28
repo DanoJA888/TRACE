@@ -72,7 +72,7 @@ async def generate_credentials_endpoint(file: UploadFile = File(None), data: str
 
 
     urls = mdp3.load_urls_from_csv("site_list.csv")
-    csv_path = "/csv_uploads/web_text.csv"
+    csv_path = "./csv_uploads/web_text.csv"
     scrapper = WebScraper(urls)
     scrapper.generate_csv(csv_path)
     mdp3.nlp_subroutine(csv_path)
