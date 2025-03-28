@@ -24,12 +24,12 @@
   }
 
   for(let i = 0; i < usernameInput.length;i++){
-    aiParams[usernameInput[i].id] = usernameInput[i].value;
+    aiParams[usernameInput[i].id] = usernameInput[i].isChecked;
   }
   console.log("Populated aiParams with Username checkbox...");
 
   for(let i = 0; i < passwordInput.length;i++){
-    aiParams[passwordInput[i].id] = passwordInput[i].value;
+    aiParams[passwordInput[i].id] = passwordInput[i].isChecked;
   }
   console.log("Populated aiParams with Password checkbox...");
 
@@ -84,13 +84,13 @@
     const formData = new FormData();
 
     if(wordlist) {
-      formData.append("wordlist", wordlist);
+      formData.append("file", wordlist);
     }
 
     formData.append("data", JSON.stringify(aiParams));
 
     try{
-      const response = await fetch('http://localhost:8000/ai', {
+      const response = await fetch('http://localhost:8000/generate-credentials', {
         method: 'POST',
         body: formData
       });
