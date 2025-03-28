@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from crawler import Crawler
 from typing import Optional
 import logging
+from fastapi.responses import StreamingResponse
+import json
 
 #logs whenever an endpoint is hit using logger.info
 logging.basicConfig(level=logging.INFO)
@@ -28,13 +30,15 @@ class CrawlRequest(BaseModel):
 '''
 @app.post("/crawler")
 async def launchCrawl(request: CrawlRequest):
-  #converts request from CrawlRequest Object to dictionary
-  crawler = Crawler()
-  params_dict = request.model_dump()
-  logger.info(request)
-  crawl_results = await crawler.start_crawl(params_dict)
-  logger.info(crawl_results)
-  return crawl_results
+    crawler = Crawler()
+    params_dict = request.model_dump()
+    logger.info(request)
+
+    async def crawl_stream():
+        async for update in crawler.start_crawl(params_dict):
+            yield json.dumps(update) + "\n"
+
+    return StreamingResponse(crawl_stream(), media_type="application/json")
 
 #helps frontend and backend communicate (different ports for fastAPI and sveltekit)
 app.add_middleware(

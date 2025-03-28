@@ -12,11 +12,35 @@
     url : ""
   }
 
-  let crawlResult = []
+  let crawlResult = []; // Updated dynamically during crawling
 
   let acceptingParams = true;
   let crawling = false;
   let displayingResults = false;
+
+  let totalPages = 0;
+  let crawledPages = 0;
+
+  let startTime = null;
+  let elapsedTime = "0s";
+  let timerInterval;
+
+  let processedRequests = 0;
+  let filteredRequests = 0;
+  let requestsPerSecond = 0;
+
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - startTime) / 1000);
+      elapsedTime = `${seconds}s`;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+    elapsedTime = "0s";
+  }
 
   function paramsToCrawling(){
     acceptingParams = false;
@@ -42,6 +66,11 @@
 
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
+    paramsToCrawling();
+    startTimer(); // Start the timer
+    crawledPages = 0; // Reset progress
+    totalPages = crawlerParams.max_pages || 0; // Set total pages if max_pages is defined
+
     const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
       method: 'POST', 
       headers: {
@@ -49,13 +78,33 @@
       },
       body: JSON.stringify(crawlerParams),
     });
+
     if (response.ok) {
-      crawlingToResults()
-      crawlResult = await response.json();
-      console.log("Crawler results:", crawlResult);
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let done = false;
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
+          crawlResult = [...crawlResult, ...updates];
+          crawledPages += updates.length; // Update progress
+
+          // Update real-time metrics
+          processedRequests += updates.length;
+          filteredRequests = crawlResult.filter((item) => !item.error).length;
+          requestsPerSecond = (processedRequests / ((Date.now() - startTime) / 1000)).toFixed(2);
+        }
+      }
+
+      crawlingToResults();
     } else {
       console.error("Error starting crawler:", response.statusText);
     }
+    stopTimer(); // Stop the timer
   }
 </script>
   
@@ -79,7 +128,49 @@
     
     {#if crawling}
       <div>
-        <h2>Crawling...</h2>
+        <h2>Running...</h2>
+        <div class="progress-bar">
+          <div
+            class="progress"
+            style="width: {totalPages > 0 ? (crawledPages / totalPages) * 100 : 0}%"
+          ></div>
+        </div>
+        <p>{crawledPages} / {totalPages || "∞"} pages crawled</p>
+        <p>Running Time: {elapsedTime}</p> <!-- Add running time display -->
+        <p>Processed Requests: {processedRequests}</p>
+        <p>Filtered Requests: {filteredRequests}</p>
+        <p>Requests Per Second: {requestsPerSecond}</p>
+        <div class="results-table">
+          {#if crawlResult.length === 0}
+            <p>No data received yet. Please wait...</p>
+          {/if}
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>URL</th>
+                <th>Title</th>
+                <th>Word Count</th>
+                <th>Character Count</th>
+                <th>Links</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each crawlResult as crawledURL, index (crawledURL.id)}  <!-- Ensure each item is uniquely identified -->
+                <tr>
+                  <td>{crawledURL.id}</td>
+                  <td>{crawledURL.url}</td>
+                  <td>{crawledURL.title}</td>
+                  <td>{crawledURL.word_count}</td>
+                  <td>{crawledURL.char_count}</td>
+                  <td>{crawledURL.link_count}</td>
+                  <td>{crawledURL.error ? 'True' : 'False'}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
       </div>
     {/if}
 
@@ -118,3 +209,19 @@
     {/if}
   </div>
 </div>
+
+<style>
+  .progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .progress {
+    height: 20px;
+    background-color: #76c7c0;
+    transition: width 0.3s ease;
+  }
+</style>
