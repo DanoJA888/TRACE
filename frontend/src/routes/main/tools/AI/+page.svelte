@@ -90,7 +90,7 @@
     formData.append("data", JSON.stringify(aiParams));
 
     try{
-      const response = await fetch('http://localhost:8000/ai', {
+      const response = await fetch('http://localhost:8000/generate-credentials', {
         method: 'POST',
         body: formData
       });

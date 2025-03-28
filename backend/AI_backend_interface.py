@@ -1,15 +1,15 @@
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import logging
 from typing import Optional
 import shutil
 import os
 from mdp3 import CredentialGeneratorMDP
-
+from typing import Dict, Optional
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
+import json
 #creates endpoints
 app = FastAPI(title="Routes")
 
@@ -24,7 +24,7 @@ async def upload_wordlist(file: UploadFile = File(...)):
 
 class CredentialRequest(BaseModel):
     # path or name of the wordlist if needed
-    wordlist_path: Optional[str] = "wordlist_uploads\wordlist.txt"
+    wordlist_path: Optional[str] = ""
 
     # toggles for user
     user_include_char: bool = True
@@ -41,11 +41,47 @@ class CredentialRequest(BaseModel):
     # how many credentials to generate
     count: int = 10
 
+class AIParams(BaseModel):
+    params: Dict[str, str | bool | int] = Field(default_factory=dict)
+
 
 @app.post("/generate-credentials")
-async def generate_credentials_endpoint(req: CredentialRequest):
-    logging.info(f"Received credential generation request: {req}")
+async def generate_credentials_endpoint(file: UploadFile = File(None), data: str = Form(...)):
+    #logging.info(f"Received credential generation request: {req}")
 
+    try:
+        # Parse JSON data from form
+        ai_params = AIParams(params=json.loads(data))
+ 
+        if file:
+            # Save the uploaded file
+            file_location = f"./uploads/{file.filename}"
+            with open(file_location, "wb") as buffer:
+                buffer.write(await file.read())
+            ai_params.params["wordlist"] = file_location  # Store file path in dictionary
+ 
+ 
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+
+    generator = CredentialGeneratorMDP(
+        csv_path= "site_list.csv",
+        wordlist_path= ai_params.params["wordlist"],
+        user_include_char = ai_params.params["userChar"],
+        user_include_num = ai_params.params["userNum"],
+        user_include_sym = ai_params.params["userSymb"],
+        user_length = ai_params.params["userLen"],
+
+        pass_include_char = ai_params.params["passChar"],
+        pass_include_num = ai_params.params["passNum"],
+        pass_include_sym = ai_params.params["passSymb"], 
+        pass_length = ai_params.params["passLen"] 
+    )
+    credentials = generator.generate_credentials(10)
+    return {"credentials": credentials}
+
+    """
     generator = CredentialGeneratorMDP(
         csv_path ="site_list.csv",      # or wherever your CSV is
         wordlist_path =req.wordlist_path or "wordlist_uploads\wordlist.txt",
@@ -59,10 +95,9 @@ async def generate_credentials_endpoint(req: CredentialRequest):
         pass_include_num = req.pass_include_num or True,
         pass_include_sym = req.pass_include_sym or True,
         pass_length = req.pass_length or 12
-    )
+    )"""
 
-    credentials = generator.generate_credentials(req.count)
-    return {"credentials": credentials}
+
 
 # Add CORS
 app.add_middleware(
