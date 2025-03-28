@@ -7,9 +7,11 @@ import shutil
 import os
 from mdp3 import CredentialGeneratorMDP
 from typing import Dict, Optional
+import json
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-import json
+
 #creates endpoints
 app = FastAPI(title="Routes")
 
@@ -48,35 +50,40 @@ class AIParams(BaseModel):
 @app.post("/generate-credentials")
 async def generate_credentials_endpoint(file: UploadFile = File(None), data: str = Form(...)):
     #logging.info(f"Received credential generation request: {req}")
-
+    file_word = ""
     try:
+        """   temp = json.loads(data)
+        print(temp)
         # Parse JSON data from form
         ai_params = AIParams(params=json.loads(data))
- 
+        print(ai_params)"""
         if file:
             # Save the uploaded file
-            file_location = f"./uploads/{file.filename}"
+            file_location = f"./wordlist_uploads/{file.filename}"
             with open(file_location, "wb") as buffer:
                 buffer.write(await file.read())
-            ai_params.params["wordlist"] = file_location  # Store file path in dictionary
+            file_word= file_location  # Store file path in dictionary
  
  
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-
+    print("second")
+    print(data)
+    print(file_word)
+    data = json.loads(data)
     generator = CredentialGeneratorMDP(
         csv_path= "site_list.csv",
-        wordlist_path= ai_params.params["wordlist"],
-        user_include_char = ai_params.params["userChar"],
-        user_include_num = ai_params.params["userNum"],
-        user_include_sym = ai_params.params["userSymb"],
-        user_length = ai_params.params["userLen"],
+        wordlist_path= file_word,
+        user_include_char = data["userChar"],
+        user_include_num = data["userNum"],
+        user_include_sym = data["userSymb"],
+        user_length = data["userLen"],
 
-        pass_include_char = ai_params.params["passChar"],
-        pass_include_num = ai_params.params["passNum"],
-        pass_include_sym = ai_params.params["passSymb"], 
-        pass_length = ai_params.params["passLen"] 
+        pass_include_char = data["passChar"],
+        pass_include_num = data["passNum"],
+        pass_include_sym = data["passSymb"], 
+        pass_length = data["passLen"] 
     )
     credentials = generator.generate_credentials(10)
     return {"credentials": credentials}
