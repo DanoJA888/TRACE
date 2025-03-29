@@ -155,7 +155,7 @@
     }
   </script>
   
-  <!--fuzzer configuration-->
+  <!--fuzzer configuration config-->
   <section class="fuzzerConfigPage">
     <div>
       <h1>Fuzzer</h1>
