@@ -9,12 +9,23 @@
       { id: "content_length", label: "Content Length Filter", type: "text", value: "", example: ">100,<500", required: false },
       { id: "extra_params", label: "Extra Parameters", type: "text", value: "", example: "token=abc", required: false }
     ];
+    
+    let stats = {
+      running_time: 0,
+      processed_requests: 0,
+      filtered_requests: 0,
+      requests_per_sec: 0
+    };
 
     type FuzzResult = {
-	    id: string | number;
-	    response: string | number;
-	    payload: string;
-	    length: number;
+	    id: number;
+      response: number;
+      lines: number;
+      words: number;
+      chars: number;
+      payload: string;
+      length: number;
+      error: boolean;
     };
   
     let fuzzerParams: Record<string, string> = {};
@@ -22,11 +33,16 @@
     let acceptingParams = true;
     let fuzzing = false;
     let showResults = false;
-
     let startTime = 0;
     let elapsedTime = "0s";
     let timerInterval = 0;
+    let terminalVisible = false;
+    let terminalLogs: string[] = [];
+    let showTerminal = false;
+    let eventSource: EventSource | null = null;
 
+
+    //timer functions
     function startTimer() {
         startTime = Date.now();
         timerInterval = setInterval(() => {
@@ -60,49 +76,86 @@
       showResults = false;
       acceptingParams = true;
     }
-  
+
+    //Buttons
+    function pauseFuzzer() {
+      console.log("Pause clicked");
+      // Notes for later: Send pause request to backend or stop frontend updates
+    }
+
+    function stopFuzzer() {
+      console.log("Stop clicked");
+      // Notes for later: Abort request, reset state, etc.
+      stopTimer();
+      fuzzing = false;
+      showResults = true; // or false if you want to hide results
+    }
+
+    function restartFuzzer() {
+      console.log("Restart clicked");
+      fuzzerResult = [];
+      stats = {
+        running_time: 0,
+        processed_requests: 0,
+        filtered_requests: 0,
+        requests_per_sec: 0
+      };
+      handleSubmit(); // re-trigger fuzzing
+    }
+
+    //Terminal functions
+    function toggleTerminal() {
+      showTerminal = !showTerminal;
+      console.log(showTerminal ? "Terminal opened" : "Terminal closed");
+    }
+
     async function handleSubmit() {
-        paramsToFuzz();
-        acceptingParams = false;
-        fuzzing = true;
-        fuzzerResult = [];
-        startTimer();
+      paramsToFuzz();
+      acceptingParams = false;
+      fuzzing = true;
+      fuzzerResult = [];
+      terminalLogs = [];
+      startTimer();
 
-        try {
-            const response = await fetch('http://localhost:8000/fuzzer', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(fuzzerParams)
-            });
+      eventSource = new EventSource("http://localhost:8000/fuzzer/stream");
 
-            if (response.ok && response.body) {
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let done = false;
+      eventSource.onmessage = (event) => {
+        terminalLogs = [...terminalLogs, event.data];
+        console.log("TERMINAL LINE:", event.data); // Debug
+      };
 
-            while (!done) {
-                const { value, done: readerDone } = await reader.read();
-                done = readerDone;
-                if (value) {
-                const chunk = decoder.decode(value, { stream: true });
-                const updates = chunk.split('\n').filter(Boolean).map((line) => JSON.parse(line)["fuzzer results"]).flat();
-                fuzzerResult = [...fuzzerResult, ...updates];
-                }
-            }
+      eventSource.onerror = () => {
+        console.error("EventSource failed");
+        eventSource?.close();
+      };
 
-            showResults = true;
-            } else {
-            console.error("Fuzzer failed to respond:", response.statusText);
-            }
-        } catch (err) {
-            console.error("Fuzzer error:", err);
+
+      try {
+        const response = await fetch("http://localhost:8000/fuzzer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(fuzzerParams),
+        });
+        
+        //json conversion
+        if (response.ok) {
+          const fullJson = await response.json();
+          fuzzerResult = fullJson["fuzzer results"];
+          stats = fullJson["stats"]; 
+          showResults = true;
+        } else {
+          console.error("Fuzzer failed to respond:", response.statusText);
         }
+      } catch (err) {
+        console.error("Fuzzer error:", err);
+      }
 
-        stopTimer();
-        fuzzing = false;
+      stopTimer();
+      fuzzing = false;
     }
   </script>
   
+  <!--fuzzer configuration-->
   <section class="fuzzerConfigPage">
     <div>
       <h1>Fuzzer</h1>
@@ -133,36 +186,71 @@
           <button type="submit">Start Fuzzer</button>
         </form>
       {/if}
-  
+      
+      <!-- Fuzzing page-->
       {#if fuzzing}
         <h2>Fuzzing in progress...</h2>
       {/if}
   
       {#if showResults}
         <h2>Fuzzing Results</h2>
+        <div class="stats">
+          <p><strong>Running Time:</strong> {stats.running_time} s</p>
+          <p><strong>Processed Requests:</strong> {stats.processed_requests}</p>
+          <p><strong>Filtered Requests:</strong> {stats.filtered_requests}</p>
+          <p><strong>Requests/sec:</strong> {stats.requests_per_sec}</p>
+        </div>
         <table>
           <thead>
             <tr>
               <th>ID</th>
               <th>Response</th>
+              <th>Lines</th>
+              <th>Words</th>
+              <th>Chars</th>
               <th>Payload</th>
               <th>Length</th>
+              <th>Error</th>
             </tr>
           </thead>
           <tbody>
             {#each fuzzerResult as row (row.id)}
                 {#if typeof row.id === 'number'}
                  <tr>
-                    <td>{row.id}</td>
-                    <td>{row.response}</td>
-                    <td>{row.payload}</td>
-                    <td>{row.length}</td>
+                  <td>{row.id}</td>
+                  <td>{row.response}</td>
+                  <td>{row.lines}</td>
+                  <td>{row.words}</td>
+                  <td>{row.chars}</td>
+                  <td>{row.payload}</td>
+                  <td>{row.length}</td>
+                  <td>{row.error ? 'True' : 'False'}</td>
                 </tr>
                {/if}
             {/each}
           </tbody>
         </table>
-        <button on:click={() => ParamResults()}>Back</button>
+        <div class="fuzzer-controls">
+          <button on:click={() => pauseFuzzer()}>Pause</button>
+          <button on:click={() => stopFuzzer()}>Stop</button>
+          <button on:click={() => restartFuzzer()}>Restart</button>
+          <button on:click={() => toggleTerminal()} class="control-btn secondary-btn">Show Terminal</button>
+        </div>
+      {/if}
+      
+      <!--Toggle Terminal-->
+      {#if showTerminal}
+        <div class="terminal-overlay">
+          <div class="terminal-header">
+            <span>Fuzzer — 80×24</span>
+            <button on:click={() => toggleTerminal()}>×</button>
+          </div>
+          <div class="terminal-body">
+            {#each terminalLogs as line}
+              <pre>{line}</pre>
+            {/each}
+          </div>
+        </div>
       {/if}
     </div>
   </section>
@@ -194,5 +282,55 @@
   
     th {
       background-color: #f4f4f4;
+    }
+
+    .fuzzer-controls {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .fuzzer-controls button {
+      padding: 0.6rem 1.5rem;
+      background-color: #b8dbe4;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .fuzzer-controls button:hover {
+      background-color: #a4cbd6;
+    }
+
+    .terminal-overlay {
+      position: fixed;
+      top: 20%;
+      left: 10%;
+      width: 80%;
+      height: 300px;
+      background: black;
+      color: lime;
+      overflow-y: scroll;
+      z-index: 999;
+      border: 2px solid #444;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+
+    .terminal-header {
+      background: #222;
+      color: white;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+    }
+
+    .terminal-body {
+      padding: 10px;
+      white-space: pre-wrap;
+      font-size: 14px;
     }
   </style>  

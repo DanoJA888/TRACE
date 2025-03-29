@@ -5,6 +5,8 @@ from crawler import Crawler
 from fuzzer import Fuzzer
 from typing import Optional, List, Union
 import logging
+from fastapi.responses import StreamingResponse
+import json
 
 # ---------- Logging ----------
 logging.basicConfig(level=logging.INFO)
@@ -45,6 +47,15 @@ async def launchCrawl(request: CrawlRequest):
     crawl_results = await crawler.start_crawl(params_dict)
     logger.info(crawl_results)
     return crawl_results
+    crawler = Crawler()
+    params_dict = request.model_dump()
+    logger.info(request)
+
+    async def crawl_stream():
+        async for update in crawler.start_crawl(params_dict):
+            yield json.dumps(update) + "\n"
+
+    return StreamingResponse(crawl_stream(), media_type="application/json")
 
 @app.post("/fuzzer")
 async def launchFuzz(request: FuzzRequest):
