@@ -136,10 +136,24 @@
           ></div>
         </div>
         <p>{crawledPages} / {totalPages || "∞"} pages crawled</p>
-        <p>Running Time: {elapsedTime}</p> <!-- Add running time display -->
-        <p>Processed Requests: {processedRequests}</p>
-        <p>Filtered Requests: {filteredRequests}</p>
-        <p>Requests Per Second: {requestsPerSecond}</p>
+        <div class="metrics">
+          <div class="metric-item">
+            <strong>Running Time:</strong>
+            <span>{elapsedTime}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Processed Requests:</strong>
+            <span>{processedRequests}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Filtered Requests:</strong>
+            <span>{filteredRequests}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Requests/sec:</strong>
+            <span>{requestsPerSecond}</span>
+          </div>
+        </div>
         <div class="results-table">
           {#if crawlResult.length === 0}
             <p>No data received yet. Please wait...</p>
@@ -177,6 +191,25 @@
 
     {#if displayingResults}
       <h2>Crawl Results</h2>
+      <div class="metrics">
+        <div class="metric-item">
+          <strong>Running Time:</strong>
+          <span>{elapsedTime}</span>
+        </div>
+        <div class="metric-item">
+          <strong>Processed Requests:</strong>
+          <span>{processedRequests}</span>
+        </div>
+        <div class="metric-item">
+          <strong>Filtered Requests:</strong>
+          <span>{filteredRequests}</span>
+        </div>
+        <div class="metric-item">
+          <strong>Requests/sec:</strong>
+          <span>{requestsPerSecond}</span>
+        </div>
+      </div>
+
       <div class="results-table">
         <table>
           <thead>
@@ -209,6 +242,18 @@
     {/if}
   </div>
 </div>
+
+<!-- doing this here for now so i dont bloat the css adding space between the table and the return button-->
+<style>
+  .results-table {
+    margin-top: 20px; /* Add space between the table and the button */
+  }
+
+  .results-table button {
+    margin-top: 20px; /* Add space between the table and the button */
+  }
+</style>
+
 
 <!-- <style>
   .progress-bar {
