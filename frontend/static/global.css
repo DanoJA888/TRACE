@@ -1,11 +1,18 @@
+body {
+  background-color: #f2f2f2; /* Light gray background */
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* looks like they are using a sans font */
+}
+
 /* Ensure the main container is centered */
 .crawlerConfigPage {
-  width: 600px;  /* Adjusted width to give more space */
+  width: 100%;  /* Adjusted width to give more space */
   margin: 10vh auto; /* Centered with some spacing from the top */
   padding: 20px;
-  background: #ffffff;
+  background: transparent;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,6 +38,57 @@ label {
   display: flex;
   flex-direction: column;
   font-weight: bold;
+  transform: translateY(-20%);
+  /* background: white; */
+  padding: 0 5px;
+  font-size: 16px;
+  color: #888;
+  transition: all 0.3s ease;
+}
+
+input {
+  width: 100%;
+  max-width: 450px;
+  padding: 12px 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px; /* pill-shaped */
+  outline: none;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: white;
+}
+
+/* Button styling */
+button {
+  width: auto;
+  /* max-width: 450px; */
+  padding: 12px;
+  background-color: #9bc2cb;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #4aa6b0;
+}
+
+/* progress bar */
+.progress-bar {
+  width: 100%;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 10px 0;
+}
+
+.progress {
+  height: 20px;
+  background-color: #4aa6b0;
+  transition: width 0.3s ease;
 }
 
 .row {
@@ -45,54 +103,32 @@ label {
   margin-right: 15px;
 }
 
-input {
-  width: 100%;
-  max-width: 450px; /* Prevent stretching */
-  padding: 10px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
-/* Button styling */
-button {
-  width: 100%;
-  max-width: 450px; /* Matches input size */
-  padding: 12px;
-  background-color: #51f1c9;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #51f1c9;
-}
-
 /* Results Table Styling */
 .results-container {
-  width: 60%;  /* Set the results container to 60% of the screen width */
-  margin-top: 20px;
-  overflow-x: auto; /* Prevents breaking on small screens */
+  width: 80%; 
+  margin: 20px auto;  
+  overflow-x: auto; 
+  display: flex;
+  justify-content: center; 
 }
 
 table {
-  width: 100%;  /* Set the table to take up 100% of the container width */
+  width: 100%;  
   border-collapse: collapse;
   text-align: left;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
   padding: 10px;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
   word-break: break-word; /* Ensures long text doesn't overflow */
 }
 
 th {
-  background-color: #51f1c9;
+  background-color: #4aa6b0;
   color: white;
 }
 
@@ -100,14 +136,15 @@ td {
   background-color: #f9f9f9;
 }
 
-/* band-aid fix while i read up how to manipulate tables more appropriately in css*/
-th:nth-child(1), td:nth-child(1) {  /* ID column */
-  min-width: 60px; /* Slightly narrower */
+/* Alternate row colors */
+tr:nth-child(even) td {
+  background-color: #e0e0e0; /* Darker grey for even rows */
 }
 
-th:nth-child(7), td:nth-child(7) {  /* Error column */
-  min-width: 60px; /* Slightly narrower */
+tr:nth-child(odd) td {
+  background-color: #f9f9f9; /* Light grey for odd rows */
 }
+
 
 /* Ensures the table is responsive */
 @media (max-width: 600px) {
