@@ -62,7 +62,7 @@ async def launchFuzz(request: FuzzRequest):
     logger.info(request)
 
     async def fuzz_stream():
-        async for update in fuzzer.start_fuzz(params_dict):
+        async for update in fuzzer.run_scan(params_dict):
             yield json.dumps(update) + "\n"
 
     return StreamingResponse(fuzz_stream(), media_type="application/json")
