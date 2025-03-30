@@ -1,47 +1,911 @@
 [
     {
         "id": 1,
-        "url": "https://apple.com",
-        "title": "Apple",
-        "word_count": 864,
-        "char_count": 5942,
-        "link_count": 83,
+        "url": "https://discord.com/",
+        "title": "Discord - Group Chat That\u00e2\u0080\u0099s All Fun & Games",
+        "word_count": 377,
+        "char_count": 3679,
+        "link_count": 49,
         "error": false
     },
     {
         "id": 2,
-        "url": "https://apple.com/diversity/",
-        "title": "Inclusion & Diversity - Apple",
-        "word_count": 4567,
-        "char_count": 32108,
-        "link_count": 74,
+        "url": "https://discord.com/community",
+        "title": "Community Resources | Discord",
+        "word_count": 551,
+        "char_count": 4986,
+        "link_count": 65,
         "error": false
     },
     {
         "id": 3,
-        "url": "https://apple.com/today/",
-        "title": "Today at Apple - Apple",
-        "word_count": 970,
-        "char_count": 9302,
-        "link_count": 344,
+        "url": "https://discord.com/streamkit",
+        "title": "Enhance Your Discord Server with StreamKit",
+        "word_count": 606,
+        "char_count": 5306,
+        "link_count": 48,
         "error": false
     },
     {
         "id": 4,
-        "url": "https://apple.com/apple-cash/",
-        "title": "Apple Cash - Apple",
-        "word_count": 2883,
-        "char_count": 17601,
-        "link_count": 76,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 85,
         "error": false
     },
     {
         "id": 5,
-        "url": "https://apple.com/apple-books/",
-        "title": "Apple Books - Apple",
-        "word_count": 923,
-        "char_count": 6379,
-        "link_count": 72,
+        "url": "https://discord.com/safety-family-center",
+        "title": "Family Center | Discord Safety",
+        "word_count": 849,
+        "char_count": 6872,
+        "link_count": 47,
+        "error": false
+    },
+    {
+        "id": 6,
+        "url": "https://discord.com/category/safety",
+        "title": "Discord Blog",
+        "word_count": 482,
+        "char_count": 4719,
+        "link_count": 80,
+        "error": false
+    },
+    {
+        "id": 7,
+        "url": "https://discord.com/safety",
+        "title": "Discord Safety Center",
+        "word_count": 429,
+        "char_count": 4072,
+        "link_count": 42,
+        "error": false
+    },
+    {
+        "id": 8,
+        "url": "https://discord.com/nitro",
+        "title": "Nitro Benefits and Features | Discord",
+        "word_count": 1101,
+        "char_count": 8425,
+        "link_count": 43,
+        "error": false
+    },
+    {
+        "id": 9,
+        "url": "https://discord.com/safety-transparency",
+        "title": "Transparency Hub | Discord Safety",
+        "word_count": 277,
+        "char_count": 3221,
+        "link_count": 46,
+        "error": false
+    },
+    {
+        "id": 10,
+        "url": "https://discord.com/ads/quests-faq",
+        "title": "Discord Quests Frequently Asked Questions",
+        "word_count": 753,
+        "char_count": 6232,
+        "link_count": 49,
+        "error": false
+    },
+    {
+        "id": 11,
+        "url": "https://discord.com/safety-policies",
+        "title": "Policy Hub | Discord",
+        "word_count": 7338,
+        "char_count": 50777,
+        "link_count": 74,
+        "error": false
+    },
+    {
+        "id": 12,
+        "url": "https://discord.com/safety-teen-charter",
+        "title": "A Charter for a Better Place to Hang Out Online | Discord",
+        "word_count": 1092,
+        "char_count": 8736,
+        "link_count": 42,
+        "error": false
+    },
+    {
+        "id": 13,
+        "url": "https://discord.com/guidelines",
+        "title": "Community Guidelines | Discord",
+        "word_count": 1868,
+        "char_count": 13581,
+        "link_count": 78,
+        "error": false
+    },
+    {
+        "id": 14,
+        "url": "https://discord.com/licenses",
+        "title": "Licenses | Discord",
+        "word_count": 286963,
+        "char_count": 1972654,
+        "link_count": 486,
+        "error": false
+    },
+    {
+        "id": 15,
+        "url": "https://discord.com/gaming",
+        "title": "Gaming | Discord",
+        "word_count": 430,
+        "char_count": 3965,
+        "link_count": 34,
+        "error": false
+    },
+    {
+        "id": 16,
+        "url": "https://discord.com/acknowledgements",
+        "title": "Acknowledgements | Discord",
+        "word_count": 26,
+        "char_count": 556,
+        "link_count": 20,
+        "error": false
+    },
+    {
+        "id": 17,
+        "url": "https://discord.com/category/product",
+        "title": "Discord Blog",
+        "word_count": 942,
+        "char_count": 8340,
+        "link_count": 119,
+        "error": false
+    },
+    {
+        "id": 18,
+        "url": "https://discord.com/developers/docs/intro",
+        "title": "Discord Developer Portal",
+        "word_count": 3,
+        "char_count": 49,
+        "link_count": 0,
+        "error": false
+    },
+    {
+        "id": 19,
+        "url": "https://discord.com/servers",
+        "title": "Discord Servers - Home",
+        "word_count": 530,
+        "char_count": 4560,
+        "link_count": 43,
+        "error": false
+    },
+    {
+        "id": 20,
+        "url": "https://discord.com/safety-privacy",
+        "title": "Privacy Hub | Discord Safety",
+        "word_count": 759,
+        "char_count": 5981,
+        "link_count": 32,
+        "error": false
+    },
+    {
+        "id": 21,
+        "url": "https://discord.com/terms",
+        "title": "Terms of Service | Discord",
+        "word_count": 7270,
+        "char_count": 46947,
+        "link_count": 53,
+        "error": false
+    },
+    {
+        "id": 22,
+        "url": "https://discord.com/safety-library",
+        "title": "Safety Library | Discord",
+        "word_count": 79152,
+        "char_count": 496263,
+        "link_count": 150,
+        "error": false
+    },
+    {
+        "id": 23,
+        "url": "https://discord.com/company-information",
+        "title": "Company Information - Impressum | Discord",
+        "word_count": 242,
+        "char_count": 2900,
+        "link_count": 26,
+        "error": false
+    },
+    {
+        "id": 24,
+        "url": "https://discord.com/mobile",
+        "title": "Improved Mobile Experience | Discord",
+        "word_count": 2153,
+        "char_count": 14468,
+        "link_count": 31,
+        "error": false
+    },
+    {
+        "id": 25,
+        "url": "https://discord.com/download",
+        "title": "Download Discord to Talk, Play, and Hang Out",
+        "word_count": 258,
+        "char_count": 2952,
+        "link_count": 32,
+        "error": false
+    },
+    {
+        "id": 26,
+        "url": "https://discord.com/category/how-to-discord",
+        "title": "Discord Blog",
+        "word_count": 465,
+        "char_count": 4368,
+        "link_count": 52,
+        "error": false
+    },
+    {
+        "id": 27,
+        "url": "https://discord.com/app",
+        "title": "Discord",
+        "word_count": 1,
+        "char_count": 30,
+        "link_count": 0,
+        "error": false
+    },
+    {
+        "id": 28,
+        "url": "https://discord.com/safety-news",
+        "title": "Safety News Hub | Discord",
+        "word_count": 18073,
+        "char_count": 117199,
+        "link_count": 99,
+        "error": false
+    },
+    {
+        "id": 29,
+        "url": "https://discord.com/creators",
+        "title": "Discord Creator Portal",
+        "word_count": 327,
+        "char_count": 3479,
+        "link_count": 36,
+        "error": false
+    },
+    {
+        "id": 30,
+        "url": "https://discord.com/careers",
+        "title": "Jobs and Career Opportunities at Discord",
+        "word_count": 1557,
+        "char_count": 10849,
+        "link_count": 21,
+        "error": false
+    },
+    {
+        "id": 31,
+        "url": "https://discord.com/developers/gdc-2025",
+        "title": "Discord @ GDC 2025",
+        "word_count": 1300,
+        "char_count": 10308,
+        "link_count": 19,
+        "error": false
+    },
+    {
+        "id": 32,
+        "url": "https://discord.com/category/engineering",
+        "title": "Discord Blog",
+        "word_count": 731,
+        "char_count": 7179,
+        "link_count": 77,
+        "error": false
+    },
+    {
+        "id": 33,
+        "url": "https://discord.com/newsroom",
+        "title": "Newsroom and Press Center | Discord",
+        "word_count": 959,
+        "char_count": 8089,
+        "link_count": 22,
+        "error": false
+    },
+    {
+        "id": 34,
+        "url": "https://discord.com/quests",
+        "title": "Discord Quests - Advertise Where the World Plays",
+        "word_count": 643,
+        "char_count": 5823,
+        "link_count": 25,
+        "error": false
+    },
+    {
+        "id": 35,
+        "url": "https://discord.com/branding",
+        "title": "Discord's Brand Guidelines",
+        "word_count": 528,
+        "char_count": 4711,
+        "link_count": 14,
+        "error": false
+    },
+    {
+        "id": 36,
+        "url": "https://discord.com/application-directory",
+        "title": "Discord App Directory",
+        "word_count": 3,
+        "char_count": 41,
+        "link_count": 0,
+        "error": false
+    },
+    {
+        "id": 37,
+        "url": "https://discord.com/ads/quests-success-stories",
+        "title": "Discord Quests Success Stories",
+        "word_count": 371,
+        "char_count": 3856,
+        "link_count": 22,
+        "error": false
+    },
+    {
+        "id": 38,
+        "url": "https://discord.com/safety-parents",
+        "title": "Parent Hub | Discord Safety",
+        "word_count": 1179,
+        "char_count": 8961,
+        "link_count": 20,
+        "error": false
+    },
+    {
+        "id": 39,
+        "url": "https://discord.com/category/company",
+        "title": "Discord Blog",
+        "word_count": 731,
+        "char_count": 6399,
+        "link_count": 75,
+        "error": false
+    },
+    {
+        "id": 40,
+        "url": "https://discord.com/developers/build",
+        "title": "Build Where the World Plays | Discord",
+        "word_count": 889,
+        "char_count": 7379,
+        "link_count": 21,
+        "error": false
+    },
+    {
+        "id": 41,
+        "url": "https://discord.com/developers",
+        "title": "Discord for Developers",
+        "word_count": 600,
+        "char_count": 5589,
+        "link_count": 12,
+        "error": false
+    },
+    {
+        "id": 42,
+        "url": "https://discord.com/privacy",
+        "title": "Privacy Policy | Discord",
+        "word_count": 5243,
+        "char_count": 34505,
+        "link_count": 42,
+        "error": false
+    },
+    {
+        "id": 43,
+        "url": "https://discord.com/company",
+        "title": "About Discord | Our Mission and Story",
+        "word_count": 816,
+        "char_count": 6586,
+        "link_count": 7,
+        "error": false
+    },
+    {
+        "id": 44,
+        "url": "https://discord.com/developers/applications",
+        "title": "Discord Developer Portal",
+        "word_count": 3,
+        "char_count": 49,
+        "link_count": 0,
+        "error": false
+    },
+    {
+        "id": 45,
+        "url": "https://discord.com/developers/social-sdk",
+        "title": "Discord Social SDK",
+        "word_count": 1262,
+        "char_count": 9511,
+        "link_count": 9,
+        "error": false
+    },
+    {
+        "id": 46,
+        "url": "https://discord.com/blog",
+        "title": "Discord Blog",
+        "word_count": 986,
+        "char_count": 8554,
+        "link_count": 90,
+        "error": false
+    },
+    {
+        "id": 47,
+        "url": "https://discord.com/ads/quests",
+        "title": "Discord Quests - Advertise Where the World Plays",
+        "word_count": 643,
+        "char_count": 5823,
+        "link_count": 12,
+        "error": false
+    },
+    {
+        "id": 48,
+        "url": "https://discord.com/college",
+        "title": "Discord for College | University Clubs and Organizations",
+        "word_count": 793,
+        "char_count": 7262,
+        "link_count": 80,
+        "error": false
+    },
+    {
+        "id": 49,
+        "url": "https://discord.com/category/community",
+        "title": "Discord Blog",
+        "word_count": 573,
+        "char_count": 6069,
+        "link_count": 60,
+        "error": false
+    },
+    {
+        "id": 50,
+        "url": "https://discord.com/login",
+        "title": "Discord",
+        "word_count": 1,
+        "char_count": 30,
+        "link_count": 0,
+        "error": false
+    },
+    {
+        "id": 51,
+        "url": "https://discord.com/community-use-cases",
+        "title": "Community Use Cases | Discord",
+        "word_count": 2796,
+        "char_count": 19120,
+        "link_count": 12,
+        "error": false
+    },
+    {
+        "id": 52,
+        "url": "https://discord.com/community/securing-your-server",
+        "title": "Securing Your Discord Server & Creating a Safe Community",
+        "word_count": 1927,
+        "char_count": 14165,
+        "link_count": 53,
+        "error": false
+    },
+    {
+        "id": 53,
+        "url": "https://discord.com/community/identifying-assigning-moderators",
+        "title": "Identifying and Assigning Server Moderators",
+        "word_count": 1990,
+        "char_count": 14300,
+        "link_count": 55,
+        "error": false
+    },
+    {
+        "id": 54,
+        "url": "https://discord.com/community/getting-set-up",
+        "title": "Setting Up Your Discord Server - How to Get Started",
+        "word_count": 1805,
+        "char_count": 13077,
+        "link_count": 54,
+        "error": false
+    },
+    {
+        "id": 55,
+        "url": "https://discord.com/community/automating-moderation-community-support",
+        "title": "Moderation & Community Support to Manage Your Server",
+        "word_count": 2318,
+        "char_count": 16622,
+        "link_count": 52,
+        "error": false
+    },
+    {
+        "id": 56,
+        "url": "https://discord.com/community-build",
+        "title": "Build Community | Discord",
+        "word_count": 11242,
+        "char_count": 71051,
+        "link_count": 31,
+        "error": false
+    },
+    {
+        "id": 57,
+        "url": "https://discord.com/community/what-is-discord",
+        "title": "What is Discord?",
+        "word_count": 2821,
+        "char_count": 18558,
+        "link_count": 50,
+        "error": false
+    },
+    {
+        "id": 58,
+        "url": "https://discord.com/community-grow",
+        "title": "Grow Community | Discord",
+        "word_count": 13866,
+        "char_count": 86082,
+        "link_count": 30,
+        "error": false
+    },
+    {
+        "id": 59,
+        "url": "https://discord.com/community-manage-engage",
+        "title": "Manage and Engage Community | Discord",
+        "word_count": 17937,
+        "char_count": 110846,
+        "link_count": 25,
+        "error": false
+    },
+    {
+        "id": 60,
+        "url": "https://discord.com/community/growing-and-promoting-your-discord-server",
+        "title": "Growing and Promoting Your Discord Server",
+        "word_count": 1481,
+        "char_count": 11087,
+        "link_count": 49,
+        "error": false
+    },
+    {
+        "id": 61,
+        "url": "https://discord.com/community-moderation-safety",
+        "title": "Community Safety and Moderation | Discord",
+        "word_count": 27918,
+        "char_count": 172811,
+        "link_count": 26,
+        "error": false
+    },
+    {
+        "id": 62,
+        "url": "https://discord.com/community-courses",
+        "title": "Community Educational Courses | Discord",
+        "word_count": 240,
+        "char_count": 3047,
+        "link_count": 3,
+        "error": false
+    },
+    {
+        "id": 63,
+        "url": "https://discord.com/admin-newsletter",
+        "title": "Get Bonus Resources | Discord Community",
+        "word_count": 210,
+        "char_count": 2874,
+        "link_count": 0,
+        "error": false
+    },
+    {
+        "id": 64,
+        "url": "https://discord.com/community/regularly-engaging-your-community",
+        "title": "Regularly Engaging Your Community",
+        "word_count": 1408,
+        "char_count": 10746,
+        "link_count": 48,
+        "error": false
+    },
+    {
+        "id": 65,
+        "url": "https://discord.com/community/community-management-the-basics",
+        "title": "The Basics of a Safe, Active Server",
+        "word_count": 2151,
+        "char_count": 14812,
+        "link_count": 46,
+        "error": false
+    },
+    {
+        "id": 66,
+        "url": "https://discord.com/community/building-a-home-for-your-community",
+        "title": "Making a Great Server & Building a Home for Your Community",
+        "word_count": 2005,
+        "char_count": 14325,
+        "link_count": 44,
+        "error": false
+    },
+    {
+        "id": 67,
+        "url": "https://discord.com/community/onboarding-new-members",
+        "title": "Onboarding New Members & Helping Your Community Find Its Way",
+        "word_count": 2439,
+        "char_count": 16565,
+        "link_count": 43,
+        "error": false
+    },
+    {
+        "id": 68,
+        "url": "https://discord.com/community/growing-your-community-through-server-insights",
+        "title": "Growing Your Community Through Server Insights & Analytics",
+        "word_count": 1743,
+        "char_count": 12766,
+        "link_count": 43,
+        "error": false
+    },
+    {
+        "id": 69,
+        "url": "https://discord.com/streamkit#the-apps",
+        "title": "Enhance Your Discord Server with StreamKit",
+        "word_count": 606,
+        "char_count": 5306,
+        "link_count": 1,
+        "error": false
+    },
+    {
+        "id": 70,
+        "url": "https://discord.com/blog/how-to-get-the-most-out-of-your-community-server",
+        "title": "How to get the most out of your Community Server",
+        "word_count": 2560,
+        "char_count": 18227,
+        "link_count": 110,
+        "error": false
+    },
+    {
+        "id": 71,
+        "url": "https://discord.com/safety/bullying-harassment-threats-policy-explainer",
+        "title": "Bullying, Harassment, and Threats Policy Explainer | Discord",
+        "word_count": 885,
+        "char_count": 8179,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 72,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-1.1",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 38,
+        "error": false
+    },
+    {
+        "id": 73,
+        "url": "https://discord.com/blog/an-update-on-our-mental-health-belonging-work",
+        "title": "An Update on our Mental Health & Belonging Work",
+        "word_count": 1165,
+        "char_count": 9731,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 74,
+        "url": "https://discord.com/safety-transparency-reports/2022-q4",
+        "title": "Discord Transparency Reports",
+        "word_count": 2883,
+        "char_count": 20631,
+        "link_count": 28,
+        "error": false
+    },
+    {
+        "id": 75,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-6",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 35,
+        "error": false
+    },
+    {
+        "id": 76,
+        "url": "https://discord.com/safety/360044157931-Working-with-law-enforcement",
+        "title": "How Discord Works with Law Enforcement",
+        "word_count": 2072,
+        "char_count": 16051,
+        "link_count": 90,
+        "error": false
+    },
+    {
+        "id": 77,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-9",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 33,
+        "error": false
+    },
+    {
+        "id": 78,
+        "url": "https://discord.com/safety/off-platform-behaviors-policy-explainer",
+        "title": "Off-Platform Behaviors Policy Explainer | Discord",
+        "word_count": 930,
+        "char_count": 8421,
+        "link_count": 90,
+        "error": false
+    },
+    {
+        "id": 79,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-3",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 31,
+        "error": false
+    },
+    {
+        "id": 80,
+        "url": "https://discord.com/safety/our-work-to-prevent-spam",
+        "title": "How Discord Prevents and Removes Spam | Discord Safety",
+        "word_count": 1058,
+        "char_count": 8930,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 81,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-10",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 29,
+        "error": false
+    },
+    {
+        "id": 82,
+        "url": "https://discord.com/safety/deceptive-practices-policy-explainer",
+        "title": "Deceptive Practices Policy Explainer | Discord",
+        "word_count": 1327,
+        "char_count": 11504,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 83,
+        "url": "https://discord.com/familycenter",
+        "title": "Family Center | Discord Safety",
+        "word_count": 849,
+        "char_count": 6872,
+        "link_count": 3,
+        "error": false
+    },
+    {
+        "id": 84,
+        "url": "https://discord.com/safety/gambling-policy-explainer",
+        "title": "Gambling Policy Explainer | Discord",
+        "word_count": 799,
+        "char_count": 7550,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 85,
+        "url": "https://discord.com/safety/misinformation-policy-explainer",
+        "title": "Misinformation Policy Explainer | Discord",
+        "word_count": 1158,
+        "char_count": 10176,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 86,
+        "url": "https://discord.com/safety/hateful-conduct-policy-explainer",
+        "title": "Hateful Conduct Policy Explainer | Discord",
+        "word_count": 1091,
+        "char_count": 9667,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 87,
+        "url": "https://discord.com/safety/violent-extremism-policy-explainer",
+        "title": "Violent Extremism Policy Explainer | Discord",
+        "word_count": 952,
+        "char_count": 8632,
+        "link_count": 91,
+        "error": false
+    },
+    {
+        "id": 88,
+        "url": "https://discord.com/safety/suicide-self-harm-policy-explainer",
+        "title": "Suicide and Self-Harm Policy Explainer | Discord",
+        "word_count": 865,
+        "char_count": 8066,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 89,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-5",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 21,
+        "error": false
+    },
+    {
+        "id": 90,
+        "url": "https://discord.com/safety/doxxing-policy-explainer",
+        "title": "Doxxing Policy Explainer | Discord",
+        "word_count": 791,
+        "char_count": 7478,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 91,
+        "url": "https://discord.com/safety/identity-authenticity-policy-explainer",
+        "title": "Identity and Authenticity Policy Explainer | Discord",
+        "word_count": 1069,
+        "char_count": 9275,
+        "link_count": 91,
+        "error": false
+    },
+    {
+        "id": 92,
+        "url": "https://discord.com/wip-private/safety-transparency",
+        "title": "No Title",
+        "word_count": 0,
+        "char_count": 0,
+        "link_count": 0,
+        "error": true
+    },
+    {
+        "id": 93,
+        "url": "https://discord.com/safety/child-safety-policy-explainer",
+        "title": "Teen and Child Safety Policy Explainer | Discord Safety",
+        "word_count": 1599,
+        "char_count": 12558,
+        "link_count": 90,
+        "error": false
+    },
+    {
+        "id": 94,
+        "url": "https://discord.com/safety/non-consensual-intimate-media-policy-explainer",
+        "title": "Non-Consensual Adult Intimate Media Policy Explainer | Discord",
+        "word_count": 987,
+        "char_count": 8998,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 95,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-4",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 15,
+        "error": false
+    },
+    {
+        "id": 96,
+        "url": "https://discord.com/safety/dangerous-regulated-goods-policy-explainer",
+        "title": "Dangerous and Regulated Goods Policy Explainer | Discord",
+        "word_count": 792,
+        "char_count": 7474,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 97,
+        "url": "https://discord.com/safety/violence-graphic-content-policy-explainer",
+        "title": "Violence and Graphic Content Policy Explainer | Discord",
+        "word_count": 930,
+        "char_count": 8427,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 98,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 12,
+        "error": false
+    },
+    {
+        "id": 99,
+        "url": "https://discord.com/safety/sexual-content-policy-explainer",
+        "title": "Sexual Content Policy Explainer | Discord",
+        "word_count": 1247,
+        "char_count": 10244,
+        "link_count": 89,
+        "error": false
+    },
+    {
+        "id": 100,
+        "url": "https://discord.com/safety-transparency-reports/2024-h1#title-7",
+        "title": "Discord Transparency Reports",
+        "word_count": 2962,
+        "char_count": 21872,
+        "link_count": 10,
+        "error": false
+    },
+    {
+        "id": 101,
+        "url": "https://discord.com/safety/safety-reporting-network-commitment",
+        "title": "Safety Reporting Network: A Commitment to Safety and Collaboration | Discord",
+        "word_count": 769,
+        "char_count": 7256,
+        "link_count": 89,
         "error": false
     }
 ]

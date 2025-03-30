@@ -116,7 +116,7 @@
         <form onsubmit="{(e) => {e.preventDefault(); handleSubmit(); paramsToCrawling()}}">
           {#each crawlerInput as param}
             <label>
-              {param.label}:
+              <span>{param.label}:</span>
               <input type={param.type} bind:value={crawlerParams[param.id]} placeholder={param.example} requirement={param.required} oninput={(e) => dynamicCrawlerParamUpdate(param.id, e.target.value)}/>
             </label>
           {/each}
