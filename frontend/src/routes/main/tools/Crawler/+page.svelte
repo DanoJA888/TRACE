@@ -55,6 +55,7 @@
   function resultsToParams(){
     displayingResults = false;
     acceptingParams = true;
+    crawlResult = [];
   }
 
   //instead of hard coded values in dict, dynamically add items to dictionary
