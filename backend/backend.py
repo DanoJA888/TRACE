@@ -6,6 +6,7 @@ from typing import Optional
 import logging
 from fastapi.responses import StreamingResponse
 import json
+from fuzzer import Fuzzer
 
 #logs whenever an endpoint is hit using logger.info
 logging.basicConfig(level=logging.INFO)
@@ -39,6 +40,32 @@ async def launchCrawl(request: CrawlRequest):
             yield json.dumps(update) + "\n"
 
     return StreamingResponse(crawl_stream(), media_type="application/json")
+    
+# Add fuzzer request model --- FUZZER
+class FuzzRequest(BaseModel):
+    target_url: str
+    word_list: Optional[str] = ''
+    cookies: Optional[str] = ''
+    hide_status: Optional[str] = ''
+    show_status: Optional[str] = ''
+    http_method: str = 'GET'
+    filter_by_content_length: Optional[str | int] = ''
+    proxy: str = ''
+    additional_parameters: Optional[str] = ''
+    show_results: bool = True  # New parameter for toggling result visibility
+
+# Add fuzzer endpoint
+@app.post("/fuzzer")
+async def launchFuzz(request: FuzzRequest):
+    fuzzer = Fuzzer()
+    params_dict = request.model_dump()
+    logger.info(request)
+
+    async def fuzz_stream():
+        async for update in fuzzer.run_scan(params_dict):
+            yield json.dumps(update) + "\n"
+
+    return StreamingResponse(fuzz_stream(), media_type="application/json")
 
 #helps frontend and backend communicate (different ports for fastAPI and sveltekit)
 app.add_middleware(
