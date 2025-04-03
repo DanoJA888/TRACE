@@ -1,5 +1,5 @@
 <script>
-  
+  let err = ""
   let wordlistInput = { id: "wordlist", type: "file", accept: ".txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true }
 
   let usernameInput = [
@@ -144,6 +144,7 @@
       }
     } catch (error) {
         console.error("Request failed:", error);
+        err = error;
     }
   }
 </script>
@@ -200,6 +201,7 @@
       {#if generating}
         <div>
           <h2>Generating Credentials...</h2>
+          <p>{err}</p>
         </div>
       {/if}
 
