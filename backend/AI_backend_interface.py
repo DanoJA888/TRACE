@@ -16,30 +16,6 @@ logger = logging.getLogger(__name__)
 #creates endpoints
 app = FastAPI(title="Routes")
 
-def extract_services_sites(json_path: str = 'outputs_crawler/crawl_results.json',
-                           csv_path: str = 'services_sites/services_sites.csv'):
-    # Ensure output directory exists
-    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
-
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-
-        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(['id', 'website'])  # Header
-            for entry in data:
-                writer.writerow([entry.get('id'), entry.get('url')])
-
-        print(f"CSV created at: {csv_path}")
-        return True
-
-    except FileNotFoundError:
-        print(f"File not found: {json_path}")
-        return False
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        return False    
 
 
 class AIParams(BaseModel):
