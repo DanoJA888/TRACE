@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-import time, json
+import time, json, os
 from collections import deque
 
 class Crawler:
@@ -126,7 +126,10 @@ class Crawler:
 
     def save_json(self):
         try:
-            with open(self.json_filename, 'w') as json_file:
+
+            file_path = os.path.join("outputs_crawler", self.json_filename)  # Save in outputs_crawler
+            
+            with open(file_path, 'w') as json_file:
                 crawled_data = []
                 for index, entry in enumerate(self.crawled_urls, start=1): #adding enumeration so we have workign ID 
                     if 'url' in entry:
@@ -142,6 +145,7 @@ class Crawler:
                     else:
                         print(f"Warning: 'url' key missing in entry: {entry}") #trying to find where that empty URL is coming from
                 json.dump(crawled_data, json_file, indent = 4)
+            print(f"Results saved to {file_path}") #quick print to know where it saved 
         except Exception as e:
             print(f"Error saving JSON: {e}")
 
