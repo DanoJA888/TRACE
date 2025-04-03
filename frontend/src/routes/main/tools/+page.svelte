@@ -5,6 +5,9 @@
     function gotoCrawler() {
       window.location.href = "/main/tools/Crawler";
     }
+    function gotoFuzzer() {
+      window.location.href = "/main/tools/Fuzzer";
+    }
 
     function gotoAI() {
       window.location.href = "/main/tools/AI";
@@ -14,7 +17,9 @@
     
     <nav>
       <button on:click={gotoCrawler}>Crawler</button>
-      <br>
+      
+      <button on:click={gotoFuzzer}>Fuzzer</button>
+      
       <button on:click={gotoAI}>AI Credential Generator</button>
     
     </nav>

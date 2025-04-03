@@ -9,40 +9,37 @@ import mdp3
 from mdp3 import CredentialGeneratorMDP, WebScraper, CredentialMDP
 from typing import Dict, Optional
 import json
-
+import csv
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 #creates endpoints
 app = FastAPI(title="Routes")
 
-@app.post("/upload-wordlist")
-async def upload_wordlist(file: UploadFile = File(...)):
-    # Save to local path so you can use it in mdp3
-    filename = f"./wordlist_uploads/{file.filename}"
-    os.makedirs("./wordlist_uploads", exist_ok=True)
-    with open(filename, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    return {"path": filename}
+def extract_services_sites(json_path: str = 'outputs_crawler/crawl_results.json',
+                           csv_path: str = 'services_sites/services_sites.csv') -> bool:
+    # Ensure the folder for the CSV exists
+    os.makedirs(os.path.dirname(csv_path), exist_ok=True)
 
-class CredentialRequest(BaseModel):
-    # path or name of the wordlist if needed
-    wordlist_path: Optional[str] = ""
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
 
-    # toggles for user
-    user_include_char: bool = True
-    user_include_num: bool = True
-    user_include_sym: bool = True
-    user_length: int = 12
+        with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            writer.writerow(['id', 'website'])
+            for entry in data:
+                writer.writerow([entry.get('id'), entry.get('url')])
 
-    # toggles for password
-    pass_include_char: bool = True
-    pass_include_num: bool = True
-    pass_include_sym: bool = True
-    pass_length: int = 12
+        return True  # Success
 
-    # how many credentials to generate
-    count: int = 10
+    except FileNotFoundError:
+        return False  # JSON file was not found
+
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return False  # Handle any other issues
+
 
 class AIParams(BaseModel):
     params: Dict[str, str | bool | int] = Field(default_factory=dict)
@@ -53,11 +50,6 @@ async def generate_credentials_endpoint(file: UploadFile = File(None), data: str
     #logging.info(f"Received credential generation request: {req}")
     file_word = ""
     try:
-        """   temp = json.loads(data)
-        print(temp)
-        # Parse JSON data from form
-        ai_params = AIParams(params=json.loads(data))
-        print(ai_params)"""
         if file:
             # Save the uploaded file
             file_location = f"./wordlist_uploads/{file.filename}"
@@ -69,9 +61,11 @@ async def generate_credentials_endpoint(file: UploadFile = File(None), data: str
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-
-
-    urls = mdp3.load_urls_from_csv("site_list.csv")
+    craw_state = extract_services_sites() 
+    if (craw_state == False):
+        return {"crawler": craw_state}
+       
+    urls = mdp3.load_urls_from_csv("services_sites/services_sites.csv")
     csv_path = "./csv_uploads/web_text.csv"
     scrapper = WebScraper(urls)
     scrapper.generate_csv(csv_path)
@@ -96,23 +90,6 @@ async def generate_credentials_endpoint(file: UploadFile = File(None), data: str
     for username, password in credentials:
         print(f"Username: {username}, Password: {password}")
     return {"credentials": credentials}
-
-    """
-    generator = CredentialGeneratorMDP(
-        csv_path ="site_list.csv",      # or wherever your CSV is
-        wordlist_path =req.wordlist_path or "wordlist_uploads\wordlist.txt",
-
-        user_include_char = req.user_include_char or True,
-        user_include_num = req.user_include_num or True,
-        user_include_sym = req.user_include_sym or True,
-        user_length = req.user_length or 12,
-
-        pass_include_char = req.pass_include_char or True,
-        pass_include_num = req.pass_include_num or True,
-        pass_include_sym = req.pass_include_sym or True,
-        pass_length = req.pass_length or 12
-    )"""
-
 
 
 # Add CORS
