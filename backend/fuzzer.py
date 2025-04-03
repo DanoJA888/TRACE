@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 scan_logger = logging.getLogger(__name__)
 
 class Fuzzer:
-    def __init__(self, output_filename='fuzz_results.json'):
+    def __init__(self, output_filename='outputs_fuzzer/fuzz_results.json'):#place json file inside outputs folder
         self.scan_target = ''
         self.payloads = []
         self.auth_cookies = {}
