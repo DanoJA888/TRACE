@@ -661,6 +661,7 @@
     padding: 8px 12px;
     text-align: left;
     border-bottom: 1px solid #ddd;
+    color: #333; /* Ensure text is visible */
   }
 
   th {
