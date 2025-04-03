@@ -1,4 +1,4 @@
-<h1> This is the Tools screen </h1>
+<h1> Tools </h1>
 
 <script>
 
@@ -16,10 +16,21 @@
     </script>
     
     <nav>
-      <button on:click={gotoCrawler}>Crawler</button>
-      
-      <button on:click={gotoFuzzer}>Fuzzer</button>
-      
-      <button on:click={gotoAI}>AI Credential Generator</button>
-    
+      <div class="toolsConfigPage">
+        <div class="row">
+          <span> Crawler </span>
+          <button on:click={gotoCrawler}>Select</button>
+        </div>
+
+        <div class="row">
+          <span> Fuzzer </span>
+          <button on:click={gotoFuzzer}>Select</button>
+        </div>
+
+        <div class="row">
+          <span> AI Credential Generator </span>
+          <button on:click={gotoAI}>Select</button>
+        </div>
+        
+      </div>
     </nav>

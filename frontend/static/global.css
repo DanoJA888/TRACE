@@ -1,7 +1,37 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* Ensure the main container is centered */
 .crawlerConfigPage {
   width: 600px;  /* Adjusted width to give more space */
   margin: 10vh auto; /* Centered with some spacing from the top */
+  padding: 20px;
+  
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #333; /* Set text color to dark gray for better contrast */
+}
+
+/* Creates a container for tools, modeled after the crawlerConfigPage */
+.toolsConfigPage {
+  width: 600px;
+  margin: 10vh auto;
   padding: 20px;
   background: #ffffff;
   border-radius: 8px;
@@ -9,6 +39,27 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: #333;
+}
+
+.toolsConfigPage .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.toolsConfigPage .row span {
+  font-weight: bold;
+}
+
+.toolsConfigPage .row button {
+  max-width: 100px;
+  padding: 5px 10px;
+  font-size: 14px;
 }
 
 /* Center the form */
@@ -57,19 +108,28 @@ input {
 
 /* Button styling */
 button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+
   width: 100%;
   max-width: 450px; /* Matches input size */
-  padding: 12px;
-  background-color: #51f1c9;
   color: white;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
 }
 
 button:hover {
-  background-color: #51f1c9;
+  background-color: #646cff;
+}
+
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
 }
 
 /* Results Table Styling */
