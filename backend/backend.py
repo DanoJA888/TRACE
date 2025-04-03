@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from crawler import Crawler
@@ -7,16 +7,18 @@ import logging
 from fastapi.responses import StreamingResponse
 import json
 from fuzzer import Fuzzer
+import os
+import shutil
 
-#logs whenever an endpoint is hit using logger.info
+# logs whenever an endpoint is hit using logger.info
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-#creates endpoints
+# creates endpoints
 app = FastAPI(title="Routes")
 
-#params for crawler (optionals for optional params,
-#both int | str in case they type into box and then delete input, prevents error and request goes through)
+# params for crawler (optionals for optional params,
+# both int | str in case they type into box and then delete input, prevents error and request goes through)
 # note, with this set up, all inputs become strings, will handle in crawler process
 class CrawlRequest(BaseModel):
     url: str
@@ -27,20 +29,20 @@ class CrawlRequest(BaseModel):
     proxy: str = ''
 
 '''
-  for now basically just launches the crawl based on the form submitted by the user
+ for now basically just launches the crawl based on the form submitted by the user
 '''
 @app.post("/crawler")
 async def launchCrawl(request: CrawlRequest):
     crawler = Crawler()
     params_dict = request.model_dump()
     logger.info(request)
-
+    
     async def crawl_stream():
         async for update in crawler.start_crawl(params_dict):
             yield json.dumps(update) + "\n"
-
-    return StreamingResponse(crawl_stream(), media_type="application/json")
     
+    return StreamingResponse(crawl_stream(), media_type="application/json")
+
 # Add fuzzer request model --- FUZZER
 class FuzzRequest(BaseModel):
     target_url: str
@@ -54,20 +56,40 @@ class FuzzRequest(BaseModel):
     additional_parameters: Optional[str] = ''
     show_results: bool = True  # New parameter for toggling result visibility
 
-# Add fuzzer endpoint
+# Add fuzzer endpoint 
 @app.post("/fuzzer")
 async def launchFuzz(request: FuzzRequest):
     fuzzer = Fuzzer()
     params_dict = request.model_dump()
     logger.info(request)
-
+    
     async def fuzz_stream():
         async for update in fuzzer.run_scan(params_dict):
             yield json.dumps(update) + "\n"
-
+    
     return StreamingResponse(fuzz_stream(), media_type="application/json")
 
-#helps frontend and backend communicate (different ports for fastAPI and sveltekit)
+# also need to Add wordlist upload endpoint
+@app.post("/upload-wordlist")
+async def upload_wordlist(file: UploadFile = File(...)):
+    try:
+        # Create directory if needed
+        os.makedirs("./wordlist_uploads", exist_ok=True)
+        
+        # Save filename to local path
+        filename = f"./wordlist_uploads/{file.filename}"
+        
+        with open(filename, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+        
+        logger.info(f"Wordlist file uploaded: {filename}")
+        return {"path": filename}
+    
+    except Exception as e:
+        logger.error(f"Error uploading wordlist file {str(e)}")
+        return {"error !": str(e)}, 500
+
+# helps frontend and backend communicate (different ports for fastAPI and sveltekit)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

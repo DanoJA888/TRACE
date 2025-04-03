@@ -3,7 +3,8 @@ from urllib.parse import urljoin, urlparse, parse_qs, urlencode
 import time
 import json
 from collections import deque
-import logging# to save json file 
+import logging
+import os
 
 # Configure  fuzzer logging
 logging.basicConfig(level=logging.INFO)
@@ -183,26 +184,59 @@ class Fuzzer:
     def configure_scan_parameters(self, scan_params):
         self.scan_target = scan_params.get('target_url', '')
 
-        # Handling word list possibilities a file path, a list of strings, or a comma-separated string
+        # Handling word list possibilities - file path, list of strings, or comma-separated string
         if 'word_list' in scan_params and scan_params['word_list']:
             word_list_param = scan_params['word_list']
+            scan_logger.info(f"Processing wordlist parameter: {word_list_param}")
+            
             if isinstance(word_list_param, list):
                 self.payloads = word_list_param
+                scan_logger.info(f"Using list of {len(self.payloads)} payloads")
             elif isinstance(word_list_param, str):
-                if ',' in word_list_param:
-                    #comma-separated list
-                    self.payloads = [word.strip() for word in word_list_param.split(',')]
-                elif '\n' in word_list_param:
-                    # newline separated list
-                    self.payloads = [word.strip() for word in word_list_param.split('\n') if word.strip()]
-                else:
-                    # read from file if present 
+                # Check if it's a file path, particularly from file upload
+                if (word_list_param.startswith('./wordlist_uploads/') or 
+                    word_list_param.startswith('wordlist_uploads/') or 
+                    os.path.exists(word_list_param)):
                     try:
                         with open(word_list_param, 'r') as file:
                             self.payloads = [line.strip() for line in file if line.strip()]
-                    except:
-                        # else it is a single item
+                        scan_logger.info(f"Loaded {len(self.payloads)} payloads from file: {word_list_param}")
+                    except Exception as e:
+                        scan_logger.error(f"Error reading wordlist file: {e}")
+                        self.payloads = [word_list_param]  # Use as single item if error occurs
+                elif ',' in word_list_param:
+                    # comma-separated list
+                    self.payloads = [word.strip() for word in word_list_param.split(',')]
+                    scan_logger.info(f"Using comma-separated list of {len(self.payloads)} payloads")
+                elif '\n' in word_list_param:
+                    # newline separated list
+                    self.payloads = [word.strip() for word in word_list_param.split('\n') if word.strip()]
+                    scan_logger.info(f"Using newline-separated list of {len(self.payloads)} payloads")
+                else:
+                    # Look for the file again with different path formats
+                    possible_paths = [
+                        word_list_param,
+                        f"./wordlist_uploads/{word_list_param}",
+                        f"wordlist_uploads/{word_list_param}",
+                        f"./{word_list_param}"
+                    ]
+                    
+                    file_found = False
+                    for path in possible_paths:
+                        if os.path.exists(path):
+                            try:
+                                with open(path, 'r') as file:
+                                    self.payloads = [line.strip() for line in file if line.strip()]
+                                scan_logger.info(f"Loaded {len(self.payloads)} payloads from alternate path: {path}")
+                                file_found = True
+                                break
+                            except Exception as e:
+                                scan_logger.error(f"Error reading wordlist at path {path}: {e}")
+                    
+                    if not file_found:
+                        # Single item
                         self.payloads = [word_list_param]
+                        scan_logger.info(f"Using single payload: {word_list_param}")
 
         # Parse cookies from string
         if 'cookies' in scan_params and scan_params['cookies']:
