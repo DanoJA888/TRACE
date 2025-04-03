@@ -54,6 +54,32 @@
     acceptingParams = true;
   }
 
+  function regenerateCredentials(){
+    displayingResults = false;
+    generating = true;
+    handleSubmit();
+  }
+
+  function saveWordlist(){
+    let textContent = "Username,Password\n";
+    textContent += aiResult[0].credentials.map(([username, password]) => `${username},${password}`).join("\n");
+
+    // Create a Blob and Object URL
+    const blob = new Blob([textContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary download link
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "GeneratedWordlist.txt"; // Default file name
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Cleanup
+    URL.revokeObjectURL(url);
+  }
+
   function dynamicAiParamUpdate(id, value) {
     aiParams[id] = value;
     console.log(`Updated ${id}: ${value}`);
@@ -97,6 +123,22 @@
 
       if (response.ok) {
         console.log("Generating...")
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+
+        while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true });
+          const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
+          aiResult = [...aiResult, ...updates];
+
+          console.log("Processed Credentials...", aiResult[0].credentials);
+          }
+        }
+        generatingToResults();
       } else {
         console.error("Error starting generate:", response.statusText);
       }
@@ -163,9 +205,26 @@
 
       {#if displayingResults}
         <h2>AI Credential Generator Results</h2>
-        <div>
-          <button onclick={(e) => { resultsToParams()}}>Back to Param Setup</button>
-        </div>
+        <div class="results-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Password</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each aiResult[0].credentials as [username, password], index}
+              <tr>
+                <td>{username}</td>
+                <td>{password}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+        <button onclick={(e) => {resultsToParams()}}>Back to Param Setup</button>
+        <button onclick={(e) => {saveWordlist()}}>Save Wordlist</button>
+      </div>
       {/if}
 
     </div>
