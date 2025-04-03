@@ -1,4 +1,4 @@
-\<script>
+<script>
   let wordlistInput = { id: "word_list", type: "file", accept: ".json, .txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true };
 
   let fuzzerInput = [
@@ -468,6 +468,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: pointer;
+    color: #333; /* Changed font color */
   }
 
   form {
