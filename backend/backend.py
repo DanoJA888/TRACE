@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, Form,  HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from crawler import Crawler
 from typing import Optional
 import logging
