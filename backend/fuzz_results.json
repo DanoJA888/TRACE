@@ -4,9 +4,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133020,
+        "chars": 133030,
         "payload": "test",
-        "length": 134030,
+        "length": 134040,
         "error": false
     },
     {
@@ -14,9 +14,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133027,
+        "chars": 133037,
         "payload": "admin",
-        "length": 134037,
+        "length": 134047,
         "error": false
     },
     {
@@ -24,9 +24,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133048,
+        "chars": 133058,
         "payload": "password",
-        "length": 134058,
+        "length": 134068,
         "error": false
     },
     {
@@ -34,19 +34,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133034,
+        "chars": 133044,
         "payload": "123456",
-        "length": 134044,
-        "error": false
-    },
-    {
-        "id": 5,
-        "response": 200,
-        "lines": 1103,
-        "words": 6907,
-        "chars": 133349,
-        "payload": "<script>alert(1)</script>",
-        "length": 134359,
+        "length": 134054,
         "error": false
     }
 ]

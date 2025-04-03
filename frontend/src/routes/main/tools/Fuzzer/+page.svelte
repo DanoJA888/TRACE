@@ -231,18 +231,6 @@
               {/if}
             {/each}
 
-            <div class="form-group checkbox-group">
-              <label for="show_results">
-                Show Results in Real-time:
-                <input
-                  id="show_results"
-                  type="checkbox"
-                  bind:checked={fuzzerParams.show_results}
-                  on:change={(e) => dynamicFuzzerParamUpdate('show_results', e.target.checked)}
-                />
-              </label>
-              <span class="help-text">Uncheck to hide results until scan completes</span>
-            </div>
 
             <button type="submit">Submit</button>
           </form>

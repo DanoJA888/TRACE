@@ -3,7 +3,7 @@ from urllib.parse import urljoin, urlparse, parse_qs, urlencode
 import time
 import json
 from collections import deque
-import logging
+import logging# to save json file 
 
 # Configure  fuzzer logging
 logging.basicConfig(level=logging.INFO)
@@ -39,7 +39,7 @@ class Fuzzer:
                 key, value = item.strip().split('=', 1)
                 cookies[key] = value
         return cookies
-
+#using request to test fuzzer functionality
     def send_request(self, url, payload, method):#Send request with payload and return response details
         try:
             headers = {'User-Agent': 'TRACE Fuzzer 1.0'}
@@ -129,7 +129,7 @@ class Fuzzer:
     async def run_scan(self, scan_parameters):#start fuzzer with user inputs params
         self.configure_scan_parameters(scan_parameters)
         if not self.payloads:# if empty this will be default 
-            self.payloads = ['test', 'admin', 'password', '123456', '<script>alert(1)</script>']
+            self.payloads = ['test', 'admin', 'password', '123456']
         self.number_of_payloads = len(self.payloads)
 
         start = time.time()
@@ -181,7 +181,6 @@ class Fuzzer:
         self.save_report_to_json()
 
     def configure_scan_parameters(self, scan_params):
-        """Configure fuzzer with the provided parameters"""
         self.scan_target = scan_params.get('target_url', '')
 
         # Handling word list possibilities a file path, a list of strings, or a comma-separated string
