@@ -1,11 +1,47 @@
 [
     {
         "id": 1,
-        "url": "https://apple/com",
-        "title": "No Title",
-        "word_count": 0,
-        "char_count": 0,
-        "link_count": 0,
-        "error": true
+        "url": "https://apple.com",
+        "title": "Apple",
+        "word_count": 988,
+        "char_count": 6624,
+        "link_count": 85,
+        "error": false
+    },
+    {
+        "id": 2,
+        "url": "https://apple.com/ipad-air/",
+        "title": "iPad Air - Apple",
+        "word_count": 4296,
+        "char_count": 31465,
+        "link_count": 115,
+        "error": false
+    },
+    {
+        "id": 3,
+        "url": "https://apple.com/retail/business/",
+        "title": "Small Business and Apple Retail - Apple",
+        "word_count": 562,
+        "char_count": 3850,
+        "link_count": 74,
+        "error": false
+    },
+    {
+        "id": 4,
+        "url": "https://apple.com/entertainment/",
+        "title": "Entertainment - Services - Apple",
+        "word_count": 615,
+        "char_count": 4899,
+        "link_count": 68,
+        "error": false
+    },
+    {
+        "id": 5,
+        "url": "https://apple.com/newsroom/",
+        "title": "Newsroom - Apple",
+        "word_count": 749,
+        "char_count": 5650,
+        "link_count": 97,
+        "error": false
     }
 ]
