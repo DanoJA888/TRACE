@@ -1,4 +1,6 @@
 <script>
+	import { preventDefault } from "svelte/legacy";
+
   let crawlerInput = [
     { id: "url", label: "Target URL", type: "text", value: "", example: "Ex: https://example.com", required: true },
     { id: "depth", label: "Crawl Depth", type: "number", value: "", example: "Ex: 2", required: false },
@@ -28,6 +30,7 @@
   let processedRequests = 0;
   let filteredRequests = 0;
   let requestsPerSecond = 0;
+  let activeController = null;
 
   function startTimer() {
     startTime = Date.now();
@@ -64,13 +67,31 @@
     console.log(crawlerParams[id])
   }
   
+  async function stopCrawler(){
+    if (activeController) {
+      console.log("Aborting active request");
+      activeController.abort();
+    }
+    const response = await fetch('http://localhost:8000/stop_crawler', {
+      method : 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
+    if(response.ok){
+      console.log("Stopped yay");
+    } else {
+      console.error("Error stoping crawler:", response.statusText);
+    }
+  }
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
     paramsToCrawling();
     startTimer(); // Start the timer
     crawledPages = 0; // Reset progress
     totalPages = crawlerParams.max_pages || 0; // Set total pages if max_pages is defined
+    activeController = new AbortController(); // used to stop real time results...
 
     const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
       method: 'POST', 
@@ -78,6 +99,7 @@
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(crawlerParams),
+      signal : activeController.signal
     });
 
     if (response.ok) {
@@ -86,19 +108,34 @@
       let done = false;
 
       while (!done) {
-        const { value, done: readerDone } = await reader.read();
-        done = readerDone;
-        if (value) {
-          const chunk = decoder.decode(value, { stream: true });
-          const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
-          crawlResult = [...crawlResult, ...updates];
-          crawledPages += updates.length; // Update progress
+        try{
+          if(activeController.signal.aborted){
+            break;
+          }
+          console.log("not stopping :(");
+          const { value, done: readerDone } = await reader.read();
+          done = readerDone;
+          if (value) {
+            const chunk = decoder.decode(value, { stream: true });
+            const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
+            crawlResult = [...crawlResult, ...updates];
+            crawledPages += updates.length; // Update progress
 
-          // Update real-time metrics
-          processedRequests += updates.length;
-          filteredRequests = crawlResult.filter((item) => !item.error).length;
-          requestsPerSecond = (processedRequests / ((Date.now() - startTime) / 1000)).toFixed(2);
+            // Update real-time metrics
+            processedRequests += updates.length;
+            filteredRequests = crawlResult.filter((item) => !item.error).length;
+            requestsPerSecond = (processedRequests / ((Date.now() - startTime) / 1000)).toFixed(2);
+          }
+        } catch(err) {
+          if(err.name === 'AbortError'){
+            done = true;
+            console.log("real time results stopped to end crawl");
+          }
+          else{
+            console.error('Error: ', '')
+          }
         }
+        
       }
 
       crawlingToResults();
@@ -172,6 +209,7 @@
             </tbody>
           </table>
         </div>
+        <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
       </div>
     {/if}
 
