@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import time, json, os
 from collections import deque
+import asyncio
 
 class Crawler:
     def __init__(self, json_filename='crawl_results.json'): #this feels incorrect but idk how else to handle json
@@ -19,6 +20,7 @@ class Crawler:
         self.crawled_urls = []
         self.json_filename = json_filename  # Initialize the JSON filename
         self.total_pages = 0  # Track total pages to crawl
+        self.stop_flag = False
         # here use the user agent string for requests
     #fine for backend
     def fetch_page(self, url): #fetching html data
@@ -78,52 +80,6 @@ class Crawler:
         # return url_info
         self.crawled_urls.append(crawled_urls_entry)
 
-    #fine for backend
-    def crawl(self): #crawler process using a queue
-        start = time.time()
-        queue = deque([self.start_url])  # Use a queue to track URLs
-        self.tree_structure[self.start_url] = []  # Initialize root in the tree
-
-        while queue:
-            url = queue.popleft()
-
-            #counts the depth of the current path and skips url if too deep
-            if self.depth != '' and url != self.start_url:
-                curr_url_path = urlparse(url).path
-                url_depth = curr_url_path.count('/')
-                if url_depth > self.depth:
-                    continue
-
-            if url in self.visited_urls:
-                continue
-
-            self.visited_urls.add(url)
-            error_occurred = self.fetch_page(url)
-
-            if not error_occurred:
-                response = requests.get(url, timeout=5, headers={"User-Agent": self.user_agent_string})
-                if response.status_code == 200:
-                    html = response.text  # Use the HTML content from the successful response
-                    parsed_html = BeautifulSoup(html, "html.parser")
-                    # sets up crawled urls info
-                    links = self.retreieve_links_to_crawl(parsed_html, url)
-                    self.retreive_url_info(parsed_html, url, links, error=False)  # No error occurred 
-                    self.tree_structure[url] = list(links)  # Store links in the tree structure
-                    queue.extend(links)  # Add found links to the queue
-                else:
-                    self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
-            else:
-                self.retreive_url_info(None, url, [], error=True) #True if error has indeed occurred
-
-            #if num pages crawled quota reached, strop crawling
-            if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
-                break
-
-        end = time.time()
-        self.crawl_time = end - start
-        self.requests_per_sec = round(((len(self.crawled_urls)) / self.crawl_time), 2)
-
-
     def save_json(self):
         try:
 
@@ -160,20 +116,9 @@ class Crawler:
     #             file.write(f"{parent_url} -> {', '.join(children)}\n")
 
 
-    '''
-    CLI START: calls all commented functions inside start_crawl to receive params, runs crawl with given params, stores and says that crawl is complete
-    FULL STACK START: 
-     - Will probably get rid of crawlinfo class maybe? dont see how it can work for front end [DONE]
-     - Will receive params in the method signature as opposed to asking [DONE]
-     - Will stop printing to command line and might instead log on inspect console (need to see how that can happen) [DONE]
-    '''
-
-    '''
-    potential new signature
-    async def start_crawl(url, depth = '', crawler_pages = '', user_agent = '', delay = '', proxy = '')
-    '''
     async def start_crawl(self, crawler_params): # starting crawling sequence
         self.configure_crawler(crawler_params)
+        self.stop_flag = False
         self.total_pages = self.max_pages if self.max_pages else float('inf')  # Set total pages
         start = time.time()
         queue = deque([self.start_url])
@@ -183,8 +128,12 @@ class Crawler:
         filtered_requests = 0
 
         while queue:
+            if self.stop_flag:
+                break
             url = queue.popleft()
 
+            # needed to stop poorly implemented real time printing
+            await asyncio.sleep(0) 
             #counts the depth of the current path and skips url if too deep
             if self.depth != '' and url != self.start_url:
                 curr_url_path = urlparse(url).path
@@ -224,6 +173,9 @@ class Crawler:
                 "requests_per_second": round(processed_requests / (time.time() - start), 2)
             }
 
+            #needed to stop poorly implemented real time printing
+            await asyncio.sleep(0)
+
             #if num pages crawled quota reached, strop crawling
             if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
                 break
@@ -232,6 +184,9 @@ class Crawler:
         self.crawl_time = end - start
         self.requests_per_sec = round(((len(self.crawled_urls)) / self.crawl_time), 2)
         self.save_json()
+
+    def stop_crawl(self):
+        self.stop_flag = True
 
     def configure_crawler(self, crawler_params):
         self.start_url = crawler_params['url']

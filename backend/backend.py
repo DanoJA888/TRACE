@@ -11,8 +11,8 @@ import os
 import shutil
 
 # logs whenever an endpoint is hit using logger.info
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger("asyncio")
 
 # creates endpoints
 app = FastAPI(title="Routes")
@@ -28,20 +28,35 @@ class CrawlRequest(BaseModel):
     delay: Optional[str | int] = ''
     proxy: str = ''
 
+crawler = None
 '''
  for now basically just launches the crawl based on the form submitted by the user
 '''
 @app.post("/crawler")
 async def launchCrawl(request: CrawlRequest):
+    global crawler
     crawler = Crawler()
     params_dict = request.model_dump()
     logger.info(request)
     
     async def crawl_stream():
-        async for update in crawler.start_crawl(params_dict):
-            yield json.dumps(update) + "\n"
+        try:
+            async for update in crawler.start_crawl(params_dict):
+                yield json.dumps(update) + "\n"
+        except Exception  as e:
+            logger.error(f"Error in crawl stream: {e}", exc_info=True)
     
     return StreamingResponse(crawl_stream(), media_type="application/json")
+
+# function that stops the execution of crawler when button is clicked
+@app.post("/stop_crawler")
+async def stopCrawler():
+    global crawler
+    if crawler:
+        crawler.stop_crawl()
+        crawler = Crawler()
+        return {"message" : "Crawl stopping requested"}
+    return {"message" : "nothing to stop"}
 
 # Add fuzzer request model --- FUZZER
 class FuzzRequest(BaseModel):
