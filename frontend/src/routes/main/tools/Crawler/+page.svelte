@@ -1,5 +1,5 @@
 <script>
-	import { preventDefault } from "svelte/legacy";
+  import { preventDefault } from "svelte/legacy";
 
   let crawlerInput = [
     { id: "url", label: "Target URL", type: "text", value: "", example: "Ex: https://example.com", required: true },
@@ -11,8 +11,13 @@
   ];
 
   let crawlerParams = {
-    url : ""
-  }
+    url: "",
+    depth: "",
+    max_pages: "",
+    user_agent: "",
+    delay: "",
+    proxy: ""
+  };
 
   let crawlResult = []; // Updated dynamically during crawling
 
@@ -32,6 +37,21 @@
   let requestsPerSecond = 0;
   let activeController = null;
 
+  let errorMessages = {
+    url: "",
+    max_pages: "",
+    depth: "",
+    delay: "",
+    proxy: "",
+  };
+
+  // Correct initialization of sortConfig
+  let sortConfig = {
+    column: "",
+    direction: 'asc'
+  };
+
+  // Start timer function
   function startTimer() {
     startTime = Date.now();
     timerInterval = setInterval(() => {
@@ -45,17 +65,17 @@
     elapsedTime = "0s";
   }
 
-  function paramsToCrawling(){
+  function paramsToCrawling() {
     acceptingParams = false;
     crawling = true;
   }
 
-  function crawlingToResults(){
+  function crawlingToResults() {
     crawling = false;
     displayingResults = true;
   }
 
-  function resultsToParams(){
+  function resultsToParams() {
     displayingResults = false;
     acceptingParams = true;
     crawlResult = [];
@@ -64,42 +84,78 @@
   //instead of hard coded values in dict, dynamically add items to dictionary
   function dynamicCrawlerParamUpdate(id, value) {
     crawlerParams[id] = value;
-    console.log(crawlerParams[id])
   }
-  
-  async function stopCrawler(){
+
+  async function stopCrawler() {
     if (activeController) {
-      console.log("Aborting active request");
       activeController.abort();
     }
     const response = await fetch('http://localhost:8000/stop_crawler', {
-      method : 'POST',
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    if(response.ok){
-      console.log("Stopped yay");
+    if (response.ok) {
+      console.log("Stopped successfully");
     } else {
-      console.error("Error stoping crawler:", response.statusText);
+      console.error("Error stopping crawler:", response.statusText);
     }
   }
+
+  // Validate input parameters before starting crawl
+  function validateParams() {
+    let isValid = true;
+
+    // Reset error messages
+    Object.keys(errorMessages).forEach(key => {
+      errorMessages[key] = "";
+    });
+
+    if (!crawlerParams.url) {
+      errorMessages.url = "URL is required!";
+      isValid = false;
+    }
+
+    if (crawlerParams.max_pages && parseInt(crawlerParams.max_pages) < 0) {
+      errorMessages.max_pages = "Max Pages cannot be a negative number!";
+      isValid = false;
+    }
+
+    if (crawlerParams.depth && parseInt(crawlerParams.depth) < 0) {
+      errorMessages.depth = "Crawl Depth cannot be a negative number!";
+      isValid = false;
+    }
+
+    if (crawlerParams.delay && parseInt(crawlerParams.delay) < 0) {
+      errorMessages.delay = "Request Delay cannot be a negative number!";
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
+    // Validate the input before proceeding
+    if (!validateParams()) {
+      return; // Do not proceed if validation fails
+    }
+
     paramsToCrawling();
-    startTimer(); // Start the timer
-    crawledPages = 0; // Reset progress
-    totalPages = crawlerParams.max_pages || 0; // Set total pages if max_pages is defined
-    activeController = new AbortController(); // used to stop real time results...
+    startTimer();
+    crawledPages = 0;
+    totalPages = crawlerParams.max_pages || 0;
+    activeController = new AbortController();
 
     const response = await fetch('http://localhost:8000/crawler', { //This is where the params are being sent
-      method: 'POST', 
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(crawlerParams),
-      signal : activeController.signal
+      signal: activeController.signal
     });
 
     if (response.ok) {
@@ -108,11 +164,10 @@
       let done = false;
 
       while (!done) {
-        try{
-          if(activeController.signal.aborted){
+        try {
+          if (activeController.signal.aborted) {
             break;
           }
-          console.log("not stopping :(");
           const { value, done: readerDone } = await reader.read();
           done = readerDone;
           if (value) {
@@ -121,50 +176,91 @@
             crawlResult = [...crawlResult, ...updates];
             crawledPages += updates.length; // Update progress
 
-            // Update real-time metrics
             processedRequests += updates.length;
             filteredRequests = crawlResult.filter((item) => !item.error).length;
             requestsPerSecond = (processedRequests / ((Date.now() - startTime) / 1000)).toFixed(2);
           }
-        } catch(err) {
-          if(err.name === 'AbortError'){
+        } catch (err) {
+          if (err.name === 'AbortError') {
             done = true;
-            console.log("real time results stopped to end crawl");
+            console.log("real-time results stopped to end crawl");
           }
-          else{
-            console.error('Error: ', '')
+          else {
+            console.error('Error: ', err);
           }
         }
-        
       }
 
       crawlingToResults();
     } else {
       console.error("Error starting crawler:", response.statusText);
     }
-    stopTimer(); // Stop the timer
+    stopTimer();
   }
+
+  // Sorting function
+  function sortTable(column) {
+    const { direction } = sortConfig;
+
+    // Toggle sorting direction
+    sortConfig.direction = direction === 'asc' ? 'desc' : 'asc';
+    sortConfig.column = column;
+
+    console.log(`Sorting by column: ${column}, direction: ${sortConfig.direction}`);
+
+    crawlResult = [...crawlResult].sort((a, b) => {
+        const aValue = a[column];
+        const bValue = b[column];
+
+        // Ensure we are working with numbers where appropriate
+        const aValueParsed = typeof aValue === 'number' ? aValue : parseFloat(aValue);
+        const bValueParsed = typeof bValue === 'number' ? bValue : parseFloat(bValue);
+
+        console.log(`Comparing ${a[column]} with ${b[column]}`);
+
+        if (aValueParsed < bValueParsed) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+        } else if (aValueParsed > bValueParsed) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+    });
+    console.log("Sorted Result: ", crawlResult);
+}
+
+
 </script>
-  
+
 <div class="crawlerConfigPage">
   <div>
     <h1>Crawler</h1>
-    {#if acceptingParams}
-      <div>
-        <form onsubmit="{(e) => {e.preventDefault(); handleSubmit(); paramsToCrawling()}}">
-          {#each crawlerInput as param}
-            <label>
-              {param.label}:
-              <input type={param.type} bind:value={crawlerParams[param.id]} placeholder={param.example} requirement={param.required} oninput={(e) => dynamicCrawlerParamUpdate(param.id, e.target.value)}/>
-            </label>
-          {/each}
 
-          <button type="submit">Submit</button>
-        </form>
-      </div>
+    {#if acceptingParams}
+    <div>
+      <form onsubmit="{(e) => {e.preventDefault(); handleSubmit()}}">
+        {#each crawlerInput as param}
+        <label>
+          <span>{param.label}:</span>
+          <input
+            type={param.type}
+            bind:value={crawlerParams[param.id]}
+            placeholder={param.example}
+            required={param.required}
+            oninput={(e) => dynamicCrawlerParamUpdate(param.id, e.target.value)}
+          />
+          {#if errorMessages[param.id]}
+          <p class="error">{errorMessages[param.id]}</p>
+          {/if}
+        </label>
+        {/each}
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
     {/if}
-    
+
     {#if crawling}
+    <div class="crawl-section">
       <div>
         <h2>Running...</h2>
         <div class="progress-bar">
@@ -173,6 +269,7 @@
             style="width: {totalPages > 0 ? (crawledPages / totalPages) * 100 : 0}%"
           ></div>
         </div>
+        <p>{crawledPages} / {totalPages || "∞"} pages crawled</p>
         <div class="metrics">
           <div class="metric-item">
             <strong>Running Time:</strong>
@@ -191,44 +288,44 @@
             <span>{requestsPerSecond}</span>
           </div>
         </div>
-      
         <div class="results-table">
           {#if crawlResult.length === 0}
-            <p>No data received yet. Please wait...</p>
+          <p>No data received yet. Please wait...</p>
           {/if}
           <table>
             <thead>
               <tr>
-                <th>ID</th>
+                <th onclick={() => sortTable('id')}>ID</th>
                 <th>URL</th>
                 <th>Title</th>
-                <th>Word Count</th>
-                <th>Character Count</th>
-                <th>Links</th>
+                <th onclick={() => sortTable('word_count')}>Word Count</th>
+                <th onclick={() => sortTable('char_count')}>Character Count</th>
+                <th onclick={() => sortTable('link_count')}>Links</th>
                 <th>Error</th>
               </tr>
             </thead>
             <tbody>
-              {#each crawlResult as crawledURL, index (crawledURL.id)}  <!-- Ensure each item is uniquely identified -->
-                <tr>
-                  <td>{crawledURL.id}</td>
-                  <td>{crawledURL.url}</td>
-                  <td>{crawledURL.title}</td>
-                  <td>{crawledURL.word_count}</td>
-                  <td>{crawledURL.char_count}</td>
-                  <td>{crawledURL.link_count}</td>
-                  <td>{crawledURL.error ? 'True' : 'False'}</td>
-                </tr>
+              {#each crawlResult as crawledURL, index (crawledURL.id)}  
+              <tr>
+                <td>{crawledURL.id}</td>
+                <td>{crawledURL.url}</td>
+                <td>{crawledURL.title}</td>
+                <td>{crawledURL.word_count}</td>
+                <td>{crawledURL.char_count}</td>
+                <td>{crawledURL.link_count}</td>
+                <td>{crawledURL.error ? 'True' : 'False'}</td>
+              </tr>
               {/each}
             </tbody>
           </table>
         </div>
         <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
       </div>
+    </div>
     {/if}
 
-
     {#if displayingResults}
+    <div class="crawl-section">
       <h2>Crawl Results</h2>
       <div class="metrics">
         <div class="metric-item">
@@ -248,36 +345,59 @@
           <span>{requestsPerSecond}</span>
         </div>
       </div>
-    
+
       <div class="results-table">
         <table>
           <thead>
             <tr>
-              <th>ID</th>
+              <th onclick={() => sortTable('id')}>ID 
+                {#if sortConfig.column === 'id'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              
               <th>URL</th>
+              
               <th>Title</th>
-              <th>Word Count</th>
-              <th>Character Count</th>
-              <th>Links</th>
+              
+              <th onclick={() => sortTable('word_count')}>Word Count 
+                {#if sortConfig.column === 'word_count'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              
+              <th onclick={() => sortTable('char_count')}>Character Count 
+                {#if sortConfig.column === 'char_count'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              
+              <th onclick={() => sortTable('link_count')}>Links 
+                {#if sortConfig.column === 'link_count'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              
               <th>Error</th>
             </tr>
           </thead>
           <tbody>
-            {#each crawlResult as crawledURL, index (crawledURL.id)}  <!-- Ensure each item is uniquely identified -->
-              <tr>
-                <td>{crawledURL.id}</td>
-                <td>{crawledURL.url}</td>
-                <td>{crawledURL.title}</td>
-                <td>{crawledURL.word_count}</td>
-                <td>{crawledURL.char_count}</td>
-                <td>{crawledURL.link_count}</td>
-                <td>{crawledURL.error ? 'True' : 'False'}</td>
-              </tr>
+            {#each crawlResult as crawledURL, index (crawledURL.id)}  
+            <tr>
+              <td>{crawledURL.id}</td>
+              <td>{crawledURL.url}</td>
+              <td>{crawledURL.title}</td>
+              <td>{crawledURL.word_count}</td>
+              <td>{crawledURL.char_count}</td>
+              <td>{crawledURL.link_count}</td>
+              <td>{crawledURL.error ? 'True' : 'False'}</td>
+            </tr>
             {/each}
           </tbody>
         </table>
         <button onclick={(e) => { resultsToParams() }}>Back to Param Setup</button>
       </div>
+    </div>
     {/if}
   </div>
 </div>
@@ -293,7 +413,28 @@
 
   .progress {
     height: 20px;
-    background-color: #76c7c0;
+    background-color: #646cff;
     transition: width 0.3s ease;
+  }
+
+  .results-table {
+    margin-top: 20px; 
+  }
+
+  .results-table button {
+    margin-top: 20px; 
+  }
+
+  .crawl-section {
+    background-color: #1f1f1f;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .error {
+    color: red;
+    font-size: 0.8rem;
   }
 </style>
