@@ -4,10 +4,10 @@
     let bruteForceInput = [
       { id: "url", label: "Target URL", type: "text", value: "", example: "Ex: https://example.com", required: true },
       { id: "wordlist", label: "Word List", type: "file", value: "", required: true },
-      { id: "top_level_directory", label: "Top Level Directory", type: "text", value: "", example: "/dir/", required: true },
-      { id: "hide_status_code", label: "Hide Status Code", type: "text", value: "", example: "404,500", required: false },
-      { id: "show_status_code", label: "Show Only Status Code", type: "text", value: "", example: "200,301", required: false },
-      { id: "filter_by_content_length", label: "Filter by Content Length", type: "number", value: "", example: "1000", required: false },
+      { id: "top_level_directory", label: "Top Level Directory", type: "text", value: "", example: "/", required: true },
+      { id: "hide_status_code", label: "Hide Status Code", type: "text", value: "", example: "403, etc.", required: false },
+      { id: "show_status_code", label: "Show Only Status Code", type: "text", value: "", example: "200, 500, etc.", required: false },
+      { id: "filter_by_content_length", label: "Filter by Content Length", type: "number", value: "", example: ">100, <500", required: false },
       { id: "additional_param", label: "Additional Parameter", type: "text", value: "", example: "Ex: some_param=value", required: false }
     ];
   
