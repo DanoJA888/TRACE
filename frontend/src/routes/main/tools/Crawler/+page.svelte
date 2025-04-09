@@ -29,6 +29,7 @@
   let crawledPages = 0;
 
   let startTime = null;
+  let accumulatedTime = 0
   let elapsedTime = "0s";
   let timerInterval;
 
@@ -36,6 +37,9 @@
   let filteredRequests = 0;
   let requestsPerSecond = 0;
   let activeController = null;
+
+  let pauseAvailable = 1
+  let resumeAvailable = 0
 
   let errorMessages = {
     url: "",
@@ -52,17 +56,36 @@
   };
 
   // Start timer function
+  // function startTimer() {
+  //   startTime = Date.now();
+  //   timerInterval = setInterval(() => {
+  //     const seconds = Math.floor((Date.now() - startTime) / 1000);
+  //     elapsedTime = `${seconds}s`;
+  //   }, 1000);
+  // }
+
+  // function stopTimer() {
+  //   clearInterval(timerInterval);
+  // }
+
   function startTimer() {
     startTime = Date.now();
     timerInterval = setInterval(() => {
-      const seconds = Math.floor((Date.now() - startTime) / 1000);
-      elapsedTime = `${seconds}s`;
+      const currentElapsed = Date.now() - startTime;
+      const totalElapsed = accumulatedTime + currentElapsed;
+      elapsedTime = `${Math.floor(totalElapsed / 1000)}s`;
     }, 1000);
   }
 
   function stopTimer() {
     clearInterval(timerInterval);
-    elapsedTime = "0s";
+    accumulatedTime += Date.now() - startTime; // add the current session's time
+  }
+
+  function resetTimer() {
+    clearInterval(timerInterval);
+    accumulatedTime = 0;
+    elapsedTime = '0s';
   }
 
   function paramsToCrawling() {
@@ -79,6 +102,16 @@
     displayingResults = false;
     acceptingParams = true;
     crawlResult = [];
+  }
+
+  function pauseToResumeButton(){
+    pauseAvailable = false;
+    resumeAvailable = true;
+  }
+
+  function resumeToPauseButton(){
+    resumeAvailable = false;
+    pauseAvailable = true;
   }
 
   //instead of hard coded values in dict, dynamically add items to dictionary
@@ -101,6 +134,40 @@
       console.log("Stopped successfully");
     } else {
       console.error("Error stopping crawler:", response.statusText);
+    }
+  }
+
+  async function pauseCrawler(){
+    pauseToResumeButton();
+    stopTimer();
+    const response = await fetch('http://localhost:8000/pause_crawler', { //This is where the params are being sent
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      console.log("Paused successfully");
+    } else {
+      console.error("Error pausing crawler:", response.statusText);
+    }
+  }
+
+  async function resumeCrawler(){
+    resumeToPauseButton();
+    startTimer();
+    const response = await fetch('http://localhost:8000/resume_crawler', { //This is where the params are being sent
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      console.log("resumed successfully");
+    } else {
+      console.error("Error resuming crawler:", response.statusText);
     }
   }
 
@@ -138,6 +205,7 @@
 
   // This is for inputs to be sent to the backend for computation.
   async function handleSubmit() {
+    resetTimer();
     // Validate the input before proceeding
     if (!validateParams()) {
       return; // Do not proceed if validation fails
@@ -335,7 +403,12 @@ function urlToFilename(url) {
           </div>
         </div> 
         <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
-        <button>Pause</button>
+        {#if pauseAvailable == true}
+        <button onclick={(e) => {preventDefault(e); pauseCrawler()}}>Pause Crawl</button>
+        {/if}
+        {#if resumeAvailable == true}
+        <button onclick={(e) => {preventDefault(e); resumeCrawler()}}>Resume Crawl</button>
+        {/if}
         <div class="results-table">
           {#if crawlResult.length === 0}
           <p>No data received yet. Please wait...</p>
