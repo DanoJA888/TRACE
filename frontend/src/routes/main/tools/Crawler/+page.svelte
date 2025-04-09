@@ -413,32 +413,34 @@ function urlToFilename(url) {
           {#if crawlResult.length === 0}
           <p>No data received yet. Please wait...</p>
           {/if}
-          <table>
-            <thead>
-              <tr>
-                <th onclick={() => sortTable('id')}>ID</th>
-                <th>URL</th>
-                <th>Title</th>
-                <th onclick={() => sortTable('word_count')}>Word Count</th>
-                <th onclick={() => sortTable('char_count')}>Character Count</th>
-                <th onclick={() => sortTable('link_count')}>Links</th>
-                <th>Error</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each crawlResult as crawledURL, index (crawledURL.id)}  
-              <tr>
-                <td>{crawledURL.id}</td>
-                <td>{crawledURL.url}</td>
-                <td>{crawledURL.title}</td>
-                <td>{crawledURL.word_count}</td>
-                <td>{crawledURL.char_count}</td>
-                <td>{crawledURL.link_count}</td>
-                <td>{crawledURL.error ? 'True' : 'False'}</td>
-              </tr>
-              {/each}
-            </tbody>
-          </table>
+          <div class = "table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick={() => sortTable('id')}>ID</th>
+                  <th>URL</th>
+                  <th>Title</th>
+                  <th onclick={() => sortTable('word_count')}>Word Count</th>
+                  <th onclick={() => sortTable('char_count')}>Character Count</th>
+                  <th onclick={() => sortTable('link_count')}>Links</th>
+                  <th>Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each crawlResult as crawledURL, index (crawledURL.id)}  
+                <tr>
+                  <td>{crawledURL.id}</td>
+                  <td>{crawledURL.url}</td>
+                  <td>{crawledURL.title}</td>
+                  <td>{crawledURL.word_count}</td>
+                  <td>{crawledURL.char_count}</td>
+                  <td>{crawledURL.link_count}</td>
+                  <td>{crawledURL.error ? 'True' : 'False'}</td>
+                </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -537,6 +539,26 @@ function urlToFilename(url) {
     height: 20px;
     background-color: #646cff;
     transition: width 0.3s ease;
+  }
+
+  .table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #1f1f1f;
+  }
+
+  .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-container th, .table-container td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
   }
 
   .results-table {
