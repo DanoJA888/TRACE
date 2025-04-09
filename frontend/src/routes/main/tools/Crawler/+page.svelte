@@ -228,6 +228,52 @@
     console.log("Sorted Result: ", crawlResult);
 }
 
+function exportToCSV(data) {
+  let filename = crawlerParams['url'];
+  filename = urlToFilename(filename);
+  
+  // convert json to array of dicts
+  const dataArray = Object.values(data);
+  
+  //Sets up label row
+  const keys = Object.keys(dataArray[0]);
+  const headerRow = keys.join(',');
+  
+  const dataRows = dataArray.map(row => {
+    return keys.map(key => {
+      // incase of empty info
+      if (row[key] === null || row[key] === undefined) {
+        return '""';
+      } else if (typeof row[key] === 'object') {
+        //convert to string
+        //.replace(/"/g, '""'): csv quirk: double quotes must be wrapped by another set of double quotes to export
+        return `"${JSON.stringify(row[key]).replace(/"/g, '""')}"`;
+      } else {
+        // Handle strings and numbers
+        return `"${String(row[key]).replace(/"/g, '""')}"`;
+      }
+    }).join(',');
+  });
+  
+  const csvContent = [headerRow, ...dataRows].join('\n');
+  
+  //creates and downloads csv
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', `${filename}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function urlToFilename(url) {
+  return url
+    .replace(/^https?:\/\//, '')   // remove http:// or https://
+    .replace(/[^a-z0-9]/gi, '_')    // replace anything not alphanumeric with _
+    .toLowerCase();                 // optional: lowercase for consistency
+}
+
 
 </script>
 
@@ -287,7 +333,9 @@
             <strong>Requests/sec:</strong>
             <span>{requestsPerSecond}</span>
           </div>
-        </div>
+        </div> 
+        <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
+        <button>Pause</button>
         <div class="results-table">
           {#if crawlResult.length === 0}
           <p>No data received yet. Please wait...</p>
@@ -319,7 +367,6 @@
             </tbody>
           </table>
         </div>
-        <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
       </div>
     </div>
     {/if}
@@ -396,6 +443,8 @@
           </tbody>
         </table>
         <button onclick={(e) => { resultsToParams() }}>Back to Param Setup</button>
+        
+        <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}}>Export</button>
       </div>
     </div>
     {/if}
@@ -436,5 +485,16 @@
   .error {
     color: red;
     font-size: 0.8rem;
+  }
+
+  input{
+    color: white;
+  }
+  input:focus {
+    color: white;
+  }
+
+  input::placeholder {
+    color: #aaa; 
   }
 </style>
