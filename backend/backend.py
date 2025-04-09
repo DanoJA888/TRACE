@@ -7,6 +7,7 @@ import logging
 from fastapi.responses import StreamingResponse
 import json
 from fuzzer import Fuzzer
+from bruteforcer import BruteForcer
 import os
 import shutil
 
@@ -83,6 +84,30 @@ async def launchFuzz(request: FuzzRequest):
             yield json.dumps(update) + "\n"
     
     return StreamingResponse(fuzz_stream(), media_type="application/json")
+
+# Add BruteForcer request model --- BRUTEFORCER
+class BruteForcerRequest(BaseModel):
+    target_url: str
+    word_list: Optional[str] = ''
+    hide_status: Optional[str] = ''
+    show_status: Optional[str] = ''
+    filter_by_content_length: Optional[str | int] = ''
+    proxy: str = ''
+    additional_parameters: Optional[str] = ''
+    show_results: bool = True  # New parameter for toggling result visibility
+
+# Add BruteForcer endpoint
+@app.post("/bruteforcer")
+async def launchBruteForcer(request: BruteForcerRequest):
+    brute_forcer = BruteForcer()
+    params_dict = request.model_dump()
+    logger.info(request)
+    
+    async def brute_force_stream():
+        async for update in brute_forcer.run_scan(params_dict):
+            yield json.dumps(update) + "\n"
+    
+    return StreamingResponse(brute_force_stream(), media_type="application/json")
 
 # also need to Add wordlist upload endpoint
 @app.post("/upload-wordlist")

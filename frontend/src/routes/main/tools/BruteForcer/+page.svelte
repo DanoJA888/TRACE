@@ -93,7 +93,7 @@
       if (activeController) {
         activeController.abort();
       }
-      const response = await fetch('http://localhost:8000/stop_bruteforce', {
+      const response = await fetch('http://localhost:8000/stop_bruteforcer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +148,7 @@
   
       activeController = new AbortController();
   
-      const response = await fetch('http://localhost:8000/bruteforce', {
+      const response = await fetch('http://localhost:8000/bruteforcer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,7 +192,18 @@
   
         bruteForcingToResults();
       } else {
+        // logging error responses (e.g, 422, 500 etc.)
+        const errorDetails = {
+          status: response.status,
+          statusText: response.statusText,
+          responseBody: await response.text(), // Capture the body for debugging
+          payload: bruteForceParams // Include the payload that caused the issue
+        };
+
         console.error("Error starting brute force:", response.statusText);
+
+        // should store error in result
+        bruteForceResult.push(errorDetails); 
       }
       stopTimer();
     }
@@ -290,23 +301,25 @@
             <table>
               <thead>
                 <tr>
-                  <th>
-                    <button type="button" onclick={() => sortTable("url")}>URL</button>
-                  </th>
-                  <th>
-                    <button type="button" onclick={() => sortTable("status_code")}>Status Code</button>
-                  </th>
-                  <th>
-                    <button type="button" onclick={() => sortTable("content_length")}>Content Length</button>
-                  </th>
+                  <th><button type="button" onclick={() => sortTable("id")}>ID</button></th>
+                  <th><button type="button" onclick={() => sortTable("status_code")}>Response</button></th>
+                  <th><button type="button" onclick={() => sortTable("lines")}>Lines</button></th>
+                  <th><button type="button" onclick={() => sortTable("words")}>Word</button></th>
+                  <th><button type="button" onclick={() => sortTable("chars")}>Chars</button></th>
+                  <th>Payload</th>
+                  <th><button type="button" onclick={() => sortTable("length")}>Length</button></th>
                 </tr>
               </thead>
               <tbody>
-                {#each bruteForceResult as result (result.url)}
+                {#each bruteForceResult as result, index (result.url)}
                 <tr>
-                  <td>{result.url}</td>
+                  <td>{index + 1}</td>
                   <td>{result.status_code}</td>
-                  <td>{result.content_length}</td>
+                  <td>{result.lines}L</td>
+                  <td>{result.words}W</td>
+                  <td>{result.chars}</td>
+                  <td>{result.payload}</td>
+                  <td>{parseFloat(result.length).toFixed(2)}</td>
                 </tr>
                 {/each}
               </tbody>
@@ -318,9 +331,85 @@
       {/if}
   
       {#if displayingResults}
-      <div>
-        <h2>Results</h2>
-        <button onclick={resultsToParams}>Go Back to Parameters</button>
+      <div class="bruteforce-section">
+        <h2> Brute Force Results</h2>
+        <div class="metrics">
+          <div class="metric-item">
+            <strong>Running Time:</strong>
+            <span>{elapsedTime}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Processed Requests:</strong>
+            <span>{processedRequests}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Filtered Requests:</strong>
+            <span>{filteredRequests}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Requests/sec:</strong>
+            <span>{requestsPerSecond}</span>
+          </div>
+        </div>
+
+        <div class="results-table">
+          <table>
+            <thead>
+              <tr>
+                <th onclick={() => sortTable('id')}>
+                  ID
+                  {#if sortConfig.column === 'id'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
+                <th onclick={() => sortTable('status_code')}>
+                  Response
+                  {#if sortConfig.column === 'status_code'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
+                <th onclick={() => sortTable('lines')}>
+                  Lines
+                  {#if sortConfig.column === 'lines'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
+                <th onclick={() => sortTable('words')}>
+                  Word
+                  {#if sortConfig.column === 'words'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
+                <th onclick={() => sortTable('chars')}>
+                  Chars
+                  {#if sortConfig.column === 'chars'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
+                <th>Payload</th>
+                <th onclick={() => sortTable('length')}>
+                  Length
+                  {#if sortConfig.column === 'length'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each bruteForceResult as result, index (result.url)}
+              <tr>
+                <td>{index + 1}</td>
+                <td>{result.status_code}</td>
+                <td>{result.lines}L</td>
+                <td>{result.words}W</td>
+                <td>{result.chars}</td>
+                <td>{result.payload}</td>
+                <td>{parseFloat(result.length).toFixed(2)}</td>
+              </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
       </div>
       {/if}
     </div>
@@ -348,6 +437,14 @@
 
   .results-table button {
     margin-top: 20px; 
+  }
+
+  .bruteforce-section {
+    background-color: #1f1f1f;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
   .error {
