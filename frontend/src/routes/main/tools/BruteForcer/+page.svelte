@@ -1,4 +1,5 @@
 <script>
+  import { preventDefault } from "svelte/legacy";
   let wordlistInput = { id: "word_list", type: "file", accept: ".json, .txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true };
 
   let bruteForceInput = [
@@ -262,13 +263,13 @@
     {/if}
 
     {#if isRunning}
+    <div class = "brute-section">
       <div>
         <h2>Running...</h2>
         <!-- Progress Bar -->
         <div class="progress-bar">
           <div class="progress" style="width: {progress}%"></div>
         </div>
-
         <!-- Metrics -->
         <div class="metrics">
           <div class="metric-item">
@@ -288,8 +289,8 @@
             <span>{elapsedTime}</span>
           </div>
         </div>
-
         <!-- Live Table -->
+        <div class = "results-table">
         <table>
           <thead>
             <tr>
@@ -316,12 +317,34 @@
             {/each}
           </tbody>
         </table>
+        </div>
       </div>
+    </div>
     {/if}
 
     {#if displayingResults}
-      <div>
-        <h2>Results</h2>
+      <div class = "brute-section">
+        <h2>Brute Force Results</h2>
+        <div class="metrics">
+          <div class="metric-item">
+            <strong>Running Time:</strong>
+            <span>{elapsedTime}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Processed Requests:</strong>
+            <span>{processedRequests}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Filtered Requests:</strong>
+            <span>{filteredRequests}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Requests/sec:</strong>
+            <span>{requestsPerSecond}</span>
+          </div>
+        </div>
+
+        <div class = "results-table">
         <table>
           <thead>
             <tr>
@@ -348,10 +371,11 @@
             {/each}
           </tbody>
         </table>
-
+        <button on:click={(e) => { resultsToParams() }}>Back to Param Setup</button>
         {#if showResultsButton}
           <button on:click={exportResults}>Export Results</button>
         {/if}
+        </div>
       </div>
     {/if}
   </div>
@@ -359,17 +383,17 @@
 
 <style>
   .progress-bar {
-    background-color: #f0f0f0;
-    border-radius: 5px;
     width: 100%;
-    height: 20px;
-    margin-top: 10px;
-  }
-  .progress {
-    background-color: #4caf50;
-    height: 100%;
-    width: 0%;
+    background-color: #e0e0e0;
     border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .progress {
+    height: 20px;
+    background-color: #646cff;
+    transition: width 0.3s ease;
   }
 
   .results-table {
@@ -378,6 +402,14 @@
 
   .results-table button {
     margin-top: 20px; 
+  }
+
+  .brute-section {
+    background-color: #1f1f1f;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
   .bruteForceConfigPage {
@@ -392,5 +424,10 @@
   align-items: center;
   color: #f5f5f5; /* Set text color to dark gray for better contrast */
 }
+
+  /* .error {
+    color: red;
+    font-size: 0.8rem;
+  } */
 
 </style>
