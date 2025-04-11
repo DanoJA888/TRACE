@@ -92,7 +92,6 @@ class BruteForcerRequest(BaseModel):
     hide_status: Optional[str] = ''
     show_status: Optional[str] = ''
     filter_by_content_length: Optional[str | int] = ''
-    proxy: str = ''
     additional_parameters: Optional[str] = ''
     show_results: bool = True  # New parameter for toggling result visibility
 

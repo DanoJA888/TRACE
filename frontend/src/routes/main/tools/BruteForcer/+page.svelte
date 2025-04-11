@@ -237,6 +237,34 @@
       });
       console.log("Sorted Result: ", bruteForceResult);
   }
+
+  // File Upload Handler
+  async function handleFileUpload(event, inputItem) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:8000/upload-wordlist", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.path) {
+        bruteForceParams.wordlist = data.path; // Store the uploaded path as value
+        inputItem.value = data.path; // Update the file input
+        console.log("Wordlist uploaded to:", data.path);
+      } else {
+        console.error("Upload failed:", data);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    }
+  }
+
   </script>
   
   <div class="bruteForceConfigPage">
