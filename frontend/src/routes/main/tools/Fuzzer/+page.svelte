@@ -34,8 +34,8 @@
   let startTime = null;
   let elapsedTime = "0s";
   let timerInterval;
-  let showTerminal = false;
   let terminalOutput = [];
+  let popoutWindow = null; // Reference to pop-out window
 
   function startTimer() {
     startTime = Date.now();
@@ -73,8 +73,169 @@
     console.log(`Updated ${id} to ${value}`);
   }
 
+  // New function for pop-out terminal
+  function openTerminalWindow() {
+    // Close existing window if open
+    if (popoutWindow && !popoutWindow.closed) {
+      popoutWindow.focus();
+      return;
+    }
+    
+    // Set dimensions and position
+    const width = 600;
+    const height = 400;
+    const left = (window.screen.width - width) / 2;
+    const top = (window.screen.height - height) / 2;
+    
+    // Open a new window
+    popoutWindow = window.open(
+      '', 
+      'fuzzerTerminal',
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+    );
+    
+    // Create basic document structure
+    const doc = popoutWindow.document;
+    doc.title = "Fuzzer Terminal Output";
+    
+    // Add styles
+    const style = doc.createElement('style');
+    style.textContent = `
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #242424;
+        color: #FFFFFF;
+      }
+      .terminal-header {
+        background-color: #333;
+        padding: 8px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .terminal-content {
+        padding: 10px;
+        height: calc(100vh - 40px);
+        overflow-y: auto;
+      }
+      .terminal-line {
+        font-family: monospace;
+        margin-bottom: 3px;
+        word-break: break-all;
+      }
+      .success { color: #4CAF50; }
+      .warning { color: #FF9800; }
+      .error { color: #F44336; }
+      .auto-scroll {
+        margin: 0 15px;
+        display: flex;
+        align-items: center;
+      }
+      .auto-scroll input {
+        margin-right: 5px;
+      }
+    `;
+    doc.head.appendChild(style);
+    
+    // Create header
+    const header = doc.createElement('div');
+    header.className = 'terminal-header';
+    
+    const headerTitle = doc.createElement('span');
+    headerTitle.textContent = 'Fuzzer Terminal Output';
+    header.appendChild(headerTitle);
+    
+    const autoScrollDiv = doc.createElement('div');
+    autoScrollDiv.className = 'auto-scroll';
+    
+    const autoScrollCheckbox = doc.createElement('input');
+    autoScrollCheckbox.type = 'checkbox';
+    autoScrollCheckbox.id = 'auto-scroll';
+    autoScrollCheckbox.checked = true;
+    
+    const autoScrollLabel = doc.createElement('label');
+    autoScrollLabel.htmlFor = 'auto-scroll';
+    autoScrollLabel.textContent = 'Auto-scroll';
+    
+    autoScrollDiv.appendChild(autoScrollCheckbox);
+    autoScrollDiv.appendChild(autoScrollLabel);
+    header.appendChild(autoScrollDiv);
+    
+    doc.body.appendChild(header);
+    
+    // Create content area
+    const content = doc.createElement('div');
+    content.id = 'terminal-content';
+    content.className = 'terminal-content';
+    doc.body.appendChild(content);
+    
+    // Add script functionality
+    const script = doc.createElement('script');
+    script.textContent = `
+      // Get elements
+      const terminalContent = document.getElementById('terminal-content');
+      const autoScrollCheckbox = document.getElementById('auto-scroll');
+      
+      // Function to add a new line to the terminal
+      window.addTerminalLine = function(text, type) {
+        const line = document.createElement('div');
+        line.className = 'terminal-line';
+        
+        if (type) {
+          line.classList.add(type);
+        }
+        
+        line.textContent = text;
+        terminalContent.appendChild(line);
+        
+        // Auto-scroll to bottom if enabled
+        if (autoScrollCheckbox.checked) {
+          terminalContent.scrollTop = terminalContent.scrollHeight;
+        }
+      };
+    `;
+    doc.body.appendChild(script);
+    
+    // Add existing terminal output
+    terminalOutput.forEach(line => {
+      // Determine line type based on content
+      let type = '';
+      if (line.includes('ERROR') || line.includes('-> 4')) {
+        type = 'error';
+      } else if (line.includes('-> 3')) {
+        type = 'warning';
+      } else if (line.includes('-> 2')) {
+        type = 'success';
+      }
+      
+      try {
+        popoutWindow.addTerminalLine(line, type);
+      } catch (e) {
+        console.error('Error adding line to terminal:', e);
+      }
+    });
+  }
+
+  // Update to use pop-out terminal
   function toggleTerminal() {
-    showTerminal = !showTerminal;
+    openTerminalWindow();
+  }
+
+  // Add line to terminal output
+  function addToTerminal(line, type = '') {
+    // Add to array
+    terminalOutput = [...terminalOutput, line];
+    
+    // Add to pop out window if open
+    if (popoutWindow && !popoutWindow.closed) {
+      try {
+        popoutWindow.addTerminalLine(line, type);
+      } catch (e) {
+        console.error('Error updating pop-out window:', e);
+      }
+    }
   }
 
   // Function to handle file upload for wordlist
@@ -211,22 +372,34 @@
             requestsPerSecond = update.requests_per_second || requestsPerSecond;
 
             if (update.payload) {
-              // Add to terminal output
-              terminalOutput = [...terminalOutput,
-                `Request ${update.id}: ${update.payload} -> ${update.response}`];
+              // Determine type based on response code
+              let type = '';
+              if (update.response >= 400) {
+                type = 'error';
+              } else if (update.response >= 300) {
+                type = 'warning';
+              } else {
+                type = 'success';
+              }
+              
+              // Format terminal output
+              const terminalLine = `Request ${update.id}: ${update.payload} -> ${update.response}`;
+              
+              // Add to terminal
+              addToTerminal(terminalLine, type);
 
               // Add result to table
               results = [...results, update];
             }
           } catch (error) {
             console.error('Error parsing update:', error);
+            addToTerminal(`ERROR: ${error.message}`, 'error');
           }
         }
       }
     } catch (error) {
       console.error('Error during fuzzing:', error);
-      // Add to terminal output for visibility
-      terminalOutput = [...terminalOutput, `ERROR: ${error.message}`];
+      addToTerminal(`ERROR: ${error.message}`, 'error');
       showResultsButton = true; // Show button even on error
       stopTimer();
     }
@@ -253,7 +426,7 @@
   }
 </script>
 
-<div class="fuzzerConfigPage">
+<div class="crawlerConfigPage">
   <div>
     <h1>Parameter Fuzzing</h1>
     <button on:click={goBack} class="back-button">Back to Tools</button>
@@ -319,41 +492,27 @@
           ></div>
         </div>
         <p>{progress.toFixed(0)}% Complete</p>
-        <div class="metrics-container">
-          <div class="metric">
-            <span class="metric-label">Running Time</span>
-            <span class="metric-value">{elapsedTime}</span>
+        <div class="metrics">
+          <div class="metric-item">
+            <strong>Running Time</strong>
+            <span>{elapsedTime}</span>
           </div>
-          <div class="metric">
-            <span class="metric-label">Processed Requests</span>
-            <span class="metric-value">{processedRequests}</span>
+          <div class="metric-item">
+            <strong>Processed Requests</strong>
+            <span>{processedRequests}</span>
           </div>
-          <div class="metric">
-            <span class="metric-label">Filtered Requests</span>
-            <span class="metric-value">{filteredRequests}</span>
+          <div class="metric-item">
+            <strong>Filtered Requests</strong>
+            <span>{filteredRequests}</span>
           </div>
-          <div class="metric">
-            <span class="metric-label">Requests/sec</span>
-            <span class="metric-value">{requestsPerSecond}</span>
+          <div class="metric-item">
+            <strong>Requests/sec</strong>
+            <span>{requestsPerSecond}</span>
           </div>
         </div>
 
-        {#if showTerminal}
-          <div class="terminal">
-            <div class="terminal-header">
-              <span>Terminal Output</span>
-              <button class="close-terminal" on:click={toggleTerminal}>×</button>
-            </div>
-            <div class="terminal-content">
-              {#each terminalOutput as line}
-                <div class="terminal-line">{line}</div>
-              {/each}
-            </div>
-          </div>
-        {/if}
-
         {#if fuzzerParams.show_results}
-          <div class="results-table">
+          <div class="results-container">
             {#if results.length === 0}
               <p>No data has been received. Please wait...</p>
             {/if}
@@ -401,7 +560,7 @@
           <button class="restart-button" on:click={restartFuzz}>Restart</button>
           <button class="stop-button" on:click={stopFuzz}>Stop</button>
           <button class="terminal-button" on:click={toggleTerminal}>
-            {showTerminal ? 'Close Terminal' : 'Show Terminal'}
+            Open Terminal
           </button>
           <button class="export-button" on:click={exportResults}>Export</button>
           {#if showResultsButton}
@@ -413,7 +572,7 @@
 
     {#if displayingResults}
       <h2>Fuzzing Results</h2>
-      <div class="results-table">
+      <div class="results-container">
         <table>
           <thead>
             <tr>
@@ -446,6 +605,7 @@
         </table>
         <div class="action-buttons">
           <button on:click={resultsToParams} class="back-button">Back to Param Setup</button>
+          <button class="terminal-button" on:click={toggleTerminal}>Open Terminal</button>
           <button class="export-button" on:click={exportResults}>Export Results</button>
         </div>
       </div>
@@ -454,41 +614,6 @@
 </div>
 
 <style>
-  .fuzzerConfigPage {
-    font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
-  }
-
-  .back-button {
-    margin-bottom: 20px;
-    padding: 8px 15px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #333; /* Changed font color */
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 15px;
-    width: 400px;
-    margin: 50px auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  .input-container {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
 
   .file-input-container {
     display: flex;
@@ -497,77 +622,19 @@
     margin-bottom: 10px;
   }
 
-  label {
-    font-weight: bold;
-  }
-
   .selected-file {
     font-size: 0.9em;
     margin-top: 5px;
+    position: static; 
+    top: 0;
+    left: 0;
+    background: transparent;
   }
 
-  .success {
-    color: #4CAF50;
-  }
-
-  .error {
-    color: #F44336;
-  }
-
-  .warning {
-    color: #FF9800;
-  }
-
-  /* Styles for checkbox group */
-  .checkbox-group label {
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .checkbox-group input[type="checkbox"] {
-    width: auto;
-    margin: 0;
-  }
-
-  .help-text {
-    font-size: 0.8em;
-    color: #666;
-    margin-top: 5px;
-  }
-
-  .results-placeholder {
-    background-color: #f9f9f9;
-    padding: 20px;
-    border-radius: 4px;
-    text-align: center;
-    margin: 20px 0;
-    border: 1px dashed #ccc;
-  }
-
-  input, textarea, select {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-  }
-
-  textarea {
-    height: 100px;
-    resize: vertical;
-  }
-
-  .submit-button {
-    background-color: #76c7c0;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 15px;
-    align-self: center;
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
   }
 
   .progress-bar {
@@ -584,90 +651,13 @@
     transition: width 0.3s ease;
   }
 
-  .metrics-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin: 20px 0;
-  }
-
-  .metric {
-    background-color: #f9f9f9;
-    padding: 10px;
+  .results-placeholder {
+    background-color: #1f1f1f;
+    padding: 20px;
     border-radius: 4px;
-    border: 1px solid #ddd;
-  }
-
-  .metric-label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #666;
-  }
-
-  .metric-value {
-    font-size: 1.2em;
-    color: #333;
-  }
-
-  .terminal {
-    background-color: #1E1E1E;
-    color: #FFFFFF;
-    border-radius: 5px;
+    text-align: center;
     margin: 20px 0;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  .terminal-header {
-    background-color: #333;
-    padding: 8px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
-  }
-
-  .close-terminal {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-  }
-
-  .terminal-content {
-    padding: 10px;
-  }
-
-  .terminal-line {
-    font-family: monospace;
-    margin-bottom: 3px;
-    word-break: break-all;
-  }
-
-  .results-table {
-    margin: 20px 0;
-    overflow-x: auto;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th, td {
-    padding: 8px 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-    color: #333; /* Ensure text is visible */
-  }
-
-  th {
-    background-color: #f2f2f2;
-    position: sticky;
-    top: 0;
+    border: 1px dashed #444;
   }
 
   .action-buttons {
@@ -677,29 +667,7 @@
     margin: 20px 0;
   }
 
-  .action-buttons button {
-    padding: 8px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .pause-button {
-    background-color: #5bbfb2;
-    color: white;
-  }
-
-  .restart-button {
-    background-color: #5bbfb2;
-    color: white;
-  }
-
-  .stop-button {
-    background-color: #5bbfb2;
-    color: white;
-  }
-
-  .terminal-button {
+  .pause-button, .restart-button, .stop-button, .terminal-button {
     background-color: #5bbfb2;
     color: white;
   }
@@ -717,5 +685,13 @@
     cursor: pointer;
     font-size: 16px;
     margin-top: 10px;
+  }
+
+  .back-button {
+    margin-bottom: 20px;
+    padding: 8px 15px;
+    background-color: #1a1a1a;
+    border: 1px solid #444;
+    color: white;
   }
 </style>

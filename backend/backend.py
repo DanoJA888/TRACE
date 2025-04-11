@@ -59,6 +59,22 @@ async def stopCrawler():
         return {"message" : "Crawl stopping requested"}
     return {"message" : "nothing to stop"}
 
+@app.post("/pause_crawler")
+async def pauseCrawler():
+    global crawler
+    if crawler:
+        crawler.pause_crawl()
+        return {"message" :" Crawler Paused"}
+    return {"message": "nothing to pause"}
+
+@app.post("/resume_crawler")
+async def resumeCrawl():
+    global crawler
+    if crawler:
+        crawler.resume_crawl()        
+        return {"message" :" Crawler Resumed"}
+    return {"message": "nothing to resume"}
+
 # Add fuzzer request model --- FUZZER
 class FuzzRequest(BaseModel):
     target_url: str

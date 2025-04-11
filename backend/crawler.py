@@ -21,6 +21,7 @@ class Crawler:
         self.json_filename = json_filename  # Initialize the JSON filename
         self.total_pages = 0  # Track total pages to crawl
         self.stop_flag = False
+        self.pause_flag = False
         # here use the user agent string for requests
     #fine for backend
     def fetch_page(self, url): #fetching html data
@@ -105,17 +106,6 @@ class Crawler:
         except Exception as e:
             print(f"Error saving JSON: {e}")
 
-
-
-
-# commenting it out incase of fall back needed, replaced by save_json
-    # #questionable, will think about it tomorrow
-    # def save_tree(self): #this will be merged or likely changed out of this code once we are provided code and team to work with on subsystem 1
-    #     with open("crawl_tree.txt", "w") as file:
-    #         for parent_url, children in self.tree_structure.items():
-    #             file.write(f"{parent_url} -> {', '.join(children)}\n")
-
-
     async def start_crawl(self, crawler_params): # starting crawling sequence
         self.configure_crawler(crawler_params)
         self.stop_flag = False
@@ -132,8 +122,11 @@ class Crawler:
                 break
             url = queue.popleft()
 
-            # needed to stop poorly implemented real time printing
-            await asyncio.sleep(0) 
+            #allows pause and stop
+            await asyncio.sleep(0.5) 
+            while self.pause_flag:
+                await asyncio.sleep(0.5) 
+
             #counts the depth of the current path and skips url if too deep
             if self.depth != '' and url != self.start_url:
                 curr_url_path = urlparse(url).path
@@ -173,8 +166,10 @@ class Crawler:
                 "requests_per_second": round(processed_requests / (time.time() - start), 2)
             }
 
-            #needed to stop poorly implemented real time printing
-            await asyncio.sleep(0)
+            #allows pause and stop
+            await asyncio.sleep(0.5)
+            while self.pause_flag:
+                await asyncio.sleep(0.5) 
 
             #if num pages crawled quota reached, strop crawling
             if self.max_pages != '' and len(self.tree_structure) == self.max_pages:
@@ -187,6 +182,11 @@ class Crawler:
 
     def stop_crawl(self):
         self.stop_flag = True
+
+    def pause_crawl(self):
+        self.pause_flag = True
+    def resume_crawl(self):
+        self.pause_flag = False
 
     def configure_crawler(self, crawler_params):
         self.start_url = crawler_params['url']

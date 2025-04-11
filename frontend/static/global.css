@@ -130,7 +130,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #646cff;
   cursor: pointer;
   transition: border-color 0.25s;
 
@@ -140,7 +140,8 @@ button {
 }
 
 button:hover {
-  background-color: #646cff;
+  background-color: rgb(26, 26, 26);
+  color: #888
 }
 
 button:focus,
