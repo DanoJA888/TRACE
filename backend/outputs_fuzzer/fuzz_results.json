@@ -4,9 +4,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133029,
+        "chars": 133028,
         "payload": "root",
-        "length": 134039,
+        "length": 134038,
         "error": false
     },
     {
@@ -14,9 +14,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133037,
+        "chars": 133035,
         "payload": "admin",
-        "length": 134047,
+        "length": 134045,
         "error": false
     },
     {
@@ -24,9 +24,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133030,
+        "chars": 133028,
         "payload": "test",
-        "length": 134040,
+        "length": 134038,
         "error": false
     },
     {
@@ -34,9 +34,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133036,
+        "chars": 133035,
         "payload": "guest",
-        "length": 134046,
+        "length": 134045,
         "error": false
     },
     {
@@ -44,9 +44,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133029,
+        "chars": 133028,
         "payload": "info",
-        "length": 134039,
+        "length": 134038,
         "error": false
     },
     {
@@ -54,9 +54,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133022,
+        "chars": 133021,
         "payload": "adm",
-        "length": 134032,
+        "length": 134031,
         "error": false
     },
     {
@@ -64,9 +64,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133036,
+        "chars": 133035,
         "payload": "mysql",
-        "length": 134046,
+        "length": 134045,
         "error": false
     },
     {
@@ -74,9 +74,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133029,
+        "chars": 133028,
         "payload": "user",
-        "length": 134039,
+        "length": 134038,
         "error": false
     },
     {
@@ -84,9 +84,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133092,
+        "chars": 133091,
         "payload": "administrator",
-        "length": 134102,
+        "length": 134101,
         "error": false
     },
     {
@@ -94,9 +94,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133043,
+        "chars": 133042,
         "payload": "oracle",
-        "length": 134053,
+        "length": 134052,
         "error": false
     },
     {
@@ -104,9 +104,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133025,
+        "chars": 133021,
         "payload": "ftp",
-        "length": 134035,
+        "length": 134031,
         "error": false
     },
     {
@@ -114,9 +114,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133015,
+        "chars": 133014,
         "payload": "pi",
-        "length": 134025,
+        "length": 134024,
         "error": false
     },
     {
@@ -124,9 +124,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133046,
+        "chars": 133042,
         "payload": "puppet",
-        "length": 134056,
+        "length": 134052,
         "error": false
     },
     {
@@ -134,9 +134,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133050,
+        "chars": 133049,
         "payload": "ansible",
-        "length": 134060,
+        "length": 134059,
         "error": false
     },
     {
@@ -144,9 +144,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133060,
+        "chars": 133056,
         "payload": "ec2-user",
-        "length": 134070,
+        "length": 134066,
         "error": false
     },
     {
@@ -154,9 +154,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133050,
+        "chars": 133049,
         "payload": "vagrant",
-        "length": 134060,
+        "length": 134059,
         "error": false
     },
     {
@@ -164,9 +164,9 @@
         "response": 200,
         "lines": 1103,
         "words": 6907,
-        "chars": 133064,
+        "chars": 133063,
         "payload": "azureuser",
-        "length": 134074,
+        "length": 134073,
         "error": false
     }
 ]
