@@ -34,14 +34,14 @@ class BruteForcer:
             if not url.startswith(('http://', 'https://')):
                 url = 'https://' + url
 
-            # Replace or append the payload as part of the URL path (directory brute force)
             parsed_url = urlparse(url)
             brute_force_url = parsed_url._replace(path=parsed_url.path + '/' + payload)
+            full_url = urlunparse(brute_force_url)
 
-            scan_logger.info(f"Attempting: {urlunparse(brute_force_url)}")
+            scan_logger.info(f"Attempting: {full_url}")
 
             response = requests.get(
-                urlunparse(brute_force_url),
+                full_url,
                 cookies=self.auth_cookies,
                 proxies={'http': self.network_proxy, 'https': self.network_proxy} if self.network_proxy else None,
                 timeout=5,
@@ -54,6 +54,7 @@ class BruteForcer:
             chars = len(content)
 
             return {
+                'url': full_url,
                 'status_code': response.status_code,
                 'lines': lines,
                 'words': words,
@@ -65,6 +66,7 @@ class BruteForcer:
         except requests.RequestException as e:
             scan_logger.error(f"Request error for payload '{payload}': {e}")
             return {
+                'url': full_url if 'full_url' in locals() else f"{url}/{payload}",
                 'status_code': 0,
                 'lines': 0,
                 'words': 0,
@@ -111,6 +113,7 @@ class BruteForcer:
 
             result_entry = {
                 'id': i + 1,
+                'url': result['url'], 
                 'response': result['status_code'],
                 'lines': result['lines'],
                 'words': result['words'],

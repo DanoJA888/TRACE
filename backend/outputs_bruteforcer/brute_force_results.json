@@ -1,6 +1,7 @@
 [
     {
         "id": 1,
+        "url": "https://example.com/admin",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -11,6 +12,7 @@
     },
     {
         "id": 2,
+        "url": "https://example.com/login",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -21,6 +23,7 @@
     },
     {
         "id": 3,
+        "url": "https://example.com/dashboard",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -31,6 +34,7 @@
     },
     {
         "id": 4,
+        "url": "https://example.com/uploads",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -41,6 +45,7 @@
     },
     {
         "id": 5,
+        "url": "https://example.com/images",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -51,6 +56,7 @@
     },
     {
         "id": 6,
+        "url": "https://example.com/js",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -61,6 +67,7 @@
     },
     {
         "id": 7,
+        "url": "https://example.com/css",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -71,6 +78,7 @@
     },
     {
         "id": 8,
+        "url": "https://example.com/api",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -81,6 +89,7 @@
     },
     {
         "id": 9,
+        "url": "https://example.com/config",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -91,6 +100,7 @@
     },
     {
         "id": 10,
+        "url": "https://example.com/config.php",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -101,6 +111,7 @@
     },
     {
         "id": 11,
+        "url": "https://example.com/robots.txt",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -111,6 +122,7 @@
     },
     {
         "id": 12,
+        "url": "https://example.com/sitemap.xml",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -121,6 +133,7 @@
     },
     {
         "id": 13,
+        "url": "https://example.com/index.html",
         "response": 200,
         "lines": 46,
         "words": 120,
@@ -131,6 +144,7 @@
     },
     {
         "id": 14,
+        "url": "https://example.com/hidden",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -141,6 +155,7 @@
     },
     {
         "id": 15,
+        "url": "https://example.com/private",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -151,6 +166,7 @@
     },
     {
         "id": 16,
+        "url": "https://example.com/test",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -161,6 +177,7 @@
     },
     {
         "id": 17,
+        "url": "https://example.com/backup",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -171,6 +188,7 @@
     },
     {
         "id": 18,
+        "url": "https://example.com/old",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -181,16 +199,18 @@
     },
     {
         "id": 19,
-        "response": 404,
-        "lines": 46,
-        "words": 120,
-        "chars": 1256,
+        "url": "https://example.com/dev",
+        "response": 0,
+        "lines": 0,
+        "words": 0,
+        "chars": 0,
         "payload": "dev",
-        "length": 1256,
-        "error": false
+        "length": 0,
+        "error": true
     },
     {
         "id": 20,
+        "url": "https://example.com/v1",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -201,6 +221,7 @@
     },
     {
         "id": 21,
+        "url": "https://example.com/v2",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -211,6 +232,7 @@
     },
     {
         "id": 22,
+        "url": "https://example.com/assets",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -221,6 +243,7 @@
     },
     {
         "id": 23,
+        "url": "https://example.com/includes",
         "response": 404,
         "lines": 46,
         "words": 120,
@@ -231,6 +254,7 @@
     },
     {
         "id": 24,
+        "url": "https://example.com/core",
         "response": 404,
         "lines": 46,
         "words": 120,
