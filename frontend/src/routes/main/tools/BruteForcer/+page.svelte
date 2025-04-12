@@ -21,9 +21,12 @@
   let acceptingParams = true;
   let isRunning = false;
   let displayingResults = false;
-  let showResultsButton = false; // New state variable
+  let showResultsButton = false;
   let selectedFileName = "No file selected"; // Track selected file name
   let fileUploaded = false; // Track if file was successfully uploaded
+  let showTerminal = false;
+  let logOutput = '';
+  let visibleResults=[];
 
   // Track progress
   let progress = 0;
@@ -185,8 +188,10 @@
         }
 
         const chunk = decoder.decode(value);
+        logOutput += chunk + '\n';
         const lines = chunk.split('\n').filter(line => line.trim());
-
+        
+        
         for (const line of lines) {
           try {
             const update = JSON.parse(line);
@@ -200,6 +205,21 @@
 
             if (update.payload) {
               results = [...results, update];
+              const statusCode = update.response;
+              const hideList = bruteForceParams.hide_status_code?.split(',').map(code => code.trim());
+              const showList = bruteForceParams.show_status_code?.split(',').map(code => code.trim());
+
+              let shouldShow = true;
+
+              if (showList?.length && showList[0] !== '') {
+                shouldShow = showList.includes(statusCode.toString());
+              } else if (hideList?.length && hideList[0] !== '') {
+                shouldShow = !hideList.includes(statusCode.toString());
+              }
+
+              if (shouldShow) {
+                visibleResults = [...visibleResults, update];
+              }
             }
           } catch (error) {
             console.error('Error parsing update:', error);
@@ -299,7 +319,7 @@
               </tr>
             </thead>
             <tbody>
-              {#each results as result, index}
+              {#each visibleResults as result, index}
                 <tr>
                   <td>{index + 1}</td>
                   <td>{result.response}</td>
@@ -356,6 +376,7 @@
         <button on:click={pauseBruteForce}>Pause</button>
         <button on:click={stopBruteForce}>Stop</button>
         <button on:click={restartBruteForce}>Restart</button>
+        <button on:click={() => showTerminal = true}>View Terminal</button>
         <button on:click={() => resultsToParams()}>Back to Param Setup</button>
         {#if showResultsButton}
           <button on:click={exportResults}>Export Results</button>
@@ -370,6 +391,20 @@
   </div>
 </div>
 
+{#if showTerminal}
+  <div class="terminal-overlay">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <span>Terminal Output</span>
+        <button on:click={() => showTerminal = false}>✖</button>
+      </div>
+      <div class="terminal-content">
+        <!-- Hook up streamed logs here -->
+        <pre>{logOutput}</pre>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .progress-bar {
@@ -446,11 +481,36 @@
   background-color: #4e56d3;
 }
 
+.terminal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
 
+.terminal-window {
+  background: #111;
+  color: #0f0;
+  width: 80%;
+  max-height: 70vh;
+  border-radius: 8px;
+  overflow-y: auto;
+  padding: 1rem;
+}
 
-  /* .error {
-    color: red;
-    font-size: 0.8rem;
-  } */
+.terminal-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
 
+.terminal-content {
+  font-family: monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+  
 </style>
