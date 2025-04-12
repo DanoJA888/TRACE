@@ -404,13 +404,7 @@ function urlToFilename(url) {
             <span>{requestsPerSecond}</span>
           </div>
         </div> 
-        <button onclick={(e) => {preventDefault(e); stopCrawler()}} title="Completely Stops Crawling of the website">Stop Crawl</button>
-        {#if pauseAvailable == true}
-        <button onclick={(e) => {preventDefault(e); pauseCrawler()}} title="Temporarily Stops Crawling of the website">Pause Crawl</button>
-        {/if}
-        {#if resumeAvailable == true}
-        <button onclick={(e) => {preventDefault(e); resumeCrawler()}} title ="Resumes Crawling of the Webstie">Resume Crawl</button>
-        {/if}
+        
         <div class="results-table">
           {#if crawlResult.length === 0}
           <p>No data received yet. Please wait...</p>
@@ -443,6 +437,13 @@ function urlToFilename(url) {
               </tbody>
             </table>
           </div>
+          <button onclick={(e) => {preventDefault(e); stopCrawler()}} title="Completely Stops Crawling of the website">Stop Crawl</button>
+          {#if pauseAvailable == true}
+          <button onclick={(e) => {preventDefault(e); pauseCrawler()}} title="Temporarily Stops Crawling of the website">Pause Crawl</button>
+          {/if}
+          {#if resumeAvailable == true}
+          <button onclick={(e) => {preventDefault(e); resumeCrawler()}} title ="Resumes Crawling of the Webstie">Resume Crawl</button>
+          {/if}
         </div>
       </div>
     </div>
@@ -471,56 +472,57 @@ function urlToFilename(url) {
       </div>
 
       <div class="results-table">
-        <table>
-          <thead>
-            <tr>
-              <th onclick={() => sortTable('id')}>ID 
-                {#if sortConfig.column === 'id'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+        <div class="table-container"> 
+          <table>
+            <thead>
+              <tr>
+                <th onclick={() => sortTable('id')}>ID 
+                  {#if sortConfig.column === 'id'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th>URL</th>
+                <th>URL</th>
               
-              <th>Title</th>
+                <th>Title</th>
               
-              <th onclick={() => sortTable('word_count')}>Word Count 
-                {#if sortConfig.column === 'word_count'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+                <th onclick={() => sortTable('word_count')}>Word Count 
+                  {#if sortConfig.column === 'word_count'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th onclick={() => sortTable('char_count')}>Character Count 
-                {#if sortConfig.column === 'char_count'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+                <th onclick={() => sortTable('char_count')}>Character Count 
+                  {#if sortConfig.column === 'char_count'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th onclick={() => sortTable('link_count')}>Links 
-                {#if sortConfig.column === 'link_count'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+                <th onclick={() => sortTable('link_count')}>Links 
+                  {#if sortConfig.column === 'link_count'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th>Error</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each crawlResult as crawledURL, index (crawledURL.id)}  
-            <tr>
-              <td>{crawledURL.id}</td>
-              <td>{crawledURL.url}</td>
-              <td>{crawledURL.title}</td>
-              <td>{crawledURL.word_count}</td>
-              <td>{crawledURL.char_count}</td>
-              <td>{crawledURL.link_count}</td>
-              <td>{crawledURL.error ? 'True' : 'False'}</td>
-            </tr>
-            {/each}
-          </tbody>
-        </table>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each crawlResult as crawledURL, index (crawledURL.id)}  
+              <tr>
+                <td>{crawledURL.id}</td>
+                <td>{crawledURL.url}</td>
+                <td>{crawledURL.title}</td>
+                <td>{crawledURL.word_count}</td>
+                <td>{crawledURL.char_count}</td>
+                <td>{crawledURL.link_count}</td>
+                <td>{crawledURL.error ? 'True' : 'False'}</td>
+              </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
         <button onclick={(e) => { resultsToParams() }} title = "Navigates back to the Crawler Parameter page">Restart</button>
-        
         <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}} title="Exports the results of the Crawling">Export</button>
       </div>
     </div>
