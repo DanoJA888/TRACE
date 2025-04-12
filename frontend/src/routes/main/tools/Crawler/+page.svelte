@@ -211,7 +211,7 @@
       return; // Do not proceed if validation fails
     }
 
-    
+
 
     paramsToCrawling();
     startTimer();
@@ -519,7 +519,7 @@ function urlToFilename(url) {
             {/each}
           </tbody>
         </table>
-        <button onclick={(e) => { resultsToParams() }} title = "Navigates back to the Crawler Parameter page">Back to Param Setup</button>
+        <button onclick={(e) => { resultsToParams() }} title = "Navigates back to the Crawler Parameter page">Restart</button>
         
         <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}} title="Exports the results of the Crawling">Export</button>
       </div>
@@ -568,7 +568,12 @@ function urlToFilename(url) {
   }
 
   .results-table button {
-    margin-top: 20px; 
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    width: auto;
+    min-width: 80px;
   }
 
   .crawl-section {
@@ -577,6 +582,15 @@ function urlToFilename(url) {
     border-radius: 1rem;
     margin-top: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .crawl-section button {
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    width: auto;
+    min-width: 80px;
   }
 
   .error {
