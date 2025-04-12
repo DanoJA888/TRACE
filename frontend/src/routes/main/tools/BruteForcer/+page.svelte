@@ -69,6 +69,23 @@
     console.log(`Updated ${id} to ${value}`);
   }
 
+  function pauseBruteForce() {
+    console.log("Paused (backend control not implemented yet)");
+  }
+
+  function stopBruteForce() {
+    if (activeController) activeController.abort();
+    stopTimer();
+    isRunning = false;
+    showResultsButton = true;
+  }
+
+  function restartBruteForce() {
+    results = [];
+    stopTimer();
+    handleSubmit();
+  }
+
   // Function to handle file upload for wordlist
   async function handleFile(event) {
     console.log("File Submitted");
@@ -263,123 +280,96 @@
     {/if}
 
     {#if isRunning}
-    <div class = "brute-section">
-      <div>
+      <div class="brute-section">
         <h2>Running...</h2>
-        <!-- Progress Bar -->
         <div class="progress-bar">
           <div class="progress" style="width: {progress}%"></div>
         </div>
-        <!-- Metrics -->
         <div class="metrics">
-          <div class="metric-item">
-            <strong>Processed</strong>
-            <span>{processedRequests}</span>
-          </div>
-          <div class="metric-item">
-            <strong>Filtered</strong>
-            <span>{filteredRequests}</span>
-          </div>
-          <div class="metric-item">
-            <strong>Requests/sec</strong>
-            <span>{requestsPerSecond}</span>
-          </div>
-          <div class="metric-item">
-            <strong>Elapsed Time</strong>
-            <span>{elapsedTime}</span>
-          </div>
+          <div class="metric-item"><strong>Processed</strong><span>{processedRequests}</span></div>
+          <div class="metric-item"><strong>Filtered</strong><span>{filteredRequests}</span></div>
+          <div class="metric-item"><strong>Requests/sec</strong><span>{requestsPerSecond}</span></div>
+          <div class="metric-item"><strong>Elapsed Time</strong><span>{elapsedTime}</span></div>
         </div>
-        <!-- Live Table -->
-        <div class = "results-table">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Lines</th>
-              <th>Words</th>
-              <th>Chars</th>
-              <th>Payload</th>
-              <th>Length</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each results as result, index}
+        <div class="results-table-scrollable">
+          <table>
+            <thead>
               <tr>
-                <td>{index + 1}</td>
-                <td>{result.response}</td>
-                <td>{result.lines}</td>
-                <td>{result.words}</td>
-                <td>{result.chars}</td>
-                <td>{result.payload}</td>
-                <td>{result.length}</td>
+                <th>ID</th><th>Status</th><th>Lines</th><th>Words</th><th>Chars</th><th>Payload</th><th>Length</th>
               </tr>
-            {/each}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {#each results as result, index}
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{result.response}</td>
+                  <td>{result.lines}</td>
+                  <td>{result.words}</td>
+                  <td>{result.chars}</td>
+                  <td>{result.payload}</td>
+                  <td>{result.length}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
     {/if}
 
     {#if displayingResults}
-      <div class = "brute-section">
+      <div class="brute-section">
         <h2>Brute Force Results</h2>
         <div class="metrics">
-          <div class="metric-item">
-            <strong>Running Time:</strong>
-            <span>{elapsedTime}</span>
-          </div>
-          <div class="metric-item">
-            <strong>Processed Requests:</strong>
-            <span>{processedRequests}</span>
-          </div>
-          <div class="metric-item">
-            <strong>Filtered Requests:</strong>
-            <span>{filteredRequests}</span>
-          </div>
-          <div class="metric-item">
-            <strong>Requests/sec:</strong>
-            <span>{requestsPerSecond}</span>
-          </div>
+          <div class="metric-item"><strong>Running Time:</strong><span>{elapsedTime}</span></div>
+          <div class="metric-item"><strong>Processed Requests:</strong><span>{processedRequests}</span></div>
+          <div class="metric-item"><strong>Filtered Requests:</strong><span>{filteredRequests}</span></div>
+          <div class="metric-item"><strong>Requests/sec:</strong><span>{requestsPerSecond}</span></div>
         </div>
-
-        <div class = "results-table">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Lines</th>
-              <th>Words</th>
-              <th>Chars</th>
-              <th>Payload</th>
-              <th>Length</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each results as result, index}
+        <div class="results-table-scrollable">
+          <table>
+            <thead>
               <tr>
-                <td>{index + 1}</td>
-                <td>{result.response}</td>
-                <td>{result.lines}</td>
-                <td>{result.words}</td>
-                <td>{result.chars}</td>
-                <td>{result.payload}</td>
-                <td>{result.length}</td>
+                <th>ID</th><th>Status</th><th>Lines</th><th>Words</th><th>Chars</th><th>Payload</th><th>Length</th>
               </tr>
-            {/each}
-          </tbody>
-        </table>
-        <button on:click={(e) => { resultsToParams() }}>Back to Param Setup</button>
-        {#if showResultsButton}
-          <button on:click={exportResults}>Export Results</button>
-        {/if}
+            </thead>
+            <tbody>
+              {#each results as result, index}
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{result.response}</td>
+                  <td>{result.lines}</td>
+                  <td>{result.words}</td>
+                  <td>{result.chars}</td>
+                  <td>{result.payload}</td>
+                  <td>{result.length}</td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
         </div>
       </div>
     {/if}
+
+    <!-- ✅ These are always visible when done -->
+    {#if isRunning || displayingResults}
+      <div class="action-buttons-bottom">
+        <button on:click={pauseBruteForce}>Pause</button>
+        <button on:click={stopBruteForce}>Stop</button>
+        <button on:click={restartBruteForce}>Restart</button>
+        <button on:click={() => resultsToParams()}>Back to Param Setup</button>
+        {#if showResultsButton}
+          <button on:click={exportResults}>Export Results</button>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- Optional fallback -->
+    {#if !acceptingParams && !isRunning && !displayingResults}
+      <p style="color: red; text-align: center; margin-top: 2rem;">⚠️ Nothing is being displayed. Check state logic.</p>
+    {/if}
   </div>
 </div>
+
 
 <style>
   .progress-bar {
@@ -424,6 +414,39 @@
   align-items: center;
   color: #f5f5f5; /* Set text color to dark gray for better contrast */
 }
+
+.results-table-scrollable {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.action-buttons-bottom {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.action-buttons-bottom button {
+  background-color: #646cff;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.action-buttons-bottom button:hover {
+  background-color: #4e56d3;
+}
+
+
 
   /* .error {
     color: red;
