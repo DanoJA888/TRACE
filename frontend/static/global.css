@@ -140,7 +140,7 @@ button {
 }
 
 button:hover {
-  background-color: white;
+  background-color: rgb(26, 26, 26);
   color: #888
 }
 

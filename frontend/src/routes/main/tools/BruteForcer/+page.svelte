@@ -1,338 +1,330 @@
 <script>
-    import { preventDefault } from "svelte/legacy";
-  
-    let bruteForceInput = [
-      { id: "url", label: "Target URL", type: "text", value: "", example: "Ex: https://example.com", required: true },
-      { id: "wordlist", label: "Word List", type: "file", value: "", required: true },
-      { id: "top_level_directory", label: "Top Level Directory", type: "text", value: "", example: "/", required: true },
-      { id: "hide_status_code", label: "Hide Status Code", type: "text", value: "", example: "403, etc.", required: false },
-      { id: "show_status_code", label: "Show Only Status Code", type: "text", value: "", example: "200, 500, etc.", required: false },
-      { id: "filter_by_content_length", label: "Filter by Content Length", type: "number", value: "", example: ">100, <500", required: false },
-      { id: "additional_param", label: "Additional Parameter", type: "text", value: "", example: "Ex: some_param=value", required: false }
-    ];
-  
-    let bruteForceParams = {
-      url: "",
-      wordlist: "",
-      top_level_directory: "",
-      hide_status_code: "",
-      show_status_code: "",
-      filter_by_content_length: "",
-      additional_param: ""
-    };
-  
-    let bruteForceResult = []; // Updated dynamically during brute forcing
-  
-    let acceptingParams = true;
-    let bruteForcing = false;
-    let displayingResults = false;
-  
-    let totalRequests = 0;
-    let completedRequests = 0;
-  
-    let startTime = null;
-    let elapsedTime = "0s";
-    let timerInterval;
-  
-    let processedRequests = 0;
-    let filteredRequests = 0;
-    let requestsPerSecond = 0;
-    let activeController = null;
-  
-    let errorMessages = {
-      url: "",
-      wordlist: "",
-      top_level_directory: "",
-      hide_status_code: "",
-      show_status_code: "",
-      filter_by_content_length: "",
-      additional_param: "",
-    };
-  
-    let sortConfig = {
-      column: "",
-      direction: 'asc'
-    };
-  
-    // Start timer function
-    function startTimer() {
-      startTime = Date.now();
-      timerInterval = setInterval(() => {
-        const seconds = Math.floor((Date.now() - startTime) / 1000);
-        elapsedTime = `${seconds}s`;
-      }, 1000);
+  import { preventDefault } from "svelte/legacy";
+  let wordlistInput = { id: "word_list", type: "file", accept: ".json, .txt", label: "Word List", value: "", example: "Ex: wordlist.txt", required: true };
+
+  let bruteForceInput = [
+    { id: "target_url", label: "Target URL", type: "text", value: "", example: "Ex: https://example.com/path", required: true },
+    { id: "top_level_directory", label: "Top Level Directory", type: "text", value: "", example: "/", required: true },
+    { id: "hide_status_code", label: "Hide Status Code", type: "text", value: "", example: "403, 500", required: false },
+    { id: "show_status_code", label: "Show Only Status Code", type: "text", value: "", example: "200, 500", required: false },
+    { id: "filter_by_content_length", label: "Filter by Content Length", type: "number", value: "", example: ">100, <500", required: false },
+    { id: "additional_param", label: "Additional Parameter", type: "text", value: "", example: "Ex: some_param=value", required: false }
+  ];
+
+  let bruteForceParams = {
+    target_url: "",
+    word_list: "",
+    show_results: true  // Initialize show_results option
+  };
+
+  let results = [];
+  let acceptingParams = true;
+  let isRunning = false;
+  let displayingResults = false;
+  let showResultsButton = false; // New state variable
+  let selectedFileName = "No file selected"; // Track selected file name
+  let fileUploaded = false; // Track if file was successfully uploaded
+
+  // Track progress
+  let progress = 0;
+  let processedRequests = 0;
+  let filteredRequests = 0;
+  let requestsPerSecond = 0;
+  let startTime = null;
+  let elapsedTime = "0s";
+  let timerInterval;
+
+  function startTimer() {
+    startTime = Date.now();
+    timerInterval = setInterval(() => {
+      const seconds = Math.floor((Date.now() - startTime) / 1000);
+      elapsedTime = `${seconds}s`;
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  function paramsToRunning() {
+    acceptingParams = false;
+    isRunning = true;
+    showResultsButton = false; // Reset button 
+  }
+
+  function runningToResults() {
+    isRunning = false;
+    displayingResults = true;
+    showResultsButton = false; // Hide button after navigating
+  }
+
+  function resultsToParams() {
+    displayingResults = false;
+    acceptingParams = true;
+    results = [];
+  }
+
+  function dynamicBruteForceParamUpdate(id, value) {
+    bruteForceParams[id] = value;
+    console.log(`Updated ${id} to ${value}`);
+  }
+
+  // Function to handle file upload for wordlist
+  async function handleFile(event) {
+    console.log("File Submitted");
+    
+    const fileInput = event.target;
+    if (!fileInput.files || fileInput.files.length === 0) {
+      console.log("No file selected");
+      selectedFileName = "No file selected";
+      fileUploaded = false;
+      return;
     }
-  
-    function stopTimer() {
-      clearInterval(timerInterval);
-      elapsedTime = "0s";
-    }
-  
-    function paramsToBruteForcing() {
-      acceptingParams = false;
-      bruteForcing = true;
-    }
-  
-    function bruteForcingToResults() {
-      bruteForcing = false;
-      displayingResults = true;
-    }
-  
-    function resultsToParams() {
-      displayingResults = false;
-      acceptingParams = true;
-      bruteForceResult = [];
-    }
-  
-    // Dynamically update brute force parameters
-    function dynamicBruteForceParamUpdate(id, value) {
-      bruteForceParams[id] = value;
-    }
-  
-    async function stopBruteForce() {
-      if (activeController) {
-        activeController.abort();
-      }
-      const response = await fetch('http://localhost:8000/stop_bruteforcer', {
+    
+    const file = fileInput.files[0];
+    selectedFileName = file.name;
+    console.log("Selected file:", file.name);
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    try {
+      const response = await fetch('http://localhost:8000/upload-wordlist', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        body: formData
       });
-  
-      if (response.ok) {
-        console.log("Stopped successfully");
-      } else {
-        console.error("Error stopping brute force:", response.statusText);
+      
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("File uploaded successfully:", result);
+      
+      bruteForceParams.word_list = result.path;
+      fileUploaded = true;
+      
+      const statusElement = document.querySelector('#file-status');
+      if (statusElement) {
+        statusElement.textContent = `File uploaded: ${file.name}`;
+        statusElement.className = 'selected-file success';
+      }
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      fileUploaded = false;
+      
+      const statusElement = document.querySelector('#file-status');
+      if (statusElement) {
+        statusElement.textContent = `Error uploading the file: ${error.message}`;
+        statusElement.className = 'selected-file error';
       }
     }
-  
-    // Validate input parameters before starting brute force
-    function validateParams() {
-      let isValid = true;
-  
-      // Reset error messages
-      Object.keys(errorMessages).forEach(key => {
-        errorMessages[key] = "";
-      });
-  
-      if (!bruteForceParams.url) {
-        errorMessages.url = "URL is required!";
-        isValid = false;
-      }
-  
-      if (!bruteForceParams.wordlist) {
-        errorMessages.wordlist = "Word list is required!";
-        isValid = false;
-      }
-  
-      if (!bruteForceParams.top_level_directory) {
-        errorMessages.top_level_directory = "Top Level Directory is required!";
-        isValid = false;
-      }
-  
-      return isValid;
+  }
+
+  // inputs to be sent to the backend for brute-forcing
+  async function handleSubmit() {
+    if (!bruteForceParams.target_url) {
+      alert('Target URL is required');
+      return;
     }
-  
-    // This is for inputs to be sent to the backend for brute forcing.
-    async function handleSubmit() {
-      // Validate the input before proceeding
-      if (!validateParams()) {
-        return; // Do not proceed if validation fails
-      }
-  
-      paramsToBruteForcing();
-      startTimer();
-      completedRequests = 0;
-      totalRequests = 0;  // Reset for brute force requests
-  
-      activeController = new AbortController();
-  
+    
+    if (!fileUploaded && !bruteForceParams.word_list) {
+      alert('Please upload a wordlist file first');
+      return;
+    }
+    
+    paramsToRunning();
+    startTimer();
+    progress = 0;
+    processedRequests = 0;
+    filteredRequests = 0;
+    requestsPerSecond = 0;
+    results = [];
+
+    try {
       const response = await fetch('http://localhost:8000/bruteforcer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(bruteForceParams),
-        signal: activeController.signal
       });
-  
-      if (response.ok) {
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
-  
-        while (!done) {
+
+      if (!response.ok) {
+        throw new Error(`Brute force request failed: ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+        showResultsButton = true;
+        stopTimer();
+        runningToResults(); // << This line was missing
+        break;
+        }
+
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(line => line.trim());
+
+        for (const line of lines) {
           try {
-            if (activeController.signal.aborted) {
-              break;
+            const update = JSON.parse(line);
+            console.log('Received update:', update); //debugging missing table entries
+            if (update.progress) {
+              progress = update.progress * 100;
             }
-            const { value, done: readerDone } = await reader.read();
-            done = readerDone;
-            if (value) {
-              const chunk = decoder.decode(value, { stream: true });
-              const updates = chunk.split('\n').filter(Boolean).map(JSON.parse);
-              bruteForceResult = [...bruteForceResult, ...updates];
-              completedRequests += updates.length; // Update progress
-  
-              processedRequests += updates.length;
-              filteredRequests = bruteForceResult.filter((item) => !item.error).length;
-              requestsPerSecond = (processedRequests / ((Date.now() - startTime) / 1000)).toFixed(2);
+            processedRequests = update.processed_requests || processedRequests;
+            filteredRequests = update.filtered_requests || filteredRequests;
+            requestsPerSecond = update.requests_per_second || requestsPerSecond;
+
+            if (update.payload) {
+              results = [...results, update];
             }
-          } catch (err) {
-            if (err.name === 'AbortError') {
-              done = true;
-              console.log("real-time results stopped to end brute force");
-            }
-            else {
-              console.error('Error: ', err);
-            }
+          } catch (error) {
+            console.error('Error parsing update:', error);
           }
         }
-  
-        bruteForcingToResults();
-      } else {
-        // logging error responses (e.g, 422, 500 etc.)
-        const errorDetails = {
-          status: response.status,
-          statusText: response.statusText,
-          responseBody: await response.text(), // Capture the body for debugging
-          payload: bruteForceParams // Include the payload that caused the issue
-        };
-
-        console.error("Error starting brute force:", response.statusText);
-
-        // should store error in result
-        bruteForceResult.push(errorDetails); 
       }
+    } catch (error) {
+      console.error('Error during brute force:', error);
+      showResultsButton = true;
       stopTimer();
     }
-  
-    // Sorting function
-    function sortTable(column) {
-      const { direction } = sortConfig;
-  
-      // Toggle sorting direction
-      sortConfig.direction = direction === 'asc' ? 'desc' : 'asc';
-      sortConfig.column = column;
-  
-      console.log(`Sorting by column: ${column}, direction: ${sortConfig.direction}`);
-  
-      bruteForceResult = [...bruteForceResult].sort((a, b) => {
-          const aValue = a[column];
-          const bValue = b[column];
-  
-          // Ensure we are working with numbers where appropriate
-          const aValueParsed = typeof aValue === 'number' ? aValue : parseFloat(aValue);
-          const bValueParsed = typeof bValue === 'number' ? bValue : parseFloat(bValue);
-  
-          console.log(`Comparing ${a[column]} with ${b[column]}`);
-  
-          if (aValueParsed < bValueParsed) {
-              return sortConfig.direction === 'asc' ? -1 : 1;
-          } else if (aValueParsed > bValueParsed) {
-              return sortConfig.direction === 'asc' ? 1 : -1;
-          }
-          return 0;
-      });
-      console.log("Sorted Result: ", bruteForceResult);
   }
-  </script>
-  
-  <div class="bruteForceConfigPage">
-    <div>
-      <h1>Brute Force</h1>
-  
-      {#if acceptingParams}
+
+  function exportResults() { 
+    const dataStr = JSON.stringify(results, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+    const exportFileDefaultName = 'bruteforce_results.json';
+
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  }
+</script>
+
+<div class="bruteForceConfigPage">
+  <div>
+    <h1>Brute Force Configuration</h1>
+
+    {#if acceptingParams}
       <div>
-        <form onsubmit="{(e) => {e.preventDefault(); handleSubmit()}}">
+        <form on:submit="{(e) => {e.preventDefault(); handleSubmit()}}">
           {#each bruteForceInput as param}
-          <label>
-            <span>{param.label}:</span>
-            <input
-              type={param.type}
-              bind:value={bruteForceParams[param.id]}
-              placeholder={param.example}
-              required={param.required}
-              oninput={(e) => dynamicBruteForceParamUpdate(param.id, e.target.value)}
-            />
-            {#if errorMessages[param.id]}
-            <p class="error">{errorMessages[param.id]}</p>
+            {#if param.type === 'file'}
+              <div>
+                <label for={param.id}><span>{param.label}</span></label>
+                <input
+                  id={param.id}
+                  accept={param.accept}
+                  type={param.type}
+                  required={param.required}
+                  on:change={handleFile}
+                />
+                <div id="file-status" class="selected-file">{selectedFileName}</div>
+              </div>
+            {:else}
+              <div>
+                <label for={param.id}>{param.label}:</label>
+                <input
+                  id={param.id}
+                  type={param.type}
+                  bind:value={bruteForceParams[param.id]}
+                  placeholder={param.example}
+                  required={param.required}
+                  on:input={(e) => dynamicBruteForceParamUpdate(param.id, e.target.value)}
+                />
+              </div>
             {/if}
-          </label>
           {/each}
-  
-          <button type="submit">Submit</button>
+
+          <div>
+            <label for="word_list">{wordlistInput.label}</label>
+            <input
+              id="word_list"
+              accept={wordlistInput.accept}
+              type="file"
+              placeholder="No file selected."
+              required={wordlistInput.required}
+              on:change={handleFile}
+            />
+            <div id="file-status" class="selected-file">{selectedFileName}</div>
+          </div>
+
+          <button type="submit" class="submit-button">Start Brute Force</button>
         </form>
       </div>
-      {/if}
-  
-      {#if bruteForcing}
-      <div class="bruteForce-section">
-        <div>
-          <h2>Running...</h2>
-          <div class="progress-bar">
-            <div
-              class="progress"
-              style="width: {totalRequests > 0 ? (completedRequests / totalRequests) * 100 : 0}%"
-            ></div>
+    {/if}
+
+    {#if isRunning}
+    <div class = "brute-section">
+      <div>
+        <h2>Running...</h2>
+        <!-- Progress Bar -->
+        <div class="progress-bar">
+          <div class="progress" style="width: {progress}%"></div>
+        </div>
+        <!-- Metrics -->
+        <div class="metrics">
+          <div class="metric-item">
+            <strong>Processed</strong>
+            <span>{processedRequests}</span>
           </div>
-          <p>{completedRequests} / {totalRequests || "∞"} requests completed</p>
-          <div class="metrics">
-            <div class="metric-item">
-              <strong>Running Time:</strong>
-              <span>{elapsedTime}</span>
-            </div>
-            <div class="metric-item">
-              <strong>Processed Requests:</strong>
-              <span>{processedRequests}</span>
-            </div>
-            <div class="metric-item">
-              <strong>Filtered Requests:</strong>
-              <span>{filteredRequests}</span>
-            </div>
-            <div class="metric-item">
-              <strong>Requests/sec:</strong>
-              <span>{requestsPerSecond}</span>
-            </div>
+          <div class="metric-item">
+            <strong>Filtered</strong>
+            <span>{filteredRequests}</span>
           </div>
-          <div class="results-table">
-            {#if bruteForceResult.length > 0}
-            <table>
-              <thead>
-                <tr>
-                  <th><button type="button" onclick={() => sortTable("id")}>ID</button></th>
-                  <th><button type="button" onclick={() => sortTable("status_code")}>Response</button></th>
-                  <th><button type="button" onclick={() => sortTable("lines")}>Lines</button></th>
-                  <th><button type="button" onclick={() => sortTable("words")}>Word</button></th>
-                  <th><button type="button" onclick={() => sortTable("chars")}>Chars</button></th>
-                  <th>Payload</th>
-                  <th><button type="button" onclick={() => sortTable("length")}>Length</button></th>
-                </tr>
-              </thead>
-              <tbody>
-                {#each bruteForceResult as result, index (result.url)}
-                <tr>
-                  <td>{index + 1}</td>
-                  <td>{result.status_code}</td>
-                  <td>{result.lines}L</td>
-                  <td>{result.words}W</td>
-                  <td>{result.chars}</td>
-                  <td>{result.payload}</td>
-                  <td>{parseFloat(result.length).toFixed(2)}</td>
-                </tr>
-                {/each}
-              </tbody>
-            </table>
-            {/if}
+          <div class="metric-item">
+            <strong>Requests/sec</strong>
+            <span>{requestsPerSecond}</span>
+          </div>
+          <div class="metric-item">
+            <strong>Elapsed Time</strong>
+            <span>{elapsedTime}</span>
           </div>
         </div>
+        <!-- Live Table -->
+        <div class = "results-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Status</th>
+              <th>Lines</th>
+              <th>Words</th>
+              <th>Chars</th>
+              <th>Payload</th>
+              <th>Length</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each results as result, index}
+              <tr>
+                <td>{index + 1}</td>
+                <td>{result.response}</td>
+                <td>{result.lines}</td>
+                <td>{result.words}</td>
+                <td>{result.chars}</td>
+                <td>{result.payload}</td>
+                <td>{result.length}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+        </div>
       </div>
-      {/if}
-  
-      {#if displayingResults}
-      <div class="bruteforce-section">
-        <h2> Brute Force Results</h2>
+    </div>
+    {/if}
+
+    {#if displayingResults}
+      <div class = "brute-section">
+        <h2>Brute Force Results</h2>
         <div class="metrics">
           <div class="metric-item">
             <strong>Running Time:</strong>
@@ -352,69 +344,42 @@
           </div>
         </div>
 
-        <div class="results-table">
-          <table>
-            <thead>
-              <tr>
-                <th onclick={() => sortTable('id')}>
-                  ID
-                  {#if sortConfig.column === 'id'}
-                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                  {/if}
-                </th>
-                <th onclick={() => sortTable('status_code')}>
-                  Response
-                  {#if sortConfig.column === 'status_code'}
-                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                  {/if}
-                </th>
-                <th onclick={() => sortTable('lines')}>
-                  Lines
-                  {#if sortConfig.column === 'lines'}
-                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                  {/if}
-                </th>
-                <th onclick={() => sortTable('words')}>
-                  Word
-                  {#if sortConfig.column === 'words'}
-                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                  {/if}
-                </th>
-                <th onclick={() => sortTable('chars')}>
-                  Chars
-                  {#if sortConfig.column === 'chars'}
-                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                  {/if}
-                </th>
-                <th>Payload</th>
-                <th onclick={() => sortTable('length')}>
-                  Length
-                  {#if sortConfig.column === 'length'}
-                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                  {/if}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each bruteForceResult as result, index (result.url)}
+        <div class = "results-table">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Status</th>
+              <th>Lines</th>
+              <th>Words</th>
+              <th>Chars</th>
+              <th>Payload</th>
+              <th>Length</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each results as result, index}
               <tr>
                 <td>{index + 1}</td>
-                <td>{result.status_code}</td>
-                <td>{result.lines}L</td>
-                <td>{result.words}W</td>
+                <td>{result.response}</td>
+                <td>{result.lines}</td>
+                <td>{result.words}</td>
                 <td>{result.chars}</td>
                 <td>{result.payload}</td>
-                <td>{parseFloat(result.length).toFixed(2)}</td>
+                <td>{result.length}</td>
               </tr>
-              {/each}
-            </tbody>
-          </table>
+            {/each}
+          </tbody>
+        </table>
+        <button on:click={(e) => { resultsToParams() }}>Back to Param Setup</button>
+        {#if showResultsButton}
+          <button on:click={exportResults}>Export Results</button>
+        {/if}
         </div>
       </div>
-      {/if}
-    </div>
+    {/if}
   </div>
-
+</div>
 
 <style>
   .progress-bar {
@@ -439,7 +404,7 @@
     margin-top: 20px; 
   }
 
-  .bruteforce-section {
+  .brute-section {
     background-color: #1f1f1f;
     padding: 1.5rem;
     border-radius: 1rem;
@@ -447,8 +412,22 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
-  .error {
+  .bruteForceConfigPage {
+  width: 80%;  /* Adjusted width to give more space */
+  margin: 10vh auto; /* Centered with some spacing from the top */
+  padding: 20px;
+  background: transparent;
+  border-radius: 8px;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #f5f5f5; /* Set text color to dark gray for better contrast */
+}
+
+  /* .error {
     color: red;
     font-size: 0.8rem;
-  }
+  } */
+
 </style>

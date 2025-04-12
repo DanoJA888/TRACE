@@ -34,14 +34,14 @@ class BruteForcer:
             if not url.startswith(('http://', 'https://')):
                 url = 'https://' + url
 
-            # Replace or append the payload as part of the URL path (directory brute force)
             parsed_url = urlparse(url)
             brute_force_url = parsed_url._replace(path=parsed_url.path + '/' + payload)
+            full_url = urlunparse(brute_force_url)
 
-            scan_logger.info(f"Attempting: {urlunparse(brute_force_url)}")
+            scan_logger.info(f"Attempting: {full_url}")
 
             response = requests.get(
-                urlunparse(brute_force_url),
+                full_url,
                 cookies=self.auth_cookies,
                 proxies={'http': self.network_proxy, 'https': self.network_proxy} if self.network_proxy else None,
                 timeout=5,
@@ -54,6 +54,7 @@ class BruteForcer:
             chars = len(content)
 
             return {
+                'url': full_url,
                 'status_code': response.status_code,
                 'lines': lines,
                 'words': words,
@@ -65,6 +66,7 @@ class BruteForcer:
         except requests.RequestException as e:
             scan_logger.error(f"Request error for payload '{payload}': {e}")
             return {
+                'url': full_url if 'full_url' in locals() else f"{url}/{payload}",
                 'status_code': 0,
                 'lines': 0,
                 'words': 0,
@@ -111,6 +113,7 @@ class BruteForcer:
 
             result_entry = {
                 'id': i + 1,
+                'url': result['url'], 
                 'response': result['status_code'],
                 'lines': result['lines'],
                 'words': result['words'],
@@ -186,3 +189,27 @@ class BruteForcer:
 
         # Display results
         self.display_results_live = scan_params.get('show_results', True)
+
+# this was for testintg on terminal ignore this 
+    # def configure_scan_parameters(self, scan_params):
+    #     """Configure scan parameters from user input."""
+    #     self.target_url = input("Enter target URL: ")
+
+    #     # Handle word list (file or list of strings)
+    #     word_list_param = input("Enter wordlist file path or list of words (comma separated): ").strip()
+        
+    #     # Remove quotes if present in the input (e.g., if the user accidentally adds quotes around the path)
+    #     if word_list_param.startswith('"') and word_list_param.endswith('"'):
+    #         word_list_param = word_list_param[1:-1]
+
+    #     if os.path.exists(word_list_param):  # Check if it's a valid file path
+    #         try:
+    #             with open(word_list_param, 'r') as file:
+    #                 self.wordlist = [line.strip() for line in file if line.strip()]
+    #         except Exception as e:
+    #             scan_logger.error(f"Error reading wordlist file: {e}")
+    #             self.wordlist = []  # Set to empty list if file reading fails
+    #     else:  # If it's not a valid path, assume it's a comma-separated list
+    #         self.wordlist = word_list_param.split(',')
+
+    #     scan_logger.info(f"Wordlist loaded: {self.wordlist}")
