@@ -380,7 +380,7 @@ function urlToFilename(url) {
         </label>
         {/each}
 
-        <button type="submit">Submit</button>
+        <button type="submit" title="Begins Crawling with the set Parameters">Submit</button>
       </form>
     </div>
     {/if}
@@ -414,12 +414,12 @@ function urlToFilename(url) {
             <span>{requestsPerSecond}</span>
           </div>
         </div> 
-        <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
+        <button onclick={(e) => {preventDefault(e); stopCrawler()}} title="Completely Stops Crawling of the website">Stop Crawl</button>
         {#if pauseAvailable == true}
-        <button onclick={(e) => {preventDefault(e); pauseCrawler()}}>Pause Crawl</button>
+        <button onclick={(e) => {preventDefault(e); pauseCrawler()}} title="Temporarily Stops Crawling of the website">Pause Crawl</button>
         {/if}
         {#if resumeAvailable == true}
-        <button onclick={(e) => {preventDefault(e); resumeCrawler()}}>Resume Crawl</button>
+        <button onclick={(e) => {preventDefault(e); resumeCrawler()}} title ="Resumes Crawling of the Webstie">Resume Crawl</button>
         {/if}
         <div class="results-table">
           {#if crawlResult.length === 0}
@@ -529,9 +529,9 @@ function urlToFilename(url) {
             {/each}
           </tbody>
         </table>
-        <button onclick={(e) => { resultsToParams() }}>Back to Param Setup</button>
+        <button onclick={(e) => { resultsToParams() }} title = "Navigates back to the Crawler Parameter page">Back to Param Setup</button>
         
-        <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}}>Export</button>
+        <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}} title="Exports the results of the Crawling">Export</button>
       </div>
     </div>
     {/if}
