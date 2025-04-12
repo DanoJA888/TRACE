@@ -211,6 +211,18 @@
       return; // Do not proceed if validation fails
     }
 
+    //Check if the URL is valid
+    try {
+      const urlCheckResponse = await fetch(crawlerParams.url, { method: 'HEAD'});
+      if (!urlCheckResponse.ok) {
+        alert("The URL is incorrect or unreachable. Please check and try again.");
+        return;
+      }
+    } catch (error) {
+      alert("The URL is incorrect or unreachable. Please check and try again.");
+      return;
+    }
+
     paramsToCrawling();
     startTimer();
     crawledPages = 0;
