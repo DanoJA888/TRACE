@@ -1,0 +1,264 @@
+[18:21:57] Starting parameter fuzzing scan on https://en.wikipedia.org/wiki/System_administrator using GET
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'admin'
+[18:21:58] Response: 403 Forbidden
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'login'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'home'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'help'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'faq'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'contact'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'about'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'images'
+[18:21:58] Response: 200 OK
+[18:21:58] GET https://en.wikipedia.org/wiki/System_administrator with payload 'img'
+[18:21:58] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'assets'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'css'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'js'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'static'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'media'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'uploads'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'download'
+[18:21:59] Response: 200 OK
+[18:21:59] GET https://en.wikipedia.org/wiki/System_administrator with payload 'docs'
+[18:21:59] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'documentation'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'api'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'register'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'signup'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'profile'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'user'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'dashboard'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'portal'
+[18:22:00] Response: 200 OK
+[18:22:00] GET https://en.wikipedia.org/wiki/System_administrator with payload 'members'
+[18:22:00] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'account'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'secure'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'private'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'public'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'backup'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'config'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'setup'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'install'
+[18:22:01] Response: 200 OK
+[18:22:01] GET https://en.wikipedia.org/wiki/System_administrator with payload 'update'
+[18:22:01] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'wp-admin'
+[18:22:02] Response: 403 Forbidden
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'wp-content'
+[18:22:02] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'wordpress'
+[18:22:02] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'joomla'
+[18:22:02] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'drupal'
+[18:22:02] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'magento'
+[18:22:02] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'cpanel'
+[18:22:02] Response: 200 OK
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'phpmyadmin'
+[18:22:02] Response: 403 Forbidden
+[18:22:02] GET https://en.wikipedia.org/wiki/System_administrator with payload 'webmail'
+[18:22:02] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'mail'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'smtp'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'ftp'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'database'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'db'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'forum'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'blog'
+[18:22:03] Response: 200 OK
+[18:22:03] GET https://en.wikipedia.org/wiki/System_administrator with payload 'news'
+[18:22:03] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'shop'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'store'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'cart'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'checkout'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'payment'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'support'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'ticket'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'status'
+[18:22:04] Response: 200 OK
+[18:22:04] GET https://en.wikipedia.org/wiki/System_administrator with payload 'search'
+[18:22:04] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'index'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'default'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'main'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'test'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'dev'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'staging'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'prod'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'production'
+[18:22:05] Response: 200 OK
+[18:22:05] GET https://en.wikipedia.org/wiki/System_administrator with payload 'old'
+[18:22:05] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'new'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'temp'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'tmp'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'archive'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'log'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'logs'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'cgi-bin'
+[18:22:06] Response: 200 OK
+[18:22:06] GET https://en.wikipedia.org/wiki/System_administrator with payload 'bin'
+[18:22:06] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'include'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'includes'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'libs'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'libraries'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'vendor'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'node_modules'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'classes'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'scripts'
+[18:22:07] Response: 200 OK
+[18:22:07] GET https://en.wikipedia.org/wiki/System_administrator with payload 'ajax'
+[18:22:07] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'xml'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'json'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'rest'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'soap'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'auth'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'login'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'logout'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'password'
+[18:22:08] Response: 200 OK
+[18:22:08] GET https://en.wikipedia.org/wiki/System_administrator with payload 'reset'
+[18:22:08] Response: 200 OK
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'recover'
+[18:22:09] Response: 200 OK
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'admin-panel'
+[18:22:09] Response: 403 Forbidden
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'administrator'
+[18:22:09] Response: 403 Forbidden
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'moderator'
+[18:22:09] Response: 200 OK
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'webmaster'
+[18:22:09] Response: 200 OK
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'control'
+[18:22:09] Response: 200 OK
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'panel'
+[18:22:09] Response: 200 OK
+[18:22:09] GET https://en.wikipedia.org/wiki/System_administrator with payload 'server-status'
+[18:22:09] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'server-info'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'phpinfo'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'info'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'stats'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'monitoring'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'cache'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'cookies'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'session'
+[18:22:10] Response: 200 OK
+[18:22:10] GET https://en.wikipedia.org/wiki/System_administrator with payload 'error'
+[18:22:10] Response: 500 Internal Server Error
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'debug'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'trace'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'health'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'metrics'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'robots'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'sitemap'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'rss'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'feed'
+[18:22:11] Response: 200 OK
+[18:22:11] GET https://en.wikipedia.org/wiki/System_administrator with payload 'newsletter'
+[18:22:11] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'subscribe'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'privacy'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'terms'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'tos'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'legal'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'mobile'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'app'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'beta'
+[18:22:12] Response: 200 OK
+[18:22:12] GET https://en.wikipedia.org/wiki/System_administrator with payload 'alpha'
+[18:22:12] Response: 200 OK
+[18:22:13] Scan completed in 15.05 seconds. Processed 131 requests, found 125 matching results.

@@ -75,7 +75,7 @@ async def resumeCrawl():
         return {"message" :" Crawler Resumed"}
     return {"message": "nothing to resume"}
 
-# Add fuzzer request model --- FUZZER
+# Add fuzzer request model FUZZER
 class FuzzRequest(BaseModel):
     target_url: str
     word_list: Optional[str] = ''
@@ -86,20 +86,52 @@ class FuzzRequest(BaseModel):
     filter_by_content_length: Optional[str | int] = ''
     proxy: str = ''
     additional_parameters: Optional[str] = ''
-    show_results: bool = True  # New parameter for toggling result visibility
+    show_results: bool = True  
 
-# Add fuzzer endpoint 
+# Global fuzzer instance to control across endpoints
+fuzzer = None
+
+#  fuzzer endpoint 
 @app.post("/fuzzer")
 async def launchFuzz(request: FuzzRequest):
+    global fuzzer
     fuzzer = Fuzzer()
     params_dict = request.model_dump()
     logger.info(request)
     
     async def fuzz_stream():
-        async for update in fuzzer.run_scan(params_dict):
-            yield json.dumps(update) + "\n"
+        try:
+            async for update in fuzzer.run_scan(params_dict):
+                yield json.dumps(update) + "\n"
+        except Exception as e:
+            logger.error(f"Error in fuzz stream: {e}", exc_info=True)
     
     return StreamingResponse(fuzz_stream(), media_type="application/json")
+
+# control endpoints for the fuzzer
+@app.post("/stop_fuzzer")
+async def stopFuzzer():
+    global fuzzer
+    if fuzzer:
+        fuzzer.stop_scan()
+        return {"message": "Fuzzer stopping requested"}
+    return {"message": "No active fuzzer to stop"}
+
+@app.post("/pause_fuzzer")
+async def pauseFuzzer():
+    global fuzzer
+    if fuzzer:
+        fuzzer.pause_scan()
+        return {"message": "Fuzzer paused"}
+    return {"message": "No active fuzzer to pause"}
+
+@app.post("/resume_fuzzer")
+async def resumeFuzzer():
+    global fuzzer
+    if fuzzer:
+        fuzzer.resume_scan()
+        return {"message": "Fuzzer resumed"}
+    return {"message": "No active fuzzer to resume"}
 
 # Add BruteForcer request model --- BRUTEFORCER
 class BruteForcerRequest(BaseModel):
@@ -111,16 +143,23 @@ class BruteForcerRequest(BaseModel):
     additional_parameters: Optional[str] = ''
     show_results: bool = True  # New parameter for toggling result visibility
 
+# Global bruteforcer instance
+brute_forcer = None
+
 # Add BruteForcer endpoint
 @app.post("/bruteforcer")
 async def launchBruteForcer(request: BruteForcerRequest):
+    global brute_forcer
     brute_forcer = BruteForcer()
     params_dict = request.model_dump()
     logger.info(request)
     
     async def brute_force_stream():
-        async for update in brute_forcer.run_scan(params_dict):
-            yield json.dumps(update) + "\n"
+        try:
+            async for update in brute_forcer.run_scan(params_dict):
+                yield json.dumps(update) + "\n"
+        except Exception as e:
+            logger.error(f"Error in brute force stream: {e}", exc_info=True)
     
     return StreamingResponse(brute_force_stream(), media_type="application/json")
 
