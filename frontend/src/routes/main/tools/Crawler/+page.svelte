@@ -211,6 +211,29 @@
       return; // Do not proceed if validation fails
     }
 
+    // This try catch is to validate whether the URL is valid or not
+    try {
+      const validateURL = await fetch('http://localhost:8000/validate_url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: crawlerParams.url })
+      });
+
+      const validationResponse = await validateURL.json();
+
+      // if the URL is not valid, show an error message
+      if (!validateURL.ok || !validationResponse.valid) {
+        alert(`URL validation failed: ${validationResponse.message || 'Unknown error'}`);
+        return;
+      }
+    }
+    catch (error) {
+      alert(`An error occurred during URL validation: ${error.message}`);
+      console.error('Error during URL validation:', error);
+      return;
+    }
 
 
     paramsToCrawling();
