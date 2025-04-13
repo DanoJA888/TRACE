@@ -570,22 +570,29 @@ function urlToFilename(url) {
 
   .table-container {
     max-height: 300px;
+    overflow-x: auto;
     overflow-y: auto;
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
     background-color: #1f1f1f;
+    width: 100%; /* Ensures the table conainter stays at a fixed width*/
+    box-sizing: border-box; /* Ensures padding is included in the width */
   }
 
   .table-container table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed /* Prevents the columns from adjusting dynamically*/
   }
 
   .table-container th, .table-container td {
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid #ccc;
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: hidden; /* Hides overflow text */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow text */
   }
 
   .results-table {
