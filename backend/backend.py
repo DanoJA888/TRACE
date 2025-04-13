@@ -1,5 +1,6 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from crawler import Crawler
 from typing import Optional
@@ -10,6 +11,7 @@ from fuzzer import Fuzzer
 from bruteforcer import BruteForcer
 import os
 import shutil
+import requests
 
 # logs whenever an endpoint is hit using logger.info
 logging.basicConfig(level=logging.DEBUG)
@@ -48,6 +50,28 @@ async def launchCrawl(request: CrawlRequest):
             logger.error(f"Error in crawl stream: {e}", exc_info=True)
     
     return StreamingResponse(crawl_stream(), media_type="application/json")
+
+@app.post("/validate_url")
+async def validate_url(request: CrawlRequest):
+    url = request.url
+    try:
+        response = requests.get(url, timeout=5)
+        # Check if the response status code is 200 (OK)
+        if response.status_code == 200:
+            return {"valid": True, "message": "URL is valid"}
+        else:
+            return {"valid": False, "message": f"URL is not reachable with a status code of {response.status_code}"}
+    # These are to catch specific exceptions that can occur with requests such as invalid URL format, connection errors, and timeouts
+    except requests.exceptions.MissingSchema:
+        return {"valid": False, "message": "Invalid URL format"}
+    except requests.exceptions.ConnectionError:
+        return {"valid": False, "message": "URL is not reachable"}
+    except requests.exceptions.Timeout:
+        return {"valid": False, "message": "Request to URL timed out"}
+    except Exception as e:
+        logger.error(f"Error validating URL: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while validating the URL")
+    
 
 # function that stops the execution of crawler when button is clicked
 @app.post("/stop_crawler")

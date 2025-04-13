@@ -23,12 +23,12 @@
       <div class="toolsConfigPage">
         <div class="row">
           <span> Crawler </span>
-          <button on:click={gotoCrawler}>Select</button>
+          <button on:click={gotoCrawler} title="Navigates to the Crawler page">Select</button>
         </div>
 
         <div class="row">
           <span> Fuzzer </span>
-          <button on:click={gotoFuzzer}>Select</button>
+          <button on:click={gotoFuzzer} title="Navigates to the Fuzzer page">Select</button>
         </div>
 
         <div class="row">
@@ -38,7 +38,7 @@
 
         <div class="row">
           <span> AI Credential Generator </span>
-          <button on:click={gotoAI}>Select</button>
+          <button on:click={gotoAI} title="Navigates to the AI Credential Generastor page">Select</button>
         </div>
         
       </div>

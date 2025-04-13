@@ -211,6 +211,31 @@
       return; // Do not proceed if validation fails
     }
 
+    // This try catch is to validate whether the URL is valid or not
+    try {
+      const validateURL = await fetch('http://localhost:8000/validate_url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: crawlerParams.url })
+      });
+
+      const validationResponse = await validateURL.json();
+
+      // if the URL is not valid, show an error message
+      if (!validateURL.ok || !validationResponse.valid) {
+        alert(`URL validation failed: ${validationResponse.message || 'Unknown error'}`);
+        return;
+      }
+    }
+    catch (error) {
+      alert(`An error occurred during URL validation: ${error.message}`);
+      console.error('Error during URL validation:', error);
+      return;
+    }
+
+
     paramsToCrawling();
     startTimer();
     crawledPages = 0;
@@ -368,7 +393,7 @@ function urlToFilename(url) {
         </label>
         {/each}
 
-        <button type="submit">Submit</button>
+        <button type="submit" title="Begins Crawling with the set Parameters">Submit</button>
       </form>
     </div>
     {/if}
@@ -402,43 +427,46 @@ function urlToFilename(url) {
             <span>{requestsPerSecond}</span>
           </div>
         </div> 
-        <button onclick={(e) => {preventDefault(e); stopCrawler()}}>Stop Crawl</button>
-        {#if pauseAvailable == true}
-        <button onclick={(e) => {preventDefault(e); pauseCrawler()}}>Pause Crawl</button>
-        {/if}
-        {#if resumeAvailable == true}
-        <button onclick={(e) => {preventDefault(e); resumeCrawler()}}>Resume Crawl</button>
-        {/if}
+        
         <div class="results-table">
           {#if crawlResult.length === 0}
           <p>No data received yet. Please wait...</p>
           {/if}
-          <table>
-            <thead>
-              <tr>
-                <th onclick={() => sortTable('id')}>ID</th>
-                <th>URL</th>
-                <th>Title</th>
-                <th onclick={() => sortTable('word_count')}>Word Count</th>
-                <th onclick={() => sortTable('char_count')}>Character Count</th>
-                <th onclick={() => sortTable('link_count')}>Links</th>
-                <th>Error</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each crawlResult as crawledURL, index (crawledURL.id)}  
-              <tr>
-                <td>{crawledURL.id}</td>
-                <td>{crawledURL.url}</td>
-                <td>{crawledURL.title}</td>
-                <td>{crawledURL.word_count}</td>
-                <td>{crawledURL.char_count}</td>
-                <td>{crawledURL.link_count}</td>
-                <td>{crawledURL.error ? 'True' : 'False'}</td>
-              </tr>
-              {/each}
-            </tbody>
-          </table>
+          <div class = "table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th onclick={() => sortTable('id')}>ID</th>
+                  <th>URL</th>
+                  <th>Title</th>
+                  <th onclick={() => sortTable('word_count')}>Word Count</th>
+                  <th onclick={() => sortTable('char_count')}>Character Count</th>
+                  <th onclick={() => sortTable('link_count')}>Links</th>
+                  <th>Error</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each crawlResult as crawledURL, index (crawledURL.id)}  
+                <tr>
+                  <td>{crawledURL.id}</td>
+                  <td>{crawledURL.url}</td>
+                  <td>{crawledURL.title}</td>
+                  <td>{crawledURL.word_count}</td>
+                  <td>{crawledURL.char_count}</td>
+                  <td>{crawledURL.link_count}</td>
+                  <td>{crawledURL.error ? 'True' : 'False'}</td>
+                </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+          <button onclick={(e) => {preventDefault(e); stopCrawler()}} title="Completely Stops Crawling of the website">Stop Crawl</button>
+          {#if pauseAvailable == true}
+          <button onclick={(e) => {preventDefault(e); pauseCrawler()}} title="Temporarily Stops Crawling of the website">Pause Crawl</button>
+          {/if}
+          {#if resumeAvailable == true}
+          <button onclick={(e) => {preventDefault(e); resumeCrawler()}} title ="Resumes Crawling of the Webstie">Resume Crawl</button>
+          {/if}
         </div>
       </div>
     </div>
@@ -467,57 +495,58 @@ function urlToFilename(url) {
       </div>
 
       <div class="results-table">
-        <table>
-          <thead>
-            <tr>
-              <th onclick={() => sortTable('id')}>ID 
-                {#if sortConfig.column === 'id'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+        <div class="table-container"> 
+          <table>
+            <thead>
+              <tr>
+                <th onclick={() => sortTable('id')}>ID 
+                  {#if sortConfig.column === 'id'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th>URL</th>
+                <th>URL</th>
               
-              <th>Title</th>
+                <th>Title</th>
               
-              <th onclick={() => sortTable('word_count')}>Word Count 
-                {#if sortConfig.column === 'word_count'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+                <th onclick={() => sortTable('word_count')}>Word Count 
+                  {#if sortConfig.column === 'word_count'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th onclick={() => sortTable('char_count')}>Character Count 
-                {#if sortConfig.column === 'char_count'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+                <th onclick={() => sortTable('char_count')}>Character Count 
+                  {#if sortConfig.column === 'char_count'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th onclick={() => sortTable('link_count')}>Links 
-                {#if sortConfig.column === 'link_count'}
-                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
-                {/if}
-              </th>
+                <th onclick={() => sortTable('link_count')}>Links 
+                  {#if sortConfig.column === 'link_count'}
+                    {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                  {/if}
+                </th>
               
-              <th>Error</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each crawlResult as crawledURL, index (crawledURL.id)}  
-            <tr>
-              <td>{crawledURL.id}</td>
-              <td>{crawledURL.url}</td>
-              <td>{crawledURL.title}</td>
-              <td>{crawledURL.word_count}</td>
-              <td>{crawledURL.char_count}</td>
-              <td>{crawledURL.link_count}</td>
-              <td>{crawledURL.error ? 'True' : 'False'}</td>
-            </tr>
-            {/each}
-          </tbody>
-        </table>
-        <button onclick={(e) => { resultsToParams() }}>Back to Param Setup</button>
-        
-        <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}}>Export</button>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#each crawlResult as crawledURL, index (crawledURL.id)}  
+              <tr>
+                <td>{crawledURL.id}</td>
+                <td>{crawledURL.url}</td>
+                <td>{crawledURL.title}</td>
+                <td>{crawledURL.word_count}</td>
+                <td>{crawledURL.char_count}</td>
+                <td>{crawledURL.link_count}</td>
+                <td>{crawledURL.error ? 'True' : 'False'}</td>
+              </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+        <button onclick={(e) => { resultsToParams() }} title = "Navigates back to the Crawler Parameter page">Restart</button>
+        <button onclick={(e) => {preventDefault(e); console.log(crawlerParams['url']); exportToCSV(crawlResult)}} title="Exports the results of the Crawling">Export</button>
       </div>
     </div>
     {/if}
@@ -539,12 +568,44 @@ function urlToFilename(url) {
     transition: width 0.3s ease;
   }
 
+  .table-container {
+    max-height: 300px;
+    overflow-x: auto;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #1f1f1f;
+    width: 100%; /* Ensures the table conainter stays at a fixed width*/
+    box-sizing: border-box; /* Ensures padding is included in the width */
+  }
+
+  .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed /* Prevents the columns from adjusting dynamically*/
+  }
+
+  .table-container th, .table-container td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: hidden; /* Hides overflow text */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow text */
+  }
+
   .results-table {
     margin-top: 20px; 
   }
 
   .results-table button {
-    margin-top: 20px; 
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    width: auto;
+    min-width: 80px;
   }
 
   .crawl-section {
@@ -553,6 +614,15 @@ function urlToFilename(url) {
     border-radius: 1rem;
     margin-top: 1rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .crawl-section button {
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    width: auto;
+    min-width: 80px;
   }
 
   .error {
