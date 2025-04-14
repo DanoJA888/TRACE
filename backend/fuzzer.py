@@ -92,6 +92,7 @@ class Fuzzer:
             chars = len(content)
 
             return {
+                'url_used': fuzz_url,
                 'status_code': response.status_code,
                 'lines': lines,
                 'words': words,
@@ -177,7 +178,7 @@ class Fuzzer:
 
             result_entry = {# Add payload and result info
                 'id': i + 1,
-                'url': self.scan_target,  # URL
+                'url': result['url_used'],  # URL
                 'response': result['status_code'],
                 'lines': result['lines'],
                 'words': result['words'],
