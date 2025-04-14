@@ -5,8 +5,9 @@ import json
 from collections import deque
 import logging
 import os
+import asyncio
 
-# Configure  fuzzer logging
+# Configure fuzzer logging
 logging.basicConfig(level=logging.INFO)
 scan_logger = logging.getLogger(__name__)
 
@@ -22,15 +23,17 @@ class Fuzzer:
         self.network_proxy = ''
         self.custom_params = {}
         self.display_results_live = False
-
         # Runtime data
         self.total_scan_time = 0.0
         self.rate_of_requests = 0.0
         self.scan_report = []
         self.report_file = output_filename
         self.number_of_payloads = 0
+        # Control flags for pause and stop functionality
+        self.stop_flag = False
+        self.pause_flag = False
 
-    def parse_auth_cookies(self, cookie_string):#parsing  cookie string in dictionary
+    def parse_auth_cookies(self, cookie_string):#parsing  cookie string in dic
         if not cookie_string:
             return {}
 
@@ -40,7 +43,7 @@ class Fuzzer:
                 key, value = item.strip().split('=', 1)
                 cookies[key] = value
         return cookies
-#using request to test fuzzer functionality
+#using request to test fuzzer functionality/ http from other team needed
     def send_request(self, url, payload, method):#Send request with payload and return response details
         try:
             headers = {'User-Agent': 'TRACE Fuzzer 1.0'}
@@ -89,6 +92,7 @@ class Fuzzer:
             chars = len(content)
 
             return {
+                'url_used': fuzz_url,
                 'status_code': response.status_code,
                 'lines': lines,
                 'words': words,
@@ -122,27 +126,59 @@ class Fuzzer:
 
     def save_report_to_json(self):#Save results to JSON file for now . might have to be CSV
         try:
+            # Ensure the directory exists
+            os.makedirs(os.path.dirname(self.report_file), exist_ok=True)
             with open(self.report_file, 'w') as json_file:
                 json.dump(self.scan_report, json_file, indent=4)
+            scan_logger.info(f"Results saved to {self.report_file}")
         except Exception as e:
-            scan_logger.error(f"Error saving  as JSON file {e}")
+            scan_logger.error(f"Error saving as JSON file {e}")
+
+    # Add methods for stopping, pausing, and resuming scans
+    def stop_scan(self):
+        scan_logger.info("Stopping scan requested")
+        self.stop_flag = True
+
+    def pause_scan(self):
+        scan_logger.info("Pausing scan requested")
+        self.pause_flag = True
+
+    def resume_scan(self):
+        scan_logger.info("Resuming scan requested")
+        self.pause_flag = False
 
     async def run_scan(self, scan_parameters):#start fuzzer with user inputs params
         self.configure_scan_parameters(scan_parameters)
         if not self.payloads:# if empty this will be default 
             self.payloads = ['test', 'admin', 'password', '123456']
         self.number_of_payloads = len(self.payloads)
+        
+        # Reset control flags at the start of a new scan
+        self.stop_flag = False
+        self.pause_flag = False
 
         start = time.time()
         processed_requests = 0
         filtered_requests = 0
 
         for i, payload in enumerate(self.payloads):
+            # Check if stop was requested
+            if self.stop_flag:
+                scan_logger.info("Scan stopped by user request")
+                break
+            # Check if pause was requested and wait if needed
+            await asyncio.sleep(0.1)  # Small delay to prevent busy waiting
+            while self.pause_flag:
+                await asyncio.sleep(0.5)  # Wait while paused
+                if self.stop_flag:  # Check if stop was requested while paused
+                    break
+
             result = self.send_request(self.scan_target, payload, self.request_method)
             processed_requests += 1
 
             result_entry = {# Add payload and result info
                 'id': i + 1,
+                'url': result['url_used'],  # URL
                 'response': result['status_code'],
                 'lines': result['lines'],
                 'words': result['words'],
@@ -156,7 +192,7 @@ class Fuzzer:
                 self.scan_report.append(result_entry)
                 filtered_requests += 1
 
-            # calc progress and also the stats
+            # calc progress and the stats
             elapsed = time.time() - start
             requests_per_second = processed_requests / elapsed if elapsed > 0 else 0
 
@@ -167,7 +203,7 @@ class Fuzzer:
                 "filtered_requests": filtered_requests,
                 "requests_per_second": round(requests_per_second, 2)
             }
-            if self.display_results_live:#reuslts display must be true then display
+            if self.display_results_live:#reuslts display must be true then display resutls
                 update.update(result_entry)
 
             yield update
