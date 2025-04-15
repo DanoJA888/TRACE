@@ -1,4 +1,4 @@
-import requests
+#import requests
 from urllib.parse import urljoin, urlparse, parse_qs, urlencode
 import time
 import json
@@ -6,6 +6,8 @@ from collections import deque
 import logging
 import os
 import asyncio
+
+from http_tester import send_http_request
 
 # Configure fuzzer logging
 logging.basicConfig(level=logging.INFO)
@@ -43,67 +45,86 @@ class Fuzzer:
                 key, value = item.strip().split('=', 1)
                 cookies[key] = value
         return cookies
-#using request to test fuzzer functionality/ http from other team needed
-    def send_request(self, url, payload, method):#Send request with payload and return response details
+    
+    #testing fuzzer with safe URL for testing purposes "https://httpbin.org/get"
+    def send_request(self, url, payload, method):
         try:
-            headers = {'User-Agent': 'TRACE Fuzzer 1.0'}
-            if not url.startswith(('http://', 'https://')):#check URL 
-                url = 'https://' + url
+            # Ensure URL has proper format
+            if not url.startswith(('http://', 'https://')):
+                url = 'http://' + url  # Changed to http as the external client uses port 80
+                
+            # Construct the URL with the payload
             if method == 'GET':
-            
                 if 'FUZZ' in url:
                     fuzz_url = url.replace('FUZZ', payload)
                 else:
                     separator = '&' if '?' in url else '?'
                     fuzz_url = f"{url}{separator}fuzz={payload}"
-                response = requests.get(
-                    fuzz_url,
-                    cookies=self.auth_cookies,
-                    proxies={'http': self.network_proxy, 'https': self.network_proxy} if self.network_proxy else None,
-                    timeout=5,
-                    headers=headers
-                )
-
-            elif method == 'POST':
-                data = {param: payload for param in self.custom_params} if self.custom_params else {'fuzz': payload}
-                response = requests.post(
-                    url,
-                    data=data,
-                    cookies=self.auth_cookies,
-                    proxies={'http': self.network_proxy, 'https': self.network_proxy} if self.network_proxy else None,
-                    timeout=5,
-                    headers=headers
-                )
-
-            elif method == 'PUT':
-                data = {param: payload for param in self.custom_params} if self.custom_params else {'fuzz': payload}
-                response = requests.put(
-                    url,
-                    data=data,
-                    cookies=self.auth_cookies,
-                    proxies={'http': self.network_proxy, 'https': self.network_proxy} if self.network_proxy else None,
-                    timeout=5,
-                    headers=headers
-                )
-
-            content = response.text
+            else:
+                fuzz_url = url
+                
+            # Prepare headers
+            headers = {'User-Agent': 'TRACE Fuzzer 1.0'}
+            
+            # Prepare cookies if needed
+            if self.auth_cookies:
+                headers['Cookie'] = "; ".join([f"{k}={v}" for k, v in self.auth_cookies.items()])
+                
+            # For POST/PUT, prepare the body
+            body = None
+            if method in ['POST', 'PUT']:
+                if self.custom_params:
+                    # Format as form data
+                    body = "&".join([f"{param}={payload}" for param in self.custom_params])
+                else:
+                    body = f"fuzz={payload}"
+                    
+            # Call HTTP client
+            response_data = send_http_request(
+                url=fuzz_url, 
+                method=method,
+                headers=headers
+            )
+            
+            # Parse the response based on its format
+            if isinstance(response_data, dict):
+                status_code = response_data.get("status_code", 0)
+                content = response_data.get("body", "")
+            else:
+                status_code = 200  # Default
+                content = response_data
+                
+                # Extract status code from raw HTTP response
+                if isinstance(content, str) and "HTTP/" in content:
+                    status_line = content.split('\n')[0]
+                    try:
+                        status_code = int(status_line.split()[1])
+                    except (IndexError, ValueError) as e:
+                        scan_logger.warning(f"Could not parse status code: {e}")
+                
+                # Extract body from raw HTTP response
+                if isinstance(content, str) and "\r\n\r\n" in content:
+                    content = content.split("\r\n\r\n", 1)[1]
+                    
+            # Process response content
             lines = content.count('\n')
             words = len(content.split())
             chars = len(content)
-
+            
             return {
                 'url_used': fuzz_url,
-                'status_code': response.status_code,
+                'status_code': status_code,
                 'lines': lines,
                 'words': words,
                 'chars': chars,
-                'length': len(response.content),
+                'length': len(content.encode('utf-8', errors='ignore')),
                 'error': False
             }
-
-        except requests.RequestException as e:
-            scan_logger.error(f"Req error: {e}")
+            
+        except Exception as e:
+            scan_logger.error(f"Request error: {e}")
             return {
+                'url_used': url if 'fuzz_url' not in locals() else fuzz_url,
                 'status_code': 0,
                 'lines': 0,
                 'words': 0,
@@ -111,6 +132,7 @@ class Fuzzer:
                 'length': 0,
                 'error': True
             }
+
 
     def display_fuzzer_results(self, result):#check status then display 
         if self.exclude_status_codes and result['status_code'] in self.exclude_status_codes:
