@@ -137,11 +137,13 @@
   <!-- Header Navigation -->
   <header>
     <nav>
+      <!--
       <a href="#">Dashboard</a>
       <a href="#">Settings</a>
+      -->
     </nav>
   </header>
-
+  
   <!-- Main Content -->
   <main>
     <h1>TRACE</h1>
