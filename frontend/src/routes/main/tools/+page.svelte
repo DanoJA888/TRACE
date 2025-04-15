@@ -1,10 +1,9 @@
-<h1> Tools </h1>
-
 <script>
 
     function gotoCrawler() {
       window.location.href = "/main/tools/Crawler";
     }
+
     function gotoFuzzer() {
       window.location.href = "/main/tools/Fuzzer";
     }
@@ -21,23 +20,25 @@
     
     <nav>
       <div class="toolsConfigPage">
+        <h1>Tools</h1>
+        <h3>[Project Name]</h3>
         <div class="row">
-          <span> Crawler </span>
+          <h3 style="padding-left: 15px;"> Crawler </h3>
           <button on:click={gotoCrawler} title="Navigates to the Crawler page">Select</button>
         </div>
 
         <div class="row">
-          <span> Fuzzer </span>
+          <h3 style="padding-left: 15px;"> Fuzzer </h3>
           <button on:click={gotoFuzzer} title="Navigates to the Fuzzer page">Select</button>
         </div>
 
         <div class="row">
-          <span> Brute Forcer </span>
+          <h3 style="padding-left: 15px;"> Brute Forcer </h3>
           <button on:click={gotoBruteForcer}>Select</button>
         </div>
 
         <div class="row">
-          <span> AI Credential Generator </span>
+          <h3 style="padding-left: 15px;"> AI Credential Generator </h3>
           <button on:click={gotoAI} title="Navigates to the AI Credential Generastor page">Select</button>
         </div>
         
