@@ -478,7 +478,6 @@
 <div class="crawlerConfigPage">
   <div>
     <h1>Parameter Fuzzing</h1>
-    <button on:click={goBack} class="back-button">Back to Tools</button>
 
     {#if acceptingParams}
       <div>
@@ -526,7 +525,7 @@
             {/if}
           {/each}
 
-          <button type="submit" class="submit-button">Start Fuzzing</button>
+          <button type="submit" class="submit-button" title="Begin Fuzzing with set parameters">Start Fuzzing</button>
         </form>
       </div>
     {/if}
@@ -556,18 +555,6 @@
             <strong>Requests/sec</strong>
             <span>{requestsPerSecond}</span>
           </div>
-        </div>
-
-        <div class="action-buttons">
-          {#if pauseAvailable}
-            <button class="pause-button" on:click={handlePauseFuzz}>Pause Fuzzer</button>
-          {/if}
-          {#if resumeAvailable}
-            <button class="resume-button" on:click={handleResumeFuzz}>Resume Fuzzer</button>
-          {/if}
-          <button class="restart-button" on:click={handleRestartFuzz}>Restart</button>
-          <button class="stop-button" on:click={handleStopFuzz}>Stop Fuzzer</button>
-          <button class="terminal-button" on:click={toggleTerminal}>Open Terminal</button>
         </div>
 
         <!-- Results Table -->
@@ -613,6 +600,19 @@
             </div>
           {/if}
         </div>
+
+        <div class="action-buttons">
+          {#if pauseAvailable}
+            <button class="pause-button" on:click={handlePauseFuzz} title="Pauses Fuzzing">Pause Fuzzer</button>
+          {/if}
+          {#if resumeAvailable}
+            <button class="resume-button" on:click={handleResumeFuzz} title="Resumes Fuzzing">Resume Fuzzer</button>
+          {/if}
+          <button class="stop-button" on:click={handleStopFuzz} title="Fully stops the Fuzzing">Stop Fuzzer</button>
+          <button class="restart-button" on:click={handleRestartFuzz} title="Restarts Fuzzing with the set parameters">Restart</button>
+          <button class="terminal-button" on:click={toggleTerminal} title="Displays Fuzzing in the terminal">Open Terminal</button>
+        </div>
+
       </div>
     {/if}
 
@@ -671,10 +671,10 @@
           </table>
           
           <div class="action-buttons">
-            <button on:click={resultsToParams} class="back-button">Back to Param Setup</button>
-            <button on:click={toggleTerminal} class="terminal-button">Open Terminal</button>
-            <button on:click={exportResults} class="export-button">Export as JSON</button>
-            <button on:click={exportToCSV} class="export-button">Export as CSV</button>
+            <button on:click={resultsToParams} class="back-button" title="Navigates back to Fuzzing Parameters">Back to Param Setup</button>
+            <button on:click={toggleTerminal} class="terminal-button" title="Opens a terminal to view">Open Terminal</button>
+            <button on:click={exportResults} class="export-button" title="Exports results as a JSON file">Export as JSON</button>
+            <button on:click={exportToCSV} class="export-button" title="Exports results as a CSV file">Export as CSV</button>
           </div>
         </div>
       </div>
@@ -711,13 +711,53 @@
   .warning { color: #FF9800; }
   .error { color: #F44336; }
 
+  .progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  .progress {
+    height: 20px;
+    background-color: #646cff;
+    transition: width 0.3s ease;
+  }
+
   .results-table {
     margin-top: 20px;
-    max-height: 500px;
+    max-height: 300px;
     overflow: auto;
     border: 1px solid #333;
     border-radius: 5px;
+    width: 100%;        /* keeps a static width */
+    table-layout: fixed; /* Ensures equal column widths */
   }
+
+  .results-table th,
+  .results-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    white-space: nowrap; /* Prevents text from wrapping */
+    overflow: hidden; /* Hides overflow text */
+    text-overflow: ellipsis; /* Adds ellipsis for overflow text */
+  }
+
+  .action-buttons button {
+    margin-top: 20px;
+    margin-right: 10px;
+    padding: 5px 10px;
+    font-size: 1rem;
+    width: auto;
+    min-width: 80px;
+  }
+
+  .terminal-button {
+    margin-left: 40px; /* Has the terminal button a little further right*/
+  }
+
   th {
     position: sticky;
     top: 0;
