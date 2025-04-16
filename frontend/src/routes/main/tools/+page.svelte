@@ -34,7 +34,7 @@
 
         <div class="row">
           <h3 style="padding-left: 15px;"> Brute Forcer </h3>
-          <button on:click={gotoBruteForcer}>Select</button>
+          <button on:click={gotoBruteForcer} title="Navigates to the Brute Forcer page">Select</button>
         </div>
 
         <div class="row">
