@@ -93,7 +93,19 @@
 
   function dynamicBruteForceParamUpdate(id, value) {
     bruteForceParams[id] = value;
-    console.log(`Updated ${id} to ${value}`);
+    if (id === 'hide_status_code') {
+      bruteForceParams.hide_status = value.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+    }
+
+    if (id === 'show_status_code') {
+      bruteForceParams.show_status = value.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+    }
+
+    if (id === 'filter_by_content_length') {
+      const numeric = parseInt(value);
+      if (!isNaN(numeric)) bruteForceParams.filter_by_content_length = numeric;
+    }
+    //console.log(`Updated ${id} to ${value}`);
   }
 
   // Function to handle file upload for wordlist
