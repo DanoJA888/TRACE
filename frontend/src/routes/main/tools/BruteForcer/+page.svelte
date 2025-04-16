@@ -87,8 +87,9 @@
   function restartBruteForce() {
     console.log("Restart clicked");
     results = [];
+    displayingResults = false; // 🔧 hide final results
     stopTimer();
-    handleSubmit();
+    handleSubmit(); // starts fresh
   }
 
   function dynamicBruteForceParamUpdate(id, value) {
@@ -522,13 +523,13 @@
     transition: width 0.3s ease;
   }
 
-  .results-table {
+  /* .results-table {
     margin-top: 20px; 
   }
 
   .results-table button {
     margin-top: 20px; 
-  }
+  } */
 
   .brute-section {
     background-color: #1f1f1f;
