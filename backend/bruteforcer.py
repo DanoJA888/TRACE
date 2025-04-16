@@ -1,9 +1,10 @@
-import requests
-from urllib.parse import urljoin, urlparse, parse_qs, urlencode, urlunparse
 import time
 import json
 import os
 import logging
+from urllib.parse import urljoin, urlparse, urlunparse
+from http_tester import send_http_request  # Importing from http_tester.py
+from proxy_logic import handle_proxy_request  # Importing from proxy_logic.py
 
 # Configure BruteForcer logging
 logging.basicConfig(level=logging.INFO)
@@ -40,30 +41,29 @@ class BruteForcer:
 
             scan_logger.info(f"Attempting: {full_url}")
 
-            response = requests.get(
-                full_url,
-                cookies=self.auth_cookies,
-                proxies={'http': self.network_proxy, 'https': self.network_proxy} if self.network_proxy else None,
-                timeout=5,
-                headers=headers
-            )
+            # Use proxy if specified, otherwise use direct request
+            if self.network_proxy:
+                result = handle_proxy_request(full_url, 'GET')  # Proxy request logic
+            else:
+                result = send_http_request(full_url, 'GET')  # Direct HTTP request using http_tester.py
 
-            content = response.text
+            content = result['body']
+            status_code = result['status_code']
             lines = content.count('\n')
             words = len(content.split())
             chars = len(content)
 
             return {
                 'url': full_url,
-                'status_code': response.status_code,
+                'status_code': status_code,
                 'lines': lines,
                 'words': words,
                 'chars': chars,
-                'length': len(response.content),
+                'length': len(content),
                 'error': False
             }
 
-        except requests.RequestException as e:
+        except Exception as e:
             scan_logger.error(f"Request error for payload '{payload}': {e}")
             return {
                 'url': full_url if 'full_url' in locals() else f"{url}/{payload}",
@@ -87,7 +87,6 @@ class BruteForcer:
             return False
 
         return True
-
 
     def save_report_to_json(self):
         """Save the results to a JSON file."""
@@ -195,4 +194,3 @@ class BruteForcer:
 
         # Display results live
         self.display_results_live = scan_params.get('show_results', True)
-
