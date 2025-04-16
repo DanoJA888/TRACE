@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import HTTPException
 from pydantic import BaseModel
 from crawler import Crawler
-from typing import Optional
+from typing import List,Optional
 import logging
 from fastapi.responses import StreamingResponse
 import json
@@ -161,8 +161,8 @@ async def resumeFuzzer():
 class BruteForcerRequest(BaseModel):
     target_url: str
     word_list: Optional[str] = ''
-    hide_status: Optional[str] = ''
-    show_status: Optional[str] = ''
+    hide_status: Optional[List[int]] = None
+    show_status: Optional[List[int]] = None
     filter_by_content_length: Optional[str | int] = ''
     additional_parameters: Optional[str] = ''
     show_results: bool = True  # New parameter for toggling result visibility
