@@ -456,8 +456,9 @@
               // Add to terminal with the full result object
               addToTerminal(update, type);
   
-              // Add to results table
+              // Add to results table and terminal
               results = [...results, update];
+              logOutput += `[${update.response}] ${update.payload}\n`;
             }
           } catch (error) {
             addToTerminal(`ERROR: ${error.message}`, 'error');

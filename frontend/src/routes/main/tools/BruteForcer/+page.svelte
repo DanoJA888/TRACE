@@ -210,8 +210,7 @@
 
             if (update.payload) {
               results = [...results, update];
-              logOutput += `[${update.response}] ${update.payload}\n`; // append to terminal
-
+              logOutput += `[${update.response}] ${update.payload} \t ${update.length} bytes \t ${update.words} words\n`;
             }
           } catch (error) {
             console.error('Error parsing update:', error);
