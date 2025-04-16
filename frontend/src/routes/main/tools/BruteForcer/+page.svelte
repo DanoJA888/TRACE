@@ -34,6 +34,12 @@
   let elapsedTime = "0s";
   let timerInterval;
 
+  //applying crawler sorter i added over there to here
+  let sortConfig = {
+  column: "",
+  direction: 'asc'
+  };
+
   function startTimer() {
     startTime = Date.now();
     timerInterval = setInterval(() => {
@@ -207,6 +213,32 @@
     linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
   }
+
+  function sortTable(column) {
+    const { direction } = sortConfig;
+
+    // Toggle sorting direction
+    sortConfig.direction = direction === 'asc' ? 'desc' : 'asc';
+    sortConfig.column = column;
+
+    console.log(`Sorting by column: ${column}, direction: ${sortConfig.direction}`);
+
+    results = [...results].sort((a, b) => {
+      const aValue = a[column];
+      const bValue = b[column];
+
+      // Ensure we are working with numbers where appropriate
+      const aValueParsed = typeof aValue === 'number' ? aValue : parseFloat(aValue);
+      const bValueParsed = typeof bValue === 'number' ? bValue : parseFloat(bValue);
+
+      if (aValueParsed < bValueParsed) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      } else if (aValueParsed > bValueParsed) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  }
 </script>
 
 <div class="bruteForceConfigPage">
@@ -348,19 +380,45 @@
         <table>
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Status</th>
-              <th>Lines</th>
-              <th>Words</th>
-              <th>Chars</th>
+              <th on:click={() => sortTable('id')}>ID
+                {#if sortConfig.column === 'id'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              <th on:click={() => sortTable('response')}>Response
+                {#if sortConfig.column === 'response'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              <th on:click={() => sortTable('lines')}>Lines
+                {#if sortConfig.column === 'lines'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              <th on:click={() => sortTable('words')}>Words
+                {#if sortConfig.column === 'words'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              <th on:click={() => sortTable('chars')}>Chars
+                {#if sortConfig.column === 'chars'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
+              
               <th>Payload</th>
-              <th>Length</th>
+
+              <th on:click={() => sortTable('length')}>Length
+                {#if sortConfig.column === 'length'}
+                  {sortConfig.direction === 'asc' ? '▲' : '▼'}
+                {/if}
+              </th>
             </tr>
           </thead>
           <tbody>
-            {#each results as result, index}
+            {#each results as result (result.id)} <!-- Key by result.id -->
               <tr>
-                <td>{index + 1}</td>
+                <td>{result.id}</td> <!-- Display result.id instead of index + 1 -->
                 <td>{result.response}</td>
                 <td>{result.lines}</td>
                 <td>{result.words}</td>
@@ -413,7 +471,7 @@
   }
 
   .bruteForceConfigPage {
-  width: 80%;  /* Adjusted width to give more space */
+  width: 100%;  /* Adjusted width to give more space */
   margin: 10vh auto; /* Centered with some spacing from the top */
   padding: 20px;
   background: transparent;
