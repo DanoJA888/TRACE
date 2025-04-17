@@ -46,7 +46,7 @@ class Fuzzer:
                 cookies[key] = value
         return cookies
     
-    #testing fuzzer with safe URL for testing purposes "https://httpbin.org/get"
+    #testing fuzzer with safe URL for testing purposes "https://httpbin.org/get"-put-post
     def send_request(self, url, payload, method):
         try:
             # Ensure URL has proper format
@@ -83,8 +83,10 @@ class Fuzzer:
             response_data = send_http_request(
                 url=fuzz_url, 
                 method=method,
-                headers=headers
+                headers=headers,
+                body=body  # ← important fix
             )
+
             
             # Parse the response based on its format
             if isinstance(response_data, dict):
