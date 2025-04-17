@@ -200,13 +200,13 @@
     {
         "id": 19,
         "url": "https://example.com/dev",
-        "response": 0,
-        "lines": 0,
-        "words": 0,
-        "chars": 0,
+        "response": 404,
+        "lines": 46,
+        "words": 120,
+        "chars": 1256,
         "payload": "dev",
-        "length": 0,
-        "error": true
+        "length": 1256,
+        "error": false
     },
     {
         "id": 20,
