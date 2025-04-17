@@ -1,92 +1,11 @@
 [
     {
         "id": 1,
-        "url": "https://discord.com",
-        "title": "Discord - Group Chat That\u2019s All Fun & Games",
-        "word_count": 380,
-        "char_count": 3591,
-        "link_count": 50,
-        "error": false
-    },
-    {
-        "id": 2,
-        "url": "https://discord.com/mobile",
-        "title": "Improved Mobile Experience | Discord",
-        "word_count": 2160,
-        "char_count": 14342,
-        "link_count": 54,
-        "error": false
-    },
-    {
-        "id": 3,
-        "url": "https://discord.com/ads/quests",
-        "title": "Discord Quests - Advertise Where the World Plays",
-        "word_count": 690,
-        "char_count": 5935,
-        "link_count": 59,
-        "error": false
-    },
-    {
-        "id": 4,
-        "url": "https://discord.com/developers/gdc-2025",
-        "title": "Discord @ GDC 2025",
-        "word_count": 1306,
-        "char_count": 10177,
-        "link_count": 47,
-        "error": false
-    },
-    {
-        "id": 5,
-        "url": "https://discord.com/safety-transparency",
-        "title": "Transparency Hub | Discord Safety",
-        "word_count": 297,
-        "char_count": 3231,
-        "link_count": 51,
-        "error": false
-    },
-    {
-        "id": 6,
-        "url": "https://discord.com/category/company",
-        "title": "Discord Blog",
-        "word_count": 776,
-        "char_count": 6506,
-        "link_count": 112,
-        "error": false
-    },
-    {
-        "id": 7,
-        "url": "https://discord.com/company",
-        "title": "About Discord | Our Mission and Story",
-        "word_count": 821,
-        "char_count": 6496,
-        "link_count": 44,
-        "error": false
-    },
-    {
-        "id": 8,
-        "url": "https://discord.com/safety-news",
-        "title": "Safety News Hub | Discord",
-        "word_count": 18111,
-        "char_count": 116452,
-        "link_count": 121,
-        "error": false
-    },
-    {
-        "id": 9,
-        "url": "https://discord.com/app",
-        "title": "Discord",
-        "word_count": 3,
-        "char_count": 43,
+        "url": "http://discord.com",
+        "title": "No Title",
+        "word_count": 0,
+        "char_count": 0,
         "link_count": 0,
-        "error": false
-    },
-    {
-        "id": 10,
-        "url": "https://discord.com/gaming",
-        "title": "Gaming | Discord",
-        "word_count": 433,
-        "char_count": 3881,
-        "link_count": 40,
-        "error": false
+        "error": true
     }
 ]
