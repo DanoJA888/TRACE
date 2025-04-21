@@ -12,6 +12,7 @@ from bruteforcer import BruteForcer
 import os
 import shutil
 import requests
+from typing import Union, List
 
 # logs whenever an endpoint is hit using logger.info
 logging.basicConfig(level=logging.DEBUG)
@@ -161,9 +162,9 @@ async def resumeFuzzer():
 class BruteForcerRequest(BaseModel):
     target_url: str
     word_list: Optional[str] = ''
-    hide_status: Optional[List[int]] = None
-    show_status: Optional[List[int]] = None
-    filter_by_content_length: Optional[str | int] = ''
+    hide_status: Union[List[int], str] = []              # allow [404,500] or "404,500"
+    show_status: Union[List[int], str] = []              # same here
+    filter_by_content_length: Optional[Union[int, str]] = None
     additional_parameters: Optional[str] = ''
     show_results: bool = True  # New parameter for toggling result visibility
 
@@ -177,6 +178,8 @@ async def launchBruteForcer(request: BruteForcerRequest):
     brute_forcer = BruteForcer()
     params_dict = request.model_dump()
     logger.info(request)
+    logger.debug(f"BruteForcer parameters: {params_dict}")
+
     
     async def brute_force_stream():
         try:
@@ -206,6 +209,32 @@ async def upload_wordlist(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Error uploading wordlist file {str(e)}")
         return {"error !": str(e)}, 500
+    
+# control endpoints for the BruteForce
+@app.post("/stop_brute")
+async def stopBrute():
+    global brute_forcer
+    if brute_forcer:
+        brute_forcer.stop_scan()
+        return {"message": "BruteForce stopping requested"}
+    return {"message": "No active BruteForce to stop"}
+
+@app.post("/pause_brute")
+async def pauseBrute():
+    global brute_forcer
+    if brute_forcer:
+        brute_forcer.pause_scan()
+        return {"message": "BruteForce paused"}
+    return {"message": "No active BruteForce to pause"}
+
+@app.post("/resume_brute")
+async def resumeBrute():
+    global brute_forcer
+    if brute_forcer:
+        brute_forcer.resume_scan()
+        return {"message": "BruteForce resumed"}
+    return {"message": "No active BruteForce to resume"}
+
 
 # helps frontend and backend communicate (different ports for fastAPI and sveltekit)
 app.add_middleware(
